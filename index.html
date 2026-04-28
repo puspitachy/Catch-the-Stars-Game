@@ -1,273 +1,380 @@
 %%html
-<div style="font-family:Arial;padding:20px">
-<h2>⭐ Catch The Stars</h2>
-
-<a href="#" id="openLink"
-style="
-font-size:24px;
-font-weight:bold;
-color:white;
-background:gold;
-padding:14px 24px;
-border-radius:10px;
-text-decoration:none;
-display:inline-block;
-">
-▶ Open Game
-</a>
-
-<div id="gameBox" style="margin-top:20px;"></div>
-</div>
-
-<script>
-document.getElementById("openLink").addEventListener("click", function(e){
-e.preventDefault();
-openGame();
-});
-
-function openGame(){
-
-const box=document.getElementById("gameBox");
-
-box.innerHTML=`
-<div id="game" tabindex="0"></div>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Catch The Stars</title>
 
 <style>
+html,body{
+margin:0;
+padding:0;
+overflow:hidden;
+font-family:Arial,sans-serif;
+}
+
 #game{
 position:relative;
-width:100%;
-height:650px;
+width:100vw;
+height:100vh;
 overflow:hidden;
-background:linear-gradient(to bottom,#000428,#001a66,#000000);
-font-family:Arial;
-outline:none;
-cursor:pointer;
+background:linear-gradient(to bottom,#000428,#00134d,#000000);
 }
 
-/* title */
-#title{
-position:absolute;
-top:10px;
-width:100%;
-text-align:center;
-font-size:38px;
-font-weight:bold;
-color:gold;
-text-shadow:0 0 10px gold;
-}
-
-/* score */
-#score{
-position:absolute;
-top:15px;
-left:15px;
-color:white;
-font-size:24px;
-font-weight:bold;
-z-index:10;
-}
-
-/* moon */
-#moon{
-position:absolute;
-top:60px;
-right:80px;
-width:70px;
-height:70px;
-border-radius:50%;
-background:#fff2aa;
-box-shadow:0 0 25px #fff2aa;
-}
-
-/* stars */
+/* sky dots */
 .sky{
 position:absolute;
 width:3px;
 height:3px;
 background:white;
 border-radius:50%;
+opacity:.8;
 }
 
+/* moon */
+#moon{
+position:absolute;
+top:70px;
+right:120px;
+width:95px;
+height:95px;
+border-radius:50%;
+background:#fff2aa;
+box-shadow:0 0 35px #fff2aa;
+z-index:1;
+}
+#moon:after{
+content:"";
+position:absolute;
+left:28px;
+top:0;
+width:95px;
+height:95px;
+border-radius:50%;
+background:#00134d;
+}
+
+/* city */
+#city{
+position:absolute;
+bottom:0;
+width:100%;
+height:160px;
+background:linear-gradient(to top,#050505,#111);
+z-index:1;
+}
+
+/* title */
+#title{
+position:absolute;
+top:20px;
+width:100%;
+text-align:center;
+font-size:54px;
+font-weight:bold;
+color:gold;
+text-shadow:0 0 20px gold;
+z-index:10;
+}
+
+/* overlay */
+#screen{
+position:absolute;
+inset:0;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+background:rgba(0,0,0,.35);
+z-index:20;
+color:white;
+text-align:center;
+}
+
+.panel{
+background:rgba(0,0,50,.75);
+padding:35px;
+border-radius:24px;
+border:2px solid rgba(255,215,0,.35);
+min-width:420px;
+}
+
+.panel h1{
+margin:0 0 15px 0;
+font-size:54px;
+color:gold;
+}
+
+.panel p{
+font-size:28px;
+margin:10px 0;
+}
+
+button{
+padding:16px 34px;
+font-size:28px;
+font-weight:bold;
+border:none;
+border-radius:14px;
+background:gold;
+cursor:pointer;
+margin-top:15px;
+}
+
+/* ui in game */
+#ui{
+position:absolute;
+top:18px;
+left:18px;
+font-size:28px;
+font-weight:bold;
+color:white;
+background:rgba(0,0,0,.45);
+padding:16px;
+border-radius:18px;
+z-index:15;
+display:none;
+line-height:1.5;
+}
+
+/* hearts */
+#hearts{
+position:absolute;
+top:20px;
+right:22px;
+font-size:42px;
+z-index:15;
+display:none;
+}
+
+/* falling star */
 .star{
 position:absolute;
-font-size:34px;
-filter:drop-shadow(0 0 8px gold);
+font-size:42px;
+filter:drop-shadow(0 0 10px gold);
+z-index:6;
 }
 
 /* tray */
 #tray{
 position:absolute;
-bottom:120px;
-left:300px;
-width:140px;
-height:15px;
+bottom:150px;
+left:45%;
+width:170px;
+height:18px;
 background:gold;
-border-radius:20px;
-box-shadow:0 0 15px gold;
+border-radius:25px;
+box-shadow:0 0 18px gold;
+z-index:9;
+display:none;
 }
 
 /* girl */
 #girl{
 position:absolute;
-bottom:10px;
-left:320px;
-font-size:90px;
-}
-
-/* message */
-#msg{
-position:absolute;
-top:250px;
-width:100%;
-text-align:center;
-font-size:45px;
-font-weight:bold;
-color:white;
+bottom:22px;
+left:45%;
+font-size:130px;
+z-index:8;
 display:none;
 }
 </style>
-`;
+</head>
 
+<body>
+
+<div id="game">
+
+<div id="moon"></div>
+<div id="city"></div>
+<div id="title">CATCH THE STARS</div>
+
+<div id="ui"></div>
+<div id="hearts">❤️❤️❤️</div>
+
+<div id="tray"></div>
+<div id="girl">👧</div>
+
+<div id="screen">
+<div class="panel">
+<h1>CATCH THE STARS</h1>
+<p>Use LEFT / RIGHT keys or Mouse</p>
+<p>Catch stars and pass levels</p>
+<button onclick="startLevel()">START GAME</button>
+</div>
+</div>
+
+</div>
+
+<script>
 const game=document.getElementById("game");
+const tray=document.getElementById("tray");
+const girl=document.getElementById("girl");
+const ui=document.getElementById("ui");
+const hearts=document.getElementById("hearts");
+const screen=document.getElementById("screen");
 
-/* create elements */
-function add(id,text){
-let el=document.createElement("div");
-el.id=id;
-el.innerHTML=text;
-game.appendChild(el);
-return el;
-}
-
-add("title","CATCH THE STARS");
-let scoreBox=add("score","Score: 0");
-add("moon","");
-let tray=add("tray","");
-let girl=add("girl","👧");
-let msg=add("msg","");
-
-let x=300;
+let x=window.innerWidth/2;
+let level=1;
 let score=0;
 let lives=3;
-let playing=true;
+let target=5;
+let speed=4;
+let playing=false;
+let maker;
 
-/* focus for keyboard */
-game.focus();
-
-/* background stars */
-for(let i=0;i<100;i++){
+/* sky dots */
+for(let i=0;i<160;i++){
 let s=document.createElement("div");
 s.className="sky";
-s.style.left=Math.random()*900+"px";
-s.style.top=Math.random()*650+"px";
+s.style.left=Math.random()*window.innerWidth+"px";
+s.style.top=Math.random()*window.innerHeight+"px";
 game.appendChild(s);
 }
 
-/* move function */
-function movePlayer(newX){
+/* level settings */
+function setLevel(){
+if(level===1){target=5; speed=4;}
+if(level===2){target=7; speed=5;}
+if(level===3){target=10; speed=6;}
+}
 
-x=newX;
-
-if(x<0) x=0;
-if(x>850) x=850;
-
+/* move player */
+function movePlayer(nx){
+x=nx;
+if(x<0)x=0;
+if(x>window.innerWidth-170)x=window.innerWidth-170;
 tray.style.left=x+"px";
-girl.style.left=(x+20)+"px";
+girl.style.left=(x+25)+"px";
 }
 
-/* keyboard arrows */
-game.addEventListener("keydown",function(e){
-
-if(!playing) return;
-
-if(e.key==="ArrowLeft"){
-movePlayer(x-30);
-}
-
-if(e.key==="ArrowRight"){
-movePlayer(x+30);
-}
-
+/* keyboard */
+document.addEventListener("keydown",e=>{
+if(!playing)return;
+if(e.key==="ArrowLeft")movePlayer(x-35);
+if(e.key==="ArrowRight")movePlayer(x+35);
 });
 
-/* mouse move */
-game.addEventListener("mousemove",function(e){
-
-if(!playing) return;
-
-const rect=game.getBoundingClientRect();
-let mouseX=e.clientX-rect.left-70;
-
-movePlayer(mouseX);
-
+/* mouse */
+game.addEventListener("mousemove",e=>{
+if(!playing)return;
+movePlayer(e.clientX-85);
 });
+
+/* update ui */
+function updateUI(){
+ui.innerHTML="SCORE: "+score+"<br>LEVEL: "+level;
+hearts.innerHTML="❤️".repeat(lives);
+}
+
+/* start level */
+function startLevel(){
+
+setLevel();
+score=0;
+playing=true;
+
+screen.style.display="none";
+ui.style.display="block";
+hearts.style.display="block";
+tray.style.display="block";
+girl.style.display="block";
+
+updateUI();
+
+maker=setInterval(makeStar,700-(level*100));
+}
 
 /* falling stars */
 function makeStar(){
 
-if(!playing) return;
+if(!playing)return;
 
 let star=document.createElement("div");
 star.className="star";
 star.innerHTML="⭐";
 
-let sx=Math.random()*850;
-let sy=-30;
+let sx=Math.random()*(window.innerWidth-50);
+let sy=-40;
 
 star.style.left=sx+"px";
 star.style.top=sy+"px";
 
 game.appendChild(star);
 
-let drop=setInterval(function(){
+let drop=setInterval(()=>{
 
-sy+=5;
+if(!playing){
+clearInterval(drop);
+return;
+}
+
+sy+=speed;
 star.style.top=sy+"px";
 
 /* catch */
-if(sy>500 && sx>x-30 && sx<x+140){
-
+if(sy>window.innerHeight-220 && sx>x-20 && sx<x+170){
 score++;
-scoreBox.innerHTML="Score: "+score;
-
+updateUI();
 star.remove();
 clearInterval(drop);
 
-if(score>=15){
-win();
+/* pass level */
+if(score>=target){
+clearInterval(maker);
+playing=false;
+
+if(level<3){
+screen.style.display="flex";
+screen.innerHTML=`
+<div class="panel">
+<h1>🎉 Congrats!</h1>
+<p>You won Level ${level}</p>
+<p>Now start Level ${level+1}</p>
+<button onclick="nextLevel()">START LEVEL ${level+1}</button>
+</div>`;
+}else{
+screen.style.display="flex";
+screen.innerHTML=`
+<div class="panel">
+<h1>🏆 YOU WON!</h1>
+<p>You completed all levels</p>
+<button onclick="location.reload()">PLAY AGAIN</button>
+</div>`;
+}
 }
 }
 
 /* miss */
-if(sy>650){
-
+if(sy>window.innerHeight){
 lives--;
-
+updateUI();
 star.remove();
 clearInterval(drop);
 
 if(lives<=0){
-lose();
+clearInterval(maker);
+playing=false;
+screen.style.display="flex";
+screen.innerHTML=`
+<div class="panel">
+<h1>💀 GAME OVER</h1>
+<p>Try Again</p>
+<button onclick="location.reload()">RESTART</button>
+</div>`;
 }
-
 }
 
 },25);
 }
 
-setInterval(makeStar,700);
-
-function win(){
-playing=false;
-msg.style.display="block";
-msg.innerHTML="🎉 YOU WIN!";
-}
-
-function lose(){
-playing=false;
-msg.style.display="block";
-msg.innerHTML="💀 GAME OVER";
-}
-
+/* next level */
+function nextLevel(){
+level++;
+lives=3;
+startLevel();
 }
 </script>
+
+</body>
+</html>
