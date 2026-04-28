@@ -1,181 +1,128 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Catch The Stars</title>
 
 <style>
-html,body{
+body{
 margin:0;
-padding:0;
-overflow:hidden;
-font-family:Arial,sans-serif;
+font-family:Arial, sans-serif;
+background:#111;
+color:white;
+text-align:center;
 }
 
+#home{
+padding:30px;
+}
+
+#openLink{
+font-size:24px;
+font-weight:bold;
+color:white;
+background:gold;
+padding:14px 24px;
+border-radius:10px;
+text-decoration:none;
+display:inline-block;
+cursor:pointer;
+}
+
+#gameBox{
+margin-top:20px;
+}
+
+/* game area */
 #game{
 position:relative;
-width:100vw;
-height:100vh;
+width:100%;
+height:700px;
 overflow:hidden;
-background:linear-gradient(to bottom,#000428,#00134d,#000000);
+background:linear-gradient(to bottom,#000428,#001a66,#000000);
+outline:none;
+cursor:pointer;
 }
 
-/* sky dots */
-.sky{
+/* title */
+#title{
 position:absolute;
-width:3px;
-height:3px;
-background:white;
-border-radius:50%;
-opacity:.8;
+top:15px;
+width:100%;
+text-align:center;
+font-size:42px;
+font-weight:bold;
+color:gold;
+text-shadow:0 0 12px gold;
+}
+
+/* score */
+#score{
+position:absolute;
+top:20px;
+left:20px;
+font-size:26px;
+font-weight:bold;
+z-index:5;
 }
 
 /* moon */
 #moon{
 position:absolute;
 top:70px;
-right:120px;
-width:95px;
-height:95px;
+right:80px;
+width:80px;
+height:80px;
 border-radius:50%;
 background:#fff2aa;
-box-shadow:0 0 35px #fff2aa;
-z-index:1;
+box-shadow:0 0 25px #fff2aa;
 }
-#moon:after{
-content:"";
+
+/* tiny stars */
+.sky{
 position:absolute;
-left:28px;
-top:0;
-width:95px;
-height:95px;
+width:3px;
+height:3px;
+background:white;
 border-radius:50%;
-background:#00134d;
 }
 
-/* city */
-#city{
-position:absolute;
-bottom:0;
-width:100%;
-height:160px;
-background:linear-gradient(to top,#050505,#111);
-z-index:1;
-}
-
-/* title */
-#title{
-position:absolute;
-top:20px;
-width:100%;
-text-align:center;
-font-size:54px;
-font-weight:bold;
-color:gold;
-text-shadow:0 0 20px gold;
-z-index:10;
-}
-
-/* overlay */
-#screen{
-position:absolute;
-inset:0;
-display:flex;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-background:rgba(0,0,0,.35);
-z-index:20;
-color:white;
-text-align:center;
-}
-
-.panel{
-background:rgba(0,0,50,.75);
-padding:35px;
-border-radius:24px;
-border:2px solid rgba(255,215,0,.35);
-min-width:420px;
-}
-
-.panel h1{
-margin:0 0 15px 0;
-font-size:54px;
-color:gold;
-}
-
-.panel p{
-font-size:28px;
-margin:10px 0;
-}
-
-button{
-padding:16px 34px;
-font-size:28px;
-font-weight:bold;
-border:none;
-border-radius:14px;
-background:gold;
-cursor:pointer;
-margin-top:15px;
-}
-
-/* ui in game */
-#ui{
-position:absolute;
-top:18px;
-left:18px;
-font-size:28px;
-font-weight:bold;
-color:white;
-background:rgba(0,0,0,.45);
-padding:16px;
-border-radius:18px;
-z-index:15;
-display:none;
-line-height:1.5;
-}
-
-/* hearts */
-#hearts{
-position:absolute;
-top:20px;
-right:22px;
-font-size:42px;
-z-index:15;
-display:none;
-}
-
-/* falling star */
+/* falling stars */
 .star{
 position:absolute;
-font-size:42px;
-filter:drop-shadow(0 0 10px gold);
-z-index:6;
+font-size:34px;
+filter:drop-shadow(0 0 8px gold);
 }
 
 /* tray */
 #tray{
 position:absolute;
-bottom:150px;
-left:45%;
-width:170px;
-height:18px;
+bottom:130px;
+left:300px;
+width:140px;
+height:16px;
 background:gold;
-border-radius:25px;
-box-shadow:0 0 18px gold;
-z-index:9;
-display:none;
+border-radius:20px;
+box-shadow:0 0 15px gold;
 }
 
 /* girl */
 #girl{
 position:absolute;
-bottom:22px;
-left:45%;
-font-size:130px;
-z-index:8;
+bottom:0;
+left:320px;
+font-size:120px;
+}
+
+/* message */
+#msg{
+position:absolute;
+top:300px;
+width:100%;
+text-align:center;
+font-size:50px;
+font-weight:bold;
 display:none;
 }
 </style>
@@ -183,196 +130,157 @@ display:none;
 
 <body>
 
-<div id="game">
+<div id="home">
+<h2>⭐ Catch The Stars</h2>
 
-<div id="moon"></div>
-<div id="city"></div>
-<div id="title">CATCH THE STARS</div>
+<a href="#" id="openLink">▶ Open Game</a>
 
-<div id="ui"></div>
-<div id="hearts">❤️❤️❤️</div>
-
-<div id="tray"></div>
-<div id="girl">👧</div>
-
-<div id="screen">
-<div class="panel">
-<h1>CATCH THE STARS</h1>
-<p>Use LEFT / RIGHT keys or Mouse</p>
-<p>Catch stars and pass levels</p>
-<button onclick="startLevel()">START GAME</button>
-</div>
-</div>
-
+<div id="gameBox"></div>
 </div>
 
 <script>
+document.getElementById("openLink").addEventListener("click", function(e){
+e.preventDefault();
+openGame();
+});
+
+function openGame(){
+
+const box=document.getElementById("gameBox");
+
+box.innerHTML=`
+<div id="game" tabindex="0">
+<div id="title">CATCH THE STARS</div>
+<div id="score">Score: 0</div>
+<div id="moon"></div>
+<div id="tray"></div>
+<div id="girl">👧</div>
+<div id="msg"></div>
+</div>
+`;
+
 const game=document.getElementById("game");
 const tray=document.getElementById("tray");
 const girl=document.getElementById("girl");
-const ui=document.getElementById("ui");
-const hearts=document.getElementById("hearts");
-const screen=document.getElementById("screen");
+const scoreBox=document.getElementById("score");
+const msg=document.getElementById("msg");
 
-let x=window.innerWidth/2;
-let level=1;
+let x=300;
 let score=0;
 let lives=3;
-let target=5;
-let speed=4;
-let playing=false;
-let maker;
+let playing=true;
 
-/* sky dots */
-for(let i=0;i<160;i++){
+/* focus keyboard */
+game.focus();
+
+/* background stars */
+for(let i=0;i<120;i++){
 let s=document.createElement("div");
 s.className="sky";
 s.style.left=Math.random()*window.innerWidth+"px";
-s.style.top=Math.random()*window.innerHeight+"px";
+s.style.top=Math.random()*700+"px";
 game.appendChild(s);
 }
 
-/* level settings */
-function setLevel(){
-if(level===1){target=5; speed=4;}
-if(level===2){target=7; speed=5;}
-if(level===3){target=10; speed=6;}
-}
-
 /* move player */
-function movePlayer(nx){
-x=nx;
-if(x<0)x=0;
-if(x>window.innerWidth-170)x=window.innerWidth-170;
+function movePlayer(newX){
+
+x=newX;
+
+if(x<0) x=0;
+if(x>window.innerWidth-160) x=window.innerWidth-160;
+
 tray.style.left=x+"px";
-girl.style.left=(x+25)+"px";
+girl.style.left=(x+15)+"px";
 }
 
 /* keyboard */
-document.addEventListener("keydown",e=>{
-if(!playing)return;
-if(e.key==="ArrowLeft")movePlayer(x-35);
-if(e.key==="ArrowRight")movePlayer(x+35);
+game.addEventListener("keydown",function(e){
+
+if(!playing) return;
+
+if(e.key==="ArrowLeft") movePlayer(x-35);
+if(e.key==="ArrowRight") movePlayer(x+35);
+
 });
 
-/* mouse */
-game.addEventListener("mousemove",e=>{
-if(!playing)return;
-movePlayer(e.clientX-85);
+/* mouse move */
+game.addEventListener("mousemove",function(e){
+
+if(!playing) return;
+
+const rect=game.getBoundingClientRect();
+movePlayer(e.clientX-rect.left-70);
+
 });
-
-/* update ui */
-function updateUI(){
-ui.innerHTML="SCORE: "+score+"<br>LEVEL: "+level;
-hearts.innerHTML="❤️".repeat(lives);
-}
-
-/* start level */
-function startLevel(){
-
-setLevel();
-score=0;
-playing=true;
-
-screen.style.display="none";
-ui.style.display="block";
-hearts.style.display="block";
-tray.style.display="block";
-girl.style.display="block";
-
-updateUI();
-
-maker=setInterval(makeStar,700-(level*100));
-}
 
 /* falling stars */
 function makeStar(){
 
-if(!playing)return;
+if(!playing) return;
 
 let star=document.createElement("div");
 star.className="star";
 star.innerHTML="⭐";
 
 let sx=Math.random()*(window.innerWidth-50);
-let sy=-40;
+let sy=-30;
 
 star.style.left=sx+"px";
 star.style.top=sy+"px";
 
 game.appendChild(star);
 
-let drop=setInterval(()=>{
+let drop=setInterval(function(){
 
-if(!playing){
-clearInterval(drop);
-return;
-}
-
-sy+=speed;
+sy+=5;
 star.style.top=sy+"px";
 
 /* catch */
-if(sy>window.innerHeight-220 && sx>x-20 && sx<x+170){
+if(sy>530 && sx>x-30 && sx<x+140){
+
 score++;
-updateUI();
+scoreBox.innerHTML="Score: "+score;
+
 star.remove();
 clearInterval(drop);
 
-/* pass level */
-if(score>=target){
-clearInterval(maker);
-playing=false;
-
-if(level<3){
-screen.style.display="flex";
-screen.innerHTML=`
-<div class="panel">
-<h1>🎉 Congrats!</h1>
-<p>You won Level ${level}</p>
-<p>Now start Level ${level+1}</p>
-<button onclick="nextLevel()">START LEVEL ${level+1}</button>
-</div>`;
-}else{
-screen.style.display="flex";
-screen.innerHTML=`
-<div class="panel">
-<h1>🏆 YOU WON!</h1>
-<p>You completed all levels</p>
-<button onclick="location.reload()">PLAY AGAIN</button>
-</div>`;
-}
+if(score>=15){
+winGame();
 }
 }
 
 /* miss */
-if(sy>window.innerHeight){
+if(sy>700){
+
 lives--;
-updateUI();
+
 star.remove();
 clearInterval(drop);
 
 if(lives<=0){
-clearInterval(maker);
-playing=false;
-screen.style.display="flex";
-screen.innerHTML=`
-<div class="panel">
-<h1>💀 GAME OVER</h1>
-<p>Try Again</p>
-<button onclick="location.reload()">RESTART</button>
-</div>`;
+loseGame();
 }
+
 }
 
 },25);
 }
 
-/* next level */
-function nextLevel(){
-level++;
-lives=3;
-startLevel();
+setInterval(makeStar,700);
+
+function winGame(){
+playing=false;
+msg.style.display="block";
+msg.innerHTML="🎉 YOU WIN!";
+}
+
+function loseGame(){
+playing=false;
+msg.style.display="block";
+msg.innerHTML="💀 GAME OVER";
+}
+
 }
 </script>
 
