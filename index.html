@@ -12,6 +12,56 @@ body{background:#05071a;font-family:'Nunito',sans-serif;overflow:hidden;height:1
 .screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .35s;}
 .screen.hidden{opacity:0;pointer-events:none;}
 
+/* POPUP */
+.name-popup{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding-top:24px;
+  background:rgba(0,0,0,.18);
+  backdrop-filter:blur(2px);
+  z-index:50;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease;
+}
+.name-popup.show{
+  opacity:1;
+  pointer-events:auto;
+}
+.name-popup.hidden{
+  display:none;
+}
+.name-popup-box{
+  background:linear-gradient(135deg,rgba(255,229,102,.98),rgba(255,179,0,.96));
+  color:#1a1633;
+  border-radius:18px;
+  padding:14px 18px;
+  box-shadow:0 10px 30px rgba(255,179,0,.35);
+  border:2px solid rgba(255,255,255,.35);
+  min-width:240px;
+  max-width:360px;
+  text-align:center;
+  transform:translateY(-10px);
+  animation:popupDrop .28s ease-out forwards;
+}
+@keyframes popupDrop{
+  from{transform:translateY(-18px) scale(.95);}
+  to{transform:translateY(0) scale(1);}
+}
+.name-popup-title{
+  font-family:'Fredoka One',cursive;
+  font-size:1.1rem;
+  margin-bottom:4px;
+}
+.name-popup-text{
+  font-family:'Nunito',sans-serif;
+  font-weight:900;
+  font-size:1rem;
+}
+
 /* ── SETUP SCREEN ── */
 #setupScreen{background:radial-gradient(ellipse at 50% 35%,#0d1b4a,#05071a 70%);}
 .setup-box{position:relative;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:24px;padding:40px 44px;text-align:center;max-width:420px;width:90vw;}
@@ -113,6 +163,13 @@ body{background:#05071a;font-family:'Nunito',sans-serif;overflow:hidden;height:1
 </style>
 </head>
 <body>
+
+<div id="namePopup" class="name-popup hidden">
+  <div class="name-popup-box">
+    <div class="name-popup-title">🎉 Welcome!</div>
+    <div class="name-popup-text" id="namePopupText"></div>
+  </div>
+</div>
 
 <!-- SETUP -->
 <div id="setupScreen" class="screen">
@@ -243,6 +300,20 @@ function makeFunnyName(name){
   return `${pick(nick3)} ${base} ${pick(nick2)}`;
 }
 
+let popupTimer = null;
+function showNamePopup(funnyName){
+  const popup = document.getElementById('namePopup');
+  const text = document.getElementById('namePopupText');
+  text.textContent = `Welcome, ${funnyName}!`;
+  popup.classList.remove('hidden');
+  popup.classList.add('show');
+  if (popupTimer) clearTimeout(popupTimer);
+  popupTimer = setTimeout(() => {
+    popup.classList.remove('show');
+    setTimeout(() => popup.classList.add('hidden'), 250);
+  }, 1800);
+}
+
 function selectGender(g){
   playerGender=g;
   document.querySelectorAll('.g-btn').forEach(b=>b.classList.remove('selected'));
@@ -260,6 +331,7 @@ function goHome(){
   playerFunnyName=makeFunnyName(playerName);
   document.getElementById('welcomeMsg').textContent=`Welcome, ${AVATARS[playerGender]} ${playerFunnyName}! Choose your level:`;
   show('homeScreen');
+  setTimeout(()=>showNamePopup(playerFunnyName),150);
 }
 
 function getLB(){try{return JSON.parse(localStorage.getItem('ctb_lb')||'{"1":[],"2":[],"3":[]}')}catch{return{"1":[],"2":[],"3":[]};}}
@@ -391,20 +463,6 @@ function drawPlayer(){
   ctx.font='108px serif';ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillText(avatar,tx+TW/2,H-4);
 }
 
-let bannerA=0,bannerTxt='';
-function updFall(){
-  const ty=H-128;
-  for(let i=fall.length-1;i>=0;i--){
-    const s=fall[i];s.y+=s.vy;s.wb+=s.ws;s.x+=Math.sin(s.wb)*.55;
-    if(s.y>ty-18&&s.y<ty+34&&s.x>tx-10&&s.x<tx+TW){
-      if(s.t.p<0){lives--;burst(s.x,ty,'#ff4422',22);shk=14;}
-      else{score+=s.t.p;burst(s.x,ty,s.t.g,18);ftxt(s.x,ty-28,s.t.p>1?`+${s.t.p}✨`:'+1');if(score>=cfg.target)winGame();}
-      uhud();fall.splice(i,1);if(lives<=0&&playing)loseGame();continue;
-    }
-    if(s.y>H+50){if(s.t.p>0){lives--;shk=8;uhud();}fall.splice(i,1);if(lives<=0&&playing)loseGame();continue;}
-    ctx.save();ctx.shadowColor=s.t.g;ctx.shadowBlur=18;ctx.font=s.t.s+'px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(s.t.e,s.x,s.y);ctx.restore();
-  }
-}
 function updFX(){
   for(let i=parts.length-1;i>=0;i--){
     const p=parts[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.14;p.l-=p.d;
@@ -415,10 +473,6 @@ function updFX(){
     const f=fts[i];f.y-=1.8;f.l-=.026;
     ctx.save();ctx.globalAlpha=Math.max(0,f.l);ctx.font='bold 22px Nunito,sans-serif';ctx.fillStyle='#ffe566';ctx.textAlign='center';ctx.shadowColor='#ffe566';ctx.shadowBlur=12;ctx.fillText(f.t,f.x,f.y);ctx.restore();
     if(f.l<=0)fts.splice(i,1);
-  }
-  if(bannerA>0){
-    ctx.save();ctx.globalAlpha=Math.min(1,bannerA);ctx.font='bold 46px Fredoka One,cursive';ctx.fillStyle='#ffe566';ctx.textAlign='center';ctx.shadowColor='#ffe566';ctx.shadowBlur=30;ctx.fillText(bannerTxt,W/2,H/2-50);ctx.restore();
-    bannerA-=.018;
   }
 }
 
@@ -431,7 +485,7 @@ function loop(){
 
 function startGame(lv){
   selectedLv=lv;cfg=CFGS[lv];score=0;lives=cfg.lives;playing=true;
-  tx=W/2-TW/2;tt=tx;fall=[];parts=[];fts=[];bannerA=0;shk=0;mx=null;
+  tx=W/2-TW/2;tt=tx;fall=[];parts=[];fts=[];shk=0;mx=null;
   hudBadgeEl.className='hud-badge '+cfg.bc;hudBadgeEl.textContent=cfg.name;
   hudPlayerEl.textContent=`${AVATARS[playerGender]||'🧑'} ${playerFunnyName}`;
   progFill.className=cfg.fc;uhud();
