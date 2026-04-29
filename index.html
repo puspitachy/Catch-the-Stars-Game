@@ -28,6 +28,7 @@ body{background:#05071a;font-family:'Nunito',sans-serif;overflow:hidden;height:1
 .g-btn.selected{border-color:#ffe566;background:rgba(255,229,102,.12);color:#ffe566;box-shadow:0 0 18px #ffe56633;}
 .g-boy.selected{border-color:#66aaff;background:rgba(102,170,255,.12);color:#66aaff;box-shadow:0 0 18px #66aaff33;}
 .g-girl.selected{border-color:#ff88cc;background:rgba(255,136,204,.12);color:#ff88cc;box-shadow:0 0 18px #ff88cc33;}
+.g-other.selected{border-color:#c0ccff;background:rgba(192,204,255,.12);color:#c0ccff;box-shadow:0 0 18px #c0ccff33;}
 .btn-start{width:100%;font-family:'Fredoka One',cursive;font-size:1.4rem;color:#05071a;background:linear-gradient(135deg,#ffe566,#ffb300);border:none;padding:15px;border-radius:50px;cursor:pointer;box-shadow:0 6px 24px #ffb30055;transition:transform .15s,opacity .2s;}
 .btn-start:hover{transform:scale(1.04) translateY(-2px);}
 .btn-start:disabled{opacity:.4;cursor:not-allowed;transform:none;}
@@ -210,7 +211,6 @@ body{background:#05071a;font-family:'Nunito',sans-serif;overflow:hidden;height:1
 </div>
 
 <script>
-// ── roundRect polyfill ──
 function rr(c,x,y,w,h,r){
   c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);
   c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
@@ -218,7 +218,6 @@ function rr(c,x,y,w,h,r){
   c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath();
 }
 
-// ── Animated bg stars (shared) ──
 function makeBgCanvas(id){
   const cv=document.getElementById(id),ctx=cv.getContext('2d');
   let stars=[];
@@ -229,9 +228,20 @@ function makeBgCanvas(id){
 makeBgCanvas('setupBg');
 makeBgCanvas('homeBg');
 
-// ── Player state ──
-let playerName='',playerGender='',selectedLv=1;
+let playerName='',playerGender='',selectedLv=1,playerFunnyName='';
 const AVATARS={boy:'🧒',girl:'👧',other:'🧑'};
+
+function makeFunnyName(name){
+  const base=name.trim().split(/\s+/)[0]||'Mystery';
+  const nick1=['McWiggle','Noodleface','Wobblebean','Snacc','Banana','Zoom-Zoom','Puffball','Sillypants','Goobster','Fizzpop','Bloop','Chucklebug'];
+  const nick2=['the Brave','the Tiny','the Zoomer','of Chaos','the Fluff','the Chaos Goat','from Planet Snack','the Wiggly','the Legendary','the Goblin King'];
+  const nick3=['Sir','Lord','Captain','Professor','Baby','Mega','Ultra','Tiny'];
+  const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
+  const style=Math.random();
+  if(style<0.33) return `${pick(nick3)} ${base} ${pick(nick1)}`;
+  if(style<0.66) return `${base} ${pick(nick2)}`;
+  return `${pick(nick3)} ${base} ${pick(nick2)}`;
+}
 
 function selectGender(g){
   playerGender=g;
@@ -247,16 +257,16 @@ function checkReady(){
 }
 function goHome(){
   playerName=nameInput.value.trim();
-  document.getElementById('welcomeMsg').textContent=`Welcome, ${AVATARS[playerGender]} ${playerName}! Choose your level:`;
+  playerFunnyName=makeFunnyName(playerName);
+  document.getElementById('welcomeMsg').textContent=`Welcome, ${AVATARS[playerGender]} ${playerFunnyName}! Choose your level:`;
   show('homeScreen');
 }
 
-// ── Leaderboard storage ──
 function getLB(){try{return JSON.parse(localStorage.getItem('ctb_lb')||'{"1":[],"2":[],"3":[]}')}catch{return{"1":[],"2":[],"3":[]};}}
 function saveLB(lb){try{localStorage.setItem('ctb_lb',JSON.stringify(lb));}catch{}}
 function addScore(lv,pts){
   const lb=getLB();
-  lb[lv].push({name:playerName,gender:playerGender,pts,date:new Date().toLocaleDateString()});
+  lb[lv].push({name:playerFunnyName||playerName,gender:playerGender,pts,date:new Date().toLocaleDateString()});
   lb[lv].sort((a,b)=>b.pts-a.pts);
   lb[lv]=lb[lv].slice(0,15);
   saveLB(lb);
@@ -274,7 +284,7 @@ function renderLB(){
   if(!rows.length){el.innerHTML='<div class="lb-empty">No scores yet!<br>Be the first to play 🌟</div>';return;}
   const medals=['🥇','🥈','🥉'];
   el.innerHTML=rows.map((r,i)=>{
-    const isMe=(r.name===playerName&&r.gender===playerGender);
+    const isMe=(r.name===playerFunnyName||r.name===playerName);
     const rankCls=i<3?`rank-${i+1}`:'';
     return `<div class="lb-row${isMe?' me':''}">
       <div class="lb-rank ${rankCls}">${medals[i]||`#${i+1}`}</div>
@@ -292,7 +302,6 @@ function showLB(){
   show('lbScreen');
 }
 function hideLB(){
-  // go back to wherever we were
   if(!document.getElementById('gameScreen').classList.contains('hidden')){
     document.getElementById('lbScreen').classList.add('hidden');
   } else {
@@ -300,15 +309,12 @@ function hideLB(){
   }
 }
 
-// ── Screen helper ──
 function show(id){
   ['setupScreen','homeScreen','gameScreen','lbScreen'].forEach(s=>{
     document.getElementById(s).classList.toggle('hidden',s!==id);
   });
 }
 
-// ── GAME CONFIGS ──
-// base fall speed is now MUCH faster; also increment per level is bigger
 const CFGS={
   1:{name:'EASY',  bc:'badge-easy',  fc:'fill-easy',  lives:5,target:15,spd:2.5, ms:900,bomb:.04,inc:.18},
   2:{name:'MEDIUM',bc:'badge-medium',fc:'fill-medium',lives:3,target:20,spd:3.8, ms:700,bomb:.12,inc:.24},
@@ -334,7 +340,6 @@ function spawn(){
   if(!playing)return;
   const isB=Math.random()<cfg.bomb;
   const t=isB?BOMB_T:STARS[Math.random()<.54?0:Math.random()<.68?1:2];
-  // speed: base + grows every 3 score points (faster ramp)
   const v=cfg.spd + Math.floor(score/3)*cfg.inc + Math.random()*.4;
   fall.push({x:Math.random()*(W-80)+40,y:-40,t,vy:v,wb:Math.random()*Math.PI*2,ws:(Math.random()-.5)*.04});
   stm=setTimeout(spawn,Math.max(160,cfg.ms-Math.floor(score/3)*30));
@@ -428,7 +433,7 @@ function startGame(lv){
   selectedLv=lv;cfg=CFGS[lv];score=0;lives=cfg.lives;playing=true;
   tx=W/2-TW/2;tt=tx;fall=[];parts=[];fts=[];bannerA=0;shk=0;mx=null;
   hudBadgeEl.className='hud-badge '+cfg.bc;hudBadgeEl.textContent=cfg.name;
-  hudPlayerEl.textContent=`${AVATARS[playerGender]||'🧑'} ${playerName}`;
+  hudPlayerEl.textContent=`${AVATARS[playerGender]||'🧑'} ${playerFunnyName}`;
   progFill.className=cfg.fc;uhud();
   ovl.classList.remove('show');
   show('gameScreen');
@@ -444,14 +449,14 @@ function winGame(){
   playing=false;addScore(selectedLv,score);
   ovE.textContent='🎉';ovT.textContent='YOU WIN!';ovT.style.color='#ffe566';
   ovSc.textContent=`Score: ${score} ⭐`;
-  ovS.innerHTML=`Amazing ${playerName}! ${cfg.name} completed!<br>Check the leaderboard to see your rank!`;
+  ovS.innerHTML=`Amazing ${playerFunnyName}! ${cfg.name} completed!<br>Check the leaderboard to see your rank!`;
   ovl.classList.add('show');
 }
 function loseGame(){
   playing=false;addScore(selectedLv,score);
   ovE.textContent='💀';ovT.textContent='GAME OVER';ovT.style.color='#ff5566';
   ovSc.textContent=`Score: ${score} ⭐`;
-  ovS.innerHTML=`Caught ${score} / ${cfg.target} on ${cfg.name}.<br>Try again, ${playerName}!`;
+  ovS.innerHTML=`Caught ${score} / ${cfg.target} on ${cfg.name}.<br>Try again, ${playerFunnyName}!`;
   ovl.classList.add('show');
 }
 
