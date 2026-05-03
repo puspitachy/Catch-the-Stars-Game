@@ -1,843 +1,850 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>CodeVerse – Save the Sky</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Code Catch – Save the Syntax Sky</title>
 <style>
-:root{
-  --bg1:#09102a;
-  --bg2:#1c2a66;
-  --bg3:#ff8c42;
-  --gold:#ffe566;
-  --panel:rgba(0,0,0,.5);
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{width:100%;height:100%;overflow:hidden;background:#09102a;font-family:'Nunito',sans-serif;color:#fff;user-select:none;touch-action:none;}
-canvas{position:fixed;inset:0;width:100%;height:100%;display:block;}
-.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:20;transition:opacity .35s,transform .35s;}
-.screen.hidden{opacity:0;pointer-events:none;transform:scale(.96);}
-#homeScreen{
-  background:linear-gradient(180deg,#08102f 0%,#20256d 40%,#ff7043 100%);
-  padding:20px 16px;
-  justify-content:flex-start;
-  overflow:auto;
+
+body {
+  font-family: 'Segoe UI', 'Fredoka One', 'Nunito', system-ui, -apple-system, 'Comic Neue', cursive;
+  overflow: hidden;
+  touch-action: none;
+  background: #0a0f2a;
+  transition: background 0.4s ease;
 }
-.title{
-  font-family:'Fredoka One',cursive;
-  font-size:clamp(2.2rem,6vw,4.8rem);
-  color:var(--gold);
-  text-align:center;
-  line-height:1.05;
-  text-shadow:0 0 24px #ffe56688,0 0 60px #ff990055;
-  margin-top:10px;
+
+/* main canvas layers */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
 }
-.subtitle{
-  font-family:'Fredoka One',cursive;
-  color:#cde2ff;
-  font-size:clamp(.9rem,3vw,1.2rem);
-  margin:10px 0 20px;
-  text-align:center;
+#canvas {
+  pointer-events: auto;  /* allow catching */
 }
-.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0 16px;}
-.pill,.choice,.world{
-  border-radius:18px;
-  border:2px solid rgba(255,255,255,.15);
-  background:rgba(255,255,255,.07);
-  color:#d9e6ff;
-  cursor:pointer;
-  text-align:center;
-  transition:transform .18s,border-color .18s,box-shadow .18s;
+
+/* UI panels */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+  backdrop-filter: blur(12px);
+  background: radial-gradient(circle at 20% 30%, rgba(10,15,50,0.88), rgba(4,8,28,0.94));
+  transition: opacity 0.35s ease, transform 0.3s ease;
+  overflow-y: auto;
+  padding: 20px;
 }
-.pill:hover,.choice:hover,.world:hover,.sel{transform:scale(1.06);border-color:var(--gold);box-shadow:0 0 18px #ffe56644;}
-.choice{min-width:84px;padding:12px 14px;font-size:2.6rem;line-height:1;}
-.choice .lbl,.world .lbl,.pill .lbl{display:block;font-family:'Fredoka One',cursive;font-size:.74rem;margin-top:4px;color:#cde2ff;}
-.world{padding:10px 14px;min-width:112px;font-family:'Fredoka One',cursive;font-size:.9rem;}
-.world .ico{display:block;font-size:1.6rem;margin-bottom:4px;}
-.pill{padding:12px 16px;font-family:'Fredoka One',cursive;font-size:.95rem;min-width:110px;}
-.btn{
-  font-family:'Fredoka One',cursive;
-  border:none;
-  cursor:pointer;
-  border-radius:999px;
-  padding:14px 34px;
-  font-size:1.2rem;
-  color:#1a0a3e;
-  background:linear-gradient(135deg,#ffe566,#ffb000);
-  box-shadow:0 8px 26px #ff990066;
+
+.screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.97);
 }
-.btn:active{transform:translateY(1px) scale(.99);}
-#hud{
-  position:fixed;top:0;left:0;right:0;z-index:30;
-  display:none;justify-content:space-between;align-items:center;
-  padding:10px 14px;background:linear-gradient(to bottom,rgba(0,0,0,.55),transparent);
-  pointer-events:none;
+
+.game-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(2rem, 8vw, 4.6rem);
+  background: linear-gradient(135deg, #FFE6B0, #FFB347, #FF8C42);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 40px rgba(255,200,100,0.6);
+  margin-bottom: 12px;
+  text-align: center;
 }
-.hudBox{display:flex;flex-direction:column;align-items:center;gap:2px;}
-.hudVal{font-family:'Fredoka One',cursive;color:var(--gold);font-size:clamp(1.2rem,4vw,2rem);line-height:1;text-shadow:0 0 10px #ffe56688;}
-.hudLbl{font-size:.62rem;letter-spacing:2px;color:#b6ccff;text-transform:uppercase;}
-#combo{display:none;color:#ff88ff;font-family:'Fredoka One',cursive;font-size:1rem;text-shadow:0 0 12px #ff88ff88;}
-#combo.show{display:block;}
-#coinDisplay{
-  position:fixed;top:10px;left:50%;transform:translateX(-50%);
-  z-index:31;display:none;
-  font-family:'Fredoka One',cursive;font-size:1rem;
-  color:#ffd700;background:rgba(0,0,0,.35);
-  padding:5px 12px;border-radius:999px;border:1px solid #ffd70055;
-  pointer-events:none;
+
+.sub {
+  color: #bbbfff;
+  font-weight: 600;
+  margin-bottom: 32px;
+  text-align: center;
+  font-size: 1rem;
+  background: rgba(0,0,0,0.4);
+  padding: 6px 18px;
+  border-radius: 60px;
 }
-#powerBar{
-  position:fixed;bottom:54px;left:50%;transform:translateX(-50%);
-  z-index:31;display:none;gap:10px;pointer-events:none;
+
+.panel-card {
+  background: rgba(20, 28, 58, 0.7);
+  backdrop-filter: blur(8px);
+  border-radius: 56px;
+  padding: 20px 24px;
+  margin: 12px 0;
+  width: 90%;
+  max-width: 550px;
+  border: 1px solid rgba(255,220,150,0.3);
 }
-.pw{
-  font-size:1.35rem;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,.12);
-  border:2px solid rgba(255,255,255,.2);opacity:.35;position:relative;
+
+.selector-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin: 12px 0 8px;
 }
-.pw.active{opacity:1;box-shadow:0 0 16px #ffe56655;animation:glow 1s infinite ease-in-out;}
-@keyframes glow{0%,100%{box-shadow:0 0 0 rgba(255,229,102,0);}50%{box-shadow:0 0 16px rgba(255,229,102,.6);}}
-.timer{position:absolute;bottom:2px;right:4px;font-size:.58rem;font-family:'Fredoka One',cursive;color:#ffe566;}
-#progressWrap{
-  position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
-  z-index:31;display:none;width:min(420px,84vw);text-align:center;pointer-events:none;
+
+.option {
+  background: rgba(255,255,240,0.1);
+  border-radius: 48px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: 0.2s;
+  border: 2px solid transparent;
+  text-align: center;
+  font-weight: bold;
+  backdrop-filter: blur(4px);
 }
-#progressLbl{font-family:'Fredoka One',cursive;font-size:.75rem;color:#cde2ff;letter-spacing:2px;margin-bottom:4px;}
-#progressBg{height:12px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden;border:1px solid rgba(255,255,255,.2);}
-#progressFill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,#ffe566,#ff9900);box-shadow:0 0 10px #ffe56666;transition:width .25s;}
-#missionToast{
-  position:fixed;top:72px;left:50%;transform:translateX(-50%) translateY(-18px);
-  z-index:35;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;
-  background:linear-gradient(135deg,rgba(40,0,80,.92),rgba(80,0,160,.92));
-  border:2px solid #ffe56666;border-radius:16px;padding:10px 20px;
-  font-family:'Fredoka One',cursive;color:#ffe566;text-align:center;
+
+.option .emoji-big {
+  font-size: 2.2rem;
+  display: block;
 }
-#missionToast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-#overlay{
-  position:fixed;inset:0;z-index:40;
-  display:flex;align-items:center;justify-content:center;flex-direction:column;
-  background:rgba(8,8,25,.86);backdrop-filter:blur(10px);
-  opacity:0;pointer-events:none;transition:opacity .3s;
+
+.option .label {
+  font-size: 0.75rem;
+  color: #ffecb3;
 }
-#overlay.show{opacity:1;pointer-events:all;}
-.ovEmoji{font-size:4rem;animation:pop .35s cubic-bezier(.2,.95,.25,1);}
-@keyframes pop{0%{transform:scale(.1);}100%{transform:scale(1);}}
-.ovTitle{font-family:'Fredoka One',cursive;font-size:clamp(2rem,6vw,3.6rem);margin:8px 0 6px;}
-.ovScore{font-family:'Fredoka One',cursive;color:#ffe566;font-size:1.35rem;margin-bottom:8px;}
-.ovSub{color:#c8d7ff;text-align:center;max-width:520px;line-height:1.7;padding:0 18px;margin-bottom:18px;font-weight:700;}
-.ovBtns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
-.btnAlt{
-  font-family:'Fredoka One',cursive;border:none;border-radius:999px;padding:12px 24px;cursor:pointer;
-  font-size:1rem;color:#cde2ff;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.2);
+
+.option.selected {
+  border-color: #FFD966;
+  background: rgba(255, 200, 100, 0.25);
+  box-shadow: 0 0 16px #ffcc44;
+  transform: scale(1.03);
 }
-#gameTip{
-  position:fixed;top:120px;left:50%;transform:translateX(-50%);
-  z-index:34;pointer-events:none;opacity:0;transition:opacity .2s;
-  font-family:'Fredoka One',cursive;font-size:1rem;color:#fff;background:rgba(0,0,0,.35);
-  padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.18);
+
+.btn-start {
+  background: linear-gradient(105deg, #FFB347, #FF7700);
+  border: none;
+  border-radius: 60px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.6rem;
+  padding: 14px 38px;
+  color: #2c1a0a;
+  margin-top: 24px;
+  cursor: pointer;
+  box-shadow: 0 12px 22px rgba(0,0,0,0.3);
+  transition: 0.1s linear;
 }
-#gameTip.show{opacity:1;}
-@media(max-width:520px){
-  .choice{min-width:72px;font-size:2.2rem;padding:10px 12px;}
-  .world{min-width:96px;font-size:.8rem;padding:9px 12px;}
-  .btn{font-size:1rem;padding:12px 26px;}
+.btn-start:active { transform: scale(0.97); }
+
+/* HUD */
+#hud {
+  position: fixed;
+  top: 8px;
+  left: 0;
+  right: 0;
+  display: none;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+  z-index: 25;
+  pointer-events: none;
+}
+
+.hud-item {
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(8px);
+  border-radius: 44px;
+  padding: 6px 15px;
+  font-weight: bold;
+  font-size: 1.3rem;
+  color: #fff3c9;
+  font-family: monospace;
+  letter-spacing: 1px;
+}
+
+#combo-badge {
+  background: #ff66c0cc;
+  border-radius: 30px;
+  padding: 5px 16px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: 0.1s;
+}
+
+#power-bar {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  gap: 20px;
+  background: rgba(0,0,0,0.5);
+  padding: 8px 20px;
+  border-radius: 60px;
+  backdrop-filter: blur(12px);
+  z-index: 25;
+}
+
+.powerup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 26px;
+  opacity: 0.45;
+  transition: 0.1s;
+}
+.powerup.active {
+  opacity: 1;
+  filter: drop-shadow(0 0 8px gold);
+}
+.timer-badge {
+  font-size: 10px;
+  background: black;
+  border-radius: 20px;
+  padding: 2px 6px;
+  margin-top: 4px;
+}
+
+#progress-area {
+  position: fixed;
+  bottom: 18px;
+  left: 20px;
+  right: 20px;
+  display: none;
+  background: #00000066;
+  border-radius: 30px;
+  padding: 6px 12px;
+  backdrop-filter: blur(8px);
+  z-index: 20;
+}
+.progress-text {
+  font-size: 12px;
+  font-weight: bold;
+  color: #ffd966;
+}
+.progress-bar-bg {
+  background: #2a2f55;
+  border-radius: 30px;
+  height: 14px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #FFD966, #FFB347);
+  border-radius: 30px;
+}
+
+#game-toast {
+  position: fixed;
+  top: 85px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: #2a1e3ccc;
+  backdrop-filter: blur(8px);
+  padding: 10px 24px;
+  border-radius: 60px;
+  color: #FFEC9F;
+  font-weight: bold;
+  pointer-events: none;
+  z-index: 35;
+  opacity: 0;
+  transition: 0.2s;
+  white-space: nowrap;
+}
+
+.game-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 6, 22, 0.92);
+  backdrop-filter: blur(16px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s;
+}
+.game-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.overlay-content {
+  text-align: center;
+  background: rgba(0,0,0,0.6);
+  padding: 32px 24px;
+  border-radius: 72px;
+  max-width: 90%;
 }
 </style>
 </head>
 <body>
-<canvas id="bg"></canvas>
-<canvas id="canvas"></canvas>
 
+<canvas id="bgCanvas"></canvas>
+<canvas id="gameCanvas"></canvas>
+
+<!-- HOME SCREEN -->
 <div id="homeScreen" class="screen">
-  <div class="title">🌤️ CodeVerse<br>Save the Sky</div>
-  <div class="subtitle">Fix stars, solve code, and brighten the sky</div>
-
-  <div style="font-family:'Fredoka One',cursive;letter-spacing:2px;font-size:.8rem;color:#b6ccff;">CHOOSE YOUR HERO</div>
-  <div class="row" id="heroRow">
-    <div class="choice sel" data-hero="kid" onclick="pickHero(this)">🧒<span class="lbl">Kid</span></div>
-    <div class="choice" data-hero="robot" onclick="pickHero(this)">🤖<span class="lbl">Robot</span></div>
-    <div class="choice" data-hero="cat" onclick="pickHero(this)">🐱<span class="lbl">Cat</span></div>
+  <div class="game-title">☄️ CODE CATCH<br>✦ SAVE SYNTAX SKY ✦</div>
+  <div class="sub">catch the correct code → restore the stars!</div>
+  
+  <div class="panel-card">
+    <div style="text-align:center; margin-bottom: 12px;">⭐ PICK YOUR CODING AVATAR ⭐</div>
+    <div class="selector-row" id="hero-select">
+      <div class="option" data-hero="kid"><span class="emoji-big">🧒</span><span class="label">KID CODER</span></div>
+      <div class="option" data-hero="robot"><span class="emoji-big">🤖</span><span class="label">ROBO BYTE</span></div>
+      <div class="option" data-hero="cat"><span class="emoji-big">🐱</span><span class="label">DEBUG KITTY</span></div>
+    </div>
   </div>
 
-  <div style="font-family:'Fredoka One',cursive;letter-spacing:2px;font-size:.8rem;color:#b6ccff;">CHOOSE MODE</div>
-  <div class="row" id="modeRow">
-    <div class="pill sel" data-mode="beginner" onclick="pickMode(this)">Beginner<span class="lbl">Kids</span></div>
-    <div class="pill" data-mode="medium" onclick="pickMode(this)">Medium<span class="lbl">Teens</span></div>
-    <div class="pill" data-mode="advanced" onclick="pickMode(this)">Advanced<span class="lbl">Adults</span></div>
+  <div class="panel-card">
+    <div style="text-align:center;">🎓 AGE / SKILL MODE 🎓</div>
+    <div class="selector-row" id="mode-select">
+      <div class="option" data-mode="beginner"><span class="emoji-big">🌱</span><span class="label">BEGINNER (Kids)</span></div>
+      <div class="option" data-mode="medium"><span class="emoji-big">⚡</span><span class="label">MEDIUM (Teens)</span></div>
+      <div class="option" data-mode="advanced"><span class="emoji-big">🧠</span><span class="label">ADVANCED (Adult)</span></div>
+    </div>
   </div>
 
-  <div style="font-family:'Fredoka One',cursive;letter-spacing:2px;font-size:.8rem;color:#b6ccff;">CHOOSE WORLD</div>
-  <div class="row" id="worldRow">
-    <div class="world sel" data-world="sky" onclick="pickWorld(this)"><span class="ico">🌈</span>Sky</div>
-    <div class="world" data-world="space" onclick="pickWorld(this)"><span class="ico">🚀</span>Space</div>
-    <div class="world" data-world="galaxy" onclick="pickWorld(this)"><span class="ico">🌌</span>Galaxy</div>
+  <div class="panel-card">
+    <div style="text-align:center;">✨ WORLD THEME ✨</div>
+    <div class="selector-row" id="world-select">
+      <div class="option" data-world="sky"><span class="emoji-big">☁️</span><span class="label">CLOUDY SKY</span></div>
+      <div class="option" data-world="space"><span class="emoji-big">🚀</span><span class="label">DEEP SPACE</span></div>
+      <div class="option" data-world="galaxy"><span class="emoji-big">🌌</span><span class="label">PURPLE GALAXY</span></div>
+    </div>
   </div>
 
-  <button class="btn" id="playBtn" type="button">▶ Start Adventure</button>
-  <div style="margin-top:14px;color:#7f95bf;font-size:.78rem;">🖱 Mouse · ⌨ Keyboard · 📱 Touch</div>
+  <button class="btn-start" id="startBtn">🌟 START ADVENTURE 🌟</button>
+  <div style="margin-top: 18px; font-size:12px; color:#aaaaff;">← → or mouse drag | catch correct syntax & avoid bugs! 🐞</div>
 </div>
 
+<!-- HUD -->
 <div id="hud">
-  <div class="hudBox"><div class="hudVal" id="scoreVal">0</div><div class="hudLbl">Score</div></div>
-  <div class="hudBox">
-    <div id="livesVal" class="hudVal">❤️❤️❤️</div>
-    <div id="combo">COMBO x1</div>
-  </div>
-  <div class="hudBox"><div class="hudVal" id="levelVal">1</div><div class="hudLbl">Level</div></div>
-</div>
-<div id="coinDisplay">🪙 <span id="coinVal">0</span></div>
-
-<div id="powerBar">
-  <div class="pw" id="pwHint">💡<span class="timer" id="pwHintT"></span></div>
-  <div class="pw" id="pwFreeze">⏸️<span class="timer" id="pwFreezeT"></span></div>
-  <div class="pw" id="pwShield">🛡️<span class="timer" id="pwShieldT"></span></div>
+  <div class="hud-item">⭐ SCORE: <span id="scoreSpan">0</span></div>
+  <div class="hud-item" id="combo-badge">🔥 x1</div>
+  <div class="hud-item">❤️ <span id="livesSpan">3</span></div>
+  <div class="hud-item">🪙 <span id="coinSpan">0</span></div>
+  <div class="hud-item">📈 LV <span id="levelSpan">1</span></div>
 </div>
 
-<div id="progressWrap">
-  <div id="progressLbl">RESTORE THE SKY</div>
-  <div id="progressBg"><div id="progressFill"></div></div>
+<div id="power-bar">
+  <div class="powerup" id="pwrHint">💡 HINT<span class="timer-badge" id="hintTimer"></span></div>
+  <div class="powerup" id="pwrFreeze">❄️ FREEZE<span class="timer-badge" id="freezeTimer"></span></div>
+  <div class="powerup" id="pwrShield">🛡️ SHIELD<span class="timer-badge" id="shieldTimer"></span></div>
 </div>
 
-<div id="gameTip"></div>
-<div id="missionToast"></div>
+<div id="progress-area">
+  <div class="progress-text">✨ FIX THE CODE STARS: <span id="fixedCount">0</span> / <span id="needCount">5</span></div>
+  <div class="progress-bar-bg"><div class="progress-fill" id="progressFill"></div></div>
+</div>
 
-<div id="overlay">
-  <div class="ovEmoji" id="ovEmoji"></div>
-  <div class="ovTitle" id="ovTitle"></div>
-  <div class="ovScore" id="ovScore"></div>
-  <div class="ovSub" id="ovSub"></div>
-  <div class="ovBtns">
-    <button class="btn" id="againBtn" type="button">🔄 Play Again</button>
-    <button class="btnAlt" id="homeBtn" type="button">🏠 Home</button>
+<div id="game-toast">✨ MESSAGE ✨</div>
+
+<div id="gameOverlay" class="game-overlay">
+  <div class="overlay-content">
+    <div style="font-size: 5rem;" id="overlayEmoji">🌙</div>
+    <div style="font-size: 2rem; font-weight: bold;" id="overlayTitle">GAME OVER</div>
+    <div style="margin: 12px;" id="overlayStats">score: 0</div>
+    <div style="margin: 6px;">✨✨✨</div>
+    <button class="btn-start" id="restartBtn">🔄 RESTART</button>
+    <button id="homeBtnMenu" style="margin-top: 12px; background:#3e2c63; padding:10px 20px; border-radius:40px; border:none; color:white;">🏠 MAIN MENU</button>
   </div>
 </div>
 
 <script>
-const AC=new(window.AudioContext||window.webkitAudioContext)();
-function tone(f,t='sine',d=.12,v=.12,del=0){
-  try{
-    const o=AC.createOscillator(),g=AC.createGain();
-    o.connect(g);g.connect(AC.destination);
-    o.type=t;o.frequency.setValueAtTime(f,AC.currentTime+del);
-    g.gain.setValueAtTime(v,AC.currentTime+del);
-    g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+del+d);
-    o.start(AC.currentTime+del);o.stop(AC.currentTime+del+d);
-  }catch{}
-}
-function sfxGood(){tone(660,'sine',.12,.14);tone(880,'sine',.1,.12,.06);}
-function sfxBad(){tone(180,'sawtooth',.18,.18);tone(120,'square',.16,.12,.06);}
-function sfxPower(){[440,554,659,880].forEach((f,i)=>tone(f,'sine',.15,.12,i*.05));}
-function sfxWin(){[523,659,784,1047].forEach((f,i)=>tone(f,'sine',.18,.14,i*.09));}
-function sfxClick(){tone(720,'sine',.06,.12);tone(980,'sine',.05,.09,.03);}
-document.addEventListener('pointerdown',()=>AC.state==='suspended'&&AC.resume(),{once:true});
-
-const HEROES={
-  kid:{emoji:'🧒',happy:'😄',sad:'😢'},
-  robot:{emoji:'🤖',happy:'🤩',sad:'😕'},
-  cat:{emoji:'🐱',happy:'😻',sad:'😿'}
-};
-const WORLDS={
-  sky:{sky:['#08102f','#1e2d72','#6d2f8f','#ff8a4c'],ground:'#16406b',accent:'#2d68b8',star:'rgba(240,245,255,',tray1:'#ffe97a',tray2:'#e6a800',trayGlow:'#ffe566',clouds:true},
-  space:{sky:['#00010a','#040817','#070d25','#0b1334'],ground:'#081126',accent:'#1a3368',star:'rgba(170,160,255,',tray1:'#93b3ff',tray2:'#3556cc',trayGlow:'#93b3ff',clouds:false},
-  galaxy:{sky:['#050012','#12002e','#24005c','#3b008b'],ground:'#12002e',accent:'#4d0f91',star:'rgba(255,180,255,',tray1:'#ff8cff',tray2:'#ab00d4',trayGlow:'#ff8cff',clouds:false}
-};
-const MODES={
-  beginner:{name:'Beginner',speed:1.55,spawn:1200,answerTime:0,choices:3,tip:'Tap the correct answer'},
-  medium:{name:'Medium',speed:2.15,spawn:950,answerTime:5,choices:4,tip:'Choose the right code quickly'},
-  advanced:{name:'Advanced',speed:2.7,spawn:820,answerTime:7,choices:4,tip:'Fix broken code blocks'}
-};
-const CHALLENGES={
-  beginner:[
-    {q:'Fix the missing bracket: (', a:' )', bad:['[',']']},
-    {q:'Choose the correct pair for function call', a:'()', bad:['{}','[]']},
-    {q:'Select the right quote mark', a:'"', bad:["'",'`']},
-    {q:'Which closes a block?', a:'}', bad:[')',']']}
-  ],
-  medium:[
-    {q:'Choose correct Python loop', a:'for i in range(5)', bad:['for i range 5','for i in 5']},
-    {q:'Choose correct if statement', a:'if score > 10:', bad:['if score > 10','if(score > 10)']},
-    {q:'Choose correct print line', a:'print("Hi")', bad:['print Hi','echo("Hi")']},
-    {q:'Choose correct variable', a:'score = 0', bad:['score == 0','score => 0']}
-  ],
-  advanced:[
-    {q:'Fix the loop header', a:'for i in range(5):', bad:['for i in range(5)','for i range(5):']},
-    {q:'Fix the function header', a:'def hello():', bad:['def hello()', 'function hello():']},
-    {q:'Fix the list syntax', a:'items = [1, 2, 3]', bad:['items = (1, 2, 3)','items = {1, 2, 3}']},
-    {q:'Fix the condition', a:'if score >= 10:', bad:['if score = 10:', 'if score >== 10:']}
-  ]
-};
-const POWERUPS=[
-  {type:'hint',emoji:'💡',name:'Hint'},
-  {type:'freeze',emoji:'⏸️',name:'Freeze'},
-  {type:'shield',emoji:'🛡️',name:'Shield'}
-];
-
-let hero='kid',mode='beginner',world='sky';
-let gameRunning=false,paused=false;
-let W=innerWidth,H=innerHeight,dpr=1;
-let bgCv=document.getElementById('bg'),bgCtx=bgCv.getContext('2d');
-let cv=document.getElementById('canvas'),ctx=cv.getContext('2d');
-
-let score=0,level=1,coins=0,lives=3,combo=0,streak=0,correct=0,wrong=0;
-let starsFixed=0,starsForLevel=5,timeNoMistake=0,timeSurvive=0;
-let missionDone={};
-let items=[],particles=[],floaters=[],stars=[],clouds=[];
-let activePower={hint:0,freeze:0,shield:0};
-let spawnTimer=null,freezeTimer=0,shieldTimer=0,hintTimer=0;
-let selectedAnswer=null,draggingId=null;
-let currentPrompt=null,currentChoices=[];
-let inputMode='tap';
-let pointerX=0,pointerY=0;
-let playerX=0,playerTargetX=0,playerBob=0;
-let trayW=150,trayH=18,groundY=0,shake=0,frame=0;
-let currentQuestion=null,questionTime=0;
-
-function resize(){
-  dpr=Math.max(1,window.devicePixelRatio||1);
-  [bgCv,cv].forEach(c=>{
-    c.width=Math.floor(innerWidth*dpr);
-    c.height=Math.floor(innerHeight*dpr);
-    c.style.width=innerWidth+'px';
-    c.style.height=innerHeight+'px';
-  });
-  [bgCtx,ctx].forEach(c=>c.setTransform(dpr,0,0,dpr,0,0));
-  W=innerWidth;H=innerHeight;
-  groundY=H-72;
-  playerX=W/2-trayW/2;
-  playerTargetX=playerX;
-}
-window.addEventListener('resize',resize);
-resize();
-
-function pickHero(el){
-  document.querySelectorAll('#heroRow .choice').forEach(n=>n.classList.remove('sel'));
-  el.classList.add('sel'); hero=el.dataset.hero;
-}
-function pickMode(el){
-  document.querySelectorAll('#modeRow .pill').forEach(n=>n.classList.remove('sel'));
-  el.classList.add('sel'); mode=el.dataset.mode;
-}
-function pickWorld(el){
-  document.querySelectorAll('#worldRow .world').forEach(n=>n.classList.remove('sel'));
-  el.classList.add('sel'); world=el.dataset.world;
-}
-
-function rr(c,x,y,w,h,r){
-  c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);
-  c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-  c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);
-  c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath();
-}
-function randChoice(arr){return arr[Math.floor(Math.random()*arr.length)];}
-function makeStars(){
-  stars=Array.from({length:180},()=>({x:Math.random()*W,y:Math.random()*H*.72,r:Math.random()*1.6+.4,a:Math.random()*Math.PI*2,sp:.01+Math.random()*.02}));
-}
-function makeClouds(){
-  clouds=Array.from({length:5},()=>({x:Math.random()*W,y:Math.random()*H*.3+30,w:80+Math.random()*120,h:35+Math.random()*20,vx:-.2-Math.random()*.25,a:.3+Math.random()*.35}));
-}
-function buildQuestion(){
-  const qset=CHALLENGES[mode];
-  currentQuestion=randChoice(qset);
-  let choices=[currentQuestion.a,...currentQuestion.bad.slice(0,2)];
-  while(choices.length<MODES[mode].choices) choices.push(randChoice(qset).bad[0]||qset[0].a);
-  choices=[...new Set(choices)].slice(0,MODES[mode].choices);
-  currentChoices=choices.sort(()=>Math.random()-.5);
-}
-function showTip(txt,dur=1600){
-  const el=document.getElementById('gameTip');
-  el.textContent=txt; el.classList.add('show');
-  clearTimeout(showTip.t); showTip.t=setTimeout(()=>el.classList.remove('show'),dur);
-}
-function mission(txt,dur=1800){
-  const el=document.getElementById('missionToast');
-  el.textContent=txt; el.classList.add('show');
-  clearTimeout(mission.t); mission.t=setTimeout(()=>el.classList.remove('show'),dur);
-}
-function floatText(x,y,t,col='#ffe566',size=20){
-  floaters.push({x,y,t,col,size,a:1});
-}
-function burst(x,y,col,n=16,big=false){
-  for(let i=0;i<n;i++){
-    const ang=Math.random()*Math.PI*2,sp=(big?8:5)+Math.random()*4;
-    particles.push({x,y,vx:Math.cos(ang)*sp,vy:Math.sin(ang)*sp,l:1,d:.03+Math.random()*.03,r:big?6:2.5+Math.random()*2,col});
+(function(){
+  // ------------- SETUP ------------
+  const bgCanvas = document.getElementById('bgCanvas');
+  const gameCanvas = document.getElementById('gameCanvas');
+  const bgCtx = bgCanvas.getContext('2d');
+  const ctx = gameCanvas.getContext('2d');
+  let W, H;
+  let gameActive = false;
+  let animFrame;
+  let lastTimestamp = 0;
+  
+  // game state
+  let score = 0, lives = 3, level = 1, coins = 0;
+  let fixedStars = 0, neededStars = 5;
+  let combo = 0, streak = 0;
+  let items = [];
+  let particles = [];
+  let floaters = [];
+  let starsBg = [];
+  let cloudsBg = [];
+  
+  // powerups
+  let activePower = { hint: 0, freeze: 0, shield: 0 };
+  
+  // player
+  let playerX = 0, targetX = 0;
+  const trayWidth = 140, trayHeight = 22;
+  let groundY = 0;
+  let mouseX = 0, mouseDown = false;
+  
+  // coding puzzle system
+  let currentChallenge = null;
+  let currentChoicesSet = [];
+  
+  // selected options
+  let hero = 'kid';
+  let mode = 'beginner';
+  let world = 'sky';
+  
+  // MODES CONFIG (speed, spawn rate)
+  const modeConfig = {
+    beginner: { speed: 1.4, spawnDelay: 1350, choicesCount: 3, hintChance: 0.2, name: '🌱 Beginner' },
+    medium: { speed: 2.0, spawnDelay: 1000, choicesCount: 4, hintChance: 0.15, name: '⚡ Medium' },
+    advanced: { speed: 2.7, spawnDelay: 800, choicesCount: 4, hintChance: 0.1, name: '🧠 Advanced' }
+  };
+  
+  // CODING CHALLENGES DATABASE: fun but educational!
+  const challengesDB = {
+    beginner: [
+      { text: "print('Hello')", correct: "print('Hello')", wrongs: ["print(Hello)", "Print('Hello')", "echo Hello"] },
+      { text: "for i in range(3):", correct: "for i in range(3):", wrongs: ["for i in range3", "for i in range(3)", "for i=0 to 3"] },
+      { text: "if x == 5:", correct: "if x == 5:", wrongs: ["if x = 5:", "if x ==5", "if x=5"] },
+      { text: "def hello():", correct: "def hello():", wrongs: ["function hello()", "def hello()", "def hello:"] },
+      { text: "list = [1,2,3]", correct: "[1,2,3]", wrongs: ["(1,2,3)", "{1,2,3}", "[1 2 3]"] }
+    ],
+    medium: [
+      { text: "lambda x: x*2", correct: "lambda x: x*2", wrongs: ["lambda x: x*2;", "def double", "lambda x, x*2"] },
+      { text: "try: pass\nexcept:", correct: "except:", wrongs: ["catch:", "error:", "finally"] },
+      { text: "class Car:", correct: "class Car:", wrongs: ["Class Car", "object Car", "def Car"] },
+      { text: "len('code')", correct: "len('code')", wrongs: ["length('code')", "len(code)", "sizeof"] }
+    ],
+    advanced: [
+      { text: "map(lambda x:x**2, lst)", correct: "map(lambda x:x**2, lst)", wrongs: ["map(x**2,lst)", "map(lambda x: x**2)", "map(pow)"] },
+      { text: "@decorator\ndef func():", correct: "@decorator", wrongs: ["@decorator", "#decorator", "decorator"] },
+      { text: "[x for x in range(5)]", correct: "[x for x in range(5)]", wrongs: ["[x for x in 5]", "{x for x in range(5)}", "list comp"] },
+      { text: "self.__init__", correct: "__init__", wrongs: ["constructor", "init", "_init_"] }
+    ]
+  };
+  
+  function getRandomChallenge() {
+    const bank = challengesDB[mode] || challengesDB.beginner;
+    const idx = Math.floor(Math.random() * bank.length);
+    return { ...bank[idx] };
   }
-}
-function addBg(){
-  const cfg=WORLDS[world];
-  const g=bgCtx.createLinearGradient(0,0,0,H);
-  cfg.sky.forEach((c,i)=>g.addColorStop(i/(cfg.sky.length-1),c));
-  bgCtx.fillStyle=g; bgCtx.fillRect(0,0,W,H);
-  stars.forEach(s=>{
-    s.a+=s.sp; if(s.a>Math.PI*2)s.a=0;
-    const al=.35+.25*Math.sin(s.a*2);
-    bgCtx.beginPath();bgCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
-    bgCtx.fillStyle=cfg.star+al+')'; bgCtx.fill();
+  
+  function buildQuestion() {
+    const base = getRandomChallenge();
+    currentChallenge = base;
+    let opts = [base.correct, ...base.wrongs.slice(0, modeConfig[mode].choicesCount-1)];
+    while(opts.length < modeConfig[mode].choicesCount) opts.push("???");
+    currentChoicesSet = opts.sort(() => Math.random() - 0.5);
+  }
+  
+  // world themes
+  const worldThemes = {
+    sky: { grad1:"#0a1f4a", grad2:"#2d4d8a", grad3:"#ff9865", starColor:"#fff5cc", cloud:true, glow:"#ffdd99" },
+    space: { grad1:"#03001C", grad2:"#0F0C29", grad3:"#302b63", starColor:"#c2c9ff", cloud:false, glow:"#b0aaff" },
+    galaxy: { grad1:"#190933", grad2:"#3b1f6e", grad3:"#a342ff", starColor:"#ffbbff", cloud:false, glow:"#e5aaff" }
+  };
+  
+  // UI elements selection
+  document.querySelectorAll('#hero-select .option').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('#hero-select .option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      hero = el.dataset.hero;
+    });
   });
-  if(cfg.clouds){
-    clouds.forEach(c=>{
-      c.x+=c.vx; if(c.x+c.w<0)c.x=W+20;
-      bgCtx.save(); bgCtx.globalAlpha=c.a*.7; bgCtx.fillStyle='#dfe8ff';
-      rr(bgCtx,c.x,c.y,c.w,c.h,c.h/2); bgCtx.fill();
-      rr(bgCtx,c.x+c.w*.22,c.y-c.h*.35,c.w*.6,c.h*.75,c.h/2); bgCtx.fill();
-      bgCtx.restore();
+  document.querySelectorAll('#mode-select .option').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('#mode-select .option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      mode = el.dataset.mode;
+    });
+  });
+  document.querySelectorAll('#world-select .option').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('#world-select .option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      world = el.dataset.world;
+    });
+  });
+  // default selection
+  document.querySelector('#hero-select .option[data-hero="kid"]').classList.add('selected');
+  document.querySelector('#mode-select .option[data-mode="beginner"]').classList.add('selected');
+  document.querySelector('#world-select .option[data-world="sky"]').classList.add('selected');
+  
+  function showToast(msg, duration=1600) {
+    const toast = document.getElementById('game-toast');
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateX(-50%) translateY(0px)';
+    clearTimeout(window.toastTimeout);
+    window.toastTimeout = setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(-50%) translateY(-20px)';
+    }, duration);
+  }
+  
+  function playSound(type) {
+    // simple beep via web audio
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!window.audioCtx) {
+      try { window.audioCtx = new AudioCtx(); } catch(e) {}
+    }
+    const actx = window.audioCtx;
+    if (!actx) return;
+    const osc = actx.createOscillator();
+    const gain = actx.createGain();
+    osc.connect(gain);
+    gain.connect(actx.destination);
+    osc.type = 'sine';
+    let freq = type === 'catch' ? 880 : (type === 'power' ? 660 : 340);
+    let duration = 0.12;
+    if(type === 'wrong') { freq = 220; duration = 0.22; }
+    osc.frequency.value = freq;
+    gain.gain.value = 0.15;
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + duration);
+    osc.stop(actx.currentTime + duration);
+  }
+  
+  function addParticles(x,y,color,count=12) {
+    for(let i=0;i<count;i++){
+      particles.push({
+        x,y,
+        vx: (Math.random()-0.5)*5,
+        vy: (Math.random()-0.5)*5 - 2,
+        life: 0.9,
+        decay: 0.02+Math.random()*0.03,
+        color: color
+      });
+    }
+  }
+  
+  function addFloater(x,y,text,color="#ffd966") {
+    floaters.push({x,y,text,life:1,vy:-1.8,color});
+  }
+  
+  function applyCorrect(itemX, itemY) {
+    score += 10;
+    coins += 1;
+    streak ++;
+    combo ++;
+    fixedStars ++;
+    if(combo > 2) score += combo;
+    showToast(`✅ +10 ${currentChallenge?.correct?.slice(0,14)}`, 600);
+    addParticles(itemX, itemY, '#FFE484', 14);
+    addFloater(itemX, itemY-20, `+10⭐`, '#FFD966');
+    playSound('catch');
+    if(streak >= 3) { showToast("🔥 STREAK! +3 COINS", 1000); coins += 3; }
+    if(fixedStars >= neededStars) levelUp();
+    updateUI();
+  }
+  
+  function applyWrong(itemX, itemY) {
+    if(activePower.shield > 0) {
+      activePower.shield = Math.max(0, activePower.shield-1);
+      showToast("🛡️ Shield blocked error!", 800);
+      return;
+    }
+    lives --;
+    combo = 0;
+    streak = 0;
+    addParticles(itemX, itemY, '#ff6a6a', 18);
+    addFloater(itemX, itemY-15, "🐞 BUG!", "#ff8888");
+    playSound('wrong');
+    showToast(`💔 Wrong syntax! Lives: ${lives}`, 1200);
+    if(lives <= 0) gameOver();
+    updateUI();
+  }
+  
+  function levelUp() {
+    level++;
+    fixedStars = 0;
+    neededStars = Math.min(5 + Math.floor(level/2), 14);
+    coins += 8;
+    showToast(`🎉 LEVEL ${level} ! Sky grows brighter ✨`, 1800);
+    addParticles(W/2, H/3, '#FFD966', 36);
+    playSound('catch');
+    // powerup reward per level
+    if(level % 2 === 0) activePower.hint = (activePower.hint||0) + 3;
+    updateUI();
+  }
+  
+  function grantPower(type) {
+    if(type === 'hint') activePower.hint = 5;
+    if(type === 'freeze') activePower.freeze = 7;
+    if(type === 'shield') activePower.shield = 3;
+    showToast(`✨ POWERUP: ${type.toUpperCase()} ✨`, 1000);
+    playSound('power');
+    updateUI();
+  }
+  
+  function spawnItem() {
+    if(!gameActive) return;
+    if(activePower.freeze > 0) {
+      setTimeout(spawnItem, 280);
+      return;
+    }
+    buildQuestion();
+    const cfg = modeConfig[mode];
+    const isPower = Math.random() < 0.12;
+    const xPos = 40 + Math.random() * (W - 120);
+    if(isPower) {
+      const pwrList = ['hint','freeze','shield'];
+      const pwr = pwrList[Math.floor(Math.random()*3)];
+      items.push({
+        type: 'power', powerType: pwr,
+        text: pwr === 'hint' ? '💡' : (pwr === 'freeze' ? '❄️' : '🛡️'),
+        x: xPos, y: -40, vy: cfg.speed,
+        vx: (Math.random()-0.5)*0.6,
+        size: 28
+      });
+    } else {
+      const correctAnswer = currentChallenge.correct;
+      let isCorrectDrop = Math.random() < 0.55;  // slightly more correct to keep fun
+      let displayText = isCorrectDrop ? correctAnswer : currentChallenge.wrongs[Math.floor(Math.random() * currentChallenge.wrongs.length)];
+      items.push({
+        type: 'code',
+        text: displayText,
+        isCorrect: (displayText === correctAnswer),
+        x: xPos, y: -40,
+        vy: cfg.speed + (Math.random()*0.4),
+        vx: (Math.random()-0.5)*0.5,
+        size: 22 + Math.min(12, Math.floor(displayText.length/3)),
+        rotation: 0
+      });
+    }
+    let delayFactor = Math.max(500, cfg.spawnDelay - level * 25);
+    setTimeout(spawnItem, delayFactor + Math.random()*150);
+  }
+  
+  function updateUI() {
+    document.getElementById('scoreSpan').innerText = score;
+    document.getElementById('livesSpan').innerText = lives;
+    document.getElementById('coinSpan').innerText = coins;
+    document.getElementById('levelSpan').innerText = level;
+    document.getElementById('fixedCount').innerText = fixedStars;
+    document.getElementById('needCount').innerText = neededStars;
+    let percent = (fixedStars/neededStars)*100;
+    document.getElementById('progressFill').style.width = `${percent}%`;
+    const comboDiv = document.getElementById('combo-badge');
+    if(combo>=2) comboDiv.innerHTML = `🔥 x${combo}`;
+    else comboDiv.innerHTML = `⚡ x1`;
+    // powerup timers
+    document.getElementById('hintTimer').innerText = activePower.hint>0 ? activePower.hint : '';
+    document.getElementById('freezeTimer').innerText = activePower.freeze>0 ? activePower.freeze : '';
+    document.getElementById('shieldTimer').innerText = activePower.shield>0 ? activePower.shield : '';
+    ['pwrHint','pwrFreeze','pwrShield'].forEach((id,i)=>{
+      const el = document.getElementById(id);
+      if((i===0 && activePower.hint>0) || (i===1 && activePower.freeze>0) || (i===2 && activePower.shield>0))
+        el.classList.add('active');
+      else el.classList.remove('active');
     });
   }
-  const gnd=bgCtx.createLinearGradient(0,groundY,0,H);
-  gnd.addColorStop(0,cfg.accent); gnd.addColorStop(1,cfg.ground);
-  bgCtx.fillStyle=gnd; bgCtx.fillRect(0,groundY,W,H-groundY);
-  bgCtx.save(); bgCtx.globalAlpha=.14; bgCtx.fillStyle='#fff'; bgCtx.fillRect(0,groundY,W,3); bgCtx.restore();
-}
-function currentAnswerText(){
-  return currentQuestion?currentQuestion.a:'';
-}
-function spawnItem(){
-  if(!gameRunning||paused)return;
-  if(freezeTimer>0){spawnTimer=setTimeout(spawnItem,220); return;}
-  buildQuestion();
-  const correctIsDanger=Math.random()<.5;
-  const cfg=MODES[mode];
-  const pos=Math.random()*(W-140)+70;
-  const isPower=Math.random()<.12;
-  let item;
-  if(isPower){
-    const p=randChoice(POWERUPS);
-    item={kind:'power',power:p.type,text:p.emoji,label:p.name,x:pos,y:-60,vy:cfg.speed*.85,vx:(Math.random()-.5)*.45,size:34,id:Math.random().toString(36).slice(2)};
-  }else{
-    const goodText=currentQuestion.a;
-    const badText=randChoice(currentQuestion.bad) || '???';
-    const showGood=correctIsDanger;
-    const txt=showGood?goodText:badText;
-    item={
-      kind:'answer',
-      text:txt,
-      correct:txt===goodText,
-      x:pos,
-      y:-60,
-      vy:cfg.speed+(Math.random()*.35),
-      vx:(Math.random()-.5)*.55,
-      rot:0,rotSp:(Math.random()-.5)*.04,
-      wob:Math.random()*Math.PI*2,
-      size:Math.max(24,Math.min(34,goodText.length<12?32:28)),
-      id:Math.random().toString(36).slice(2)
-    };
+  
+  function gameOver() {
+    gameActive = false;
+    document.getElementById('overlayEmoji').innerText = '💻🌧️';
+    document.getElementById('overlayTitle').innerText = 'SYNTAX COLLAPSE';
+    document.getElementById('overlayStats').innerHTML = `⭐ Score: ${score}<br>🪙 Coins: ${coins}<br>📈 Level: ${level}`;
+    document.getElementById('gameOverlay').classList.add('show');
   }
-  items.push(item);
-  const delay=Math.max(220,cfg.spawn - Math.min(level*40,250));
-  spawnTimer=setTimeout(spawnItem,delay+Math.random()*140);
-}
-
-function applyCorrect(x,y){
-  score+=10+(mode==='advanced'?5:0);
-  coins+=2;
-  correct++; streak++; combo++;
-  starsFixed++;
-  timeNoMistake++;
-  if(combo>=3) sfxWin();
-  sfxGood();
-  burst(x,y,WORLDS[world].trayGlow,16,true);
-  floatText(x,y-20,'+10 ⭐','#ffe566',22);
-  if(streak>=3) mission('✅ 3 correct in a row!');
-  if(starsFixed>=starsForLevel) levelUp();
-  if(streak>=3 && !missionDone.streak3){missionDone.streak3=true; coins+=8; mission('🏆 Mission: 3 in a row! +8 coins');}
-}
-function applyWrong(x,y){
-  if(activePower.shield>0){activePower.shield--; showTip('Shield blocked it!'); return;}
-  wrong++; streak=0; combo=0; lives=Math.max(0,lives-1); shake=12; timeNoMistake=0;
-  sfxBad(); burst(x,y,'#ff5555',14); floatText(x,y-18,'Oops!','#ff8888',20);
-  if(lives<=0) gameOver();
-}
-function levelUp(){
-  level++; starsFixed=0; starsForLevel=Math.min(5+level*2,12);
-  coins+=10; sfxWin();
-  mission(`🎉 Level ${level}! The sky brightens!`,2200);
-  burst(Math.random()*W,Math.random()*H*.5,'#ffe566',26,true);
-}
-function grantPower(type){
-  activePower[type]=activePower[type]||0;
-  activePower[type]+=8;
-  sfxPower();
-  if(type==='hint') showTip('Hint ready!');
-  if(type==='freeze') showTip('Freeze activated!');
-  if(type==='shield') showTip('Shield activated!');
-}
-function handleCatch(item){
-  if(item.kind==='power'){ grantPower(item.power); floatText(item.x,item.y-18,item.label,'#ffffff',18); burst(item.x,item.y,'#88aaff',18); return; }
-  const good = item.correct;
-  if(good) applyCorrect(item.x,item.y); else applyWrong(item.x,item.y);
-}
-function createUIChoices(){
-  const wrap=document.getElementById('choiceDock');
-}
-
-function setEmotion(state){
-  const heroMap=HEROES[hero];
-  currentEmotion=state==='good'?heroMap.happy:state==='bad'?heroMap.sad:heroMap.emoji;
-}
-let currentEmotion=HEROES[hero].emoji;
-
-function drawPlayer(){
-  const ty=groundY-12;
-  playerBob+=.12;
-  const bob=Math.sin(playerBob)*4*(currentEmotion===HEROES[hero].happy?1.8:1);
-  ctx.save(); ctx.globalAlpha=.2; ctx.fillStyle='#000';
-  ctx.scale(1,.16); ctx.beginPath();
-  ctx.ellipse(playerX+trayW/2,(ty+12)*6.25,trayW*.36,trayW*.36,0,0,Math.PI*2);
-  ctx.fill(); ctx.restore();
-
-  if(activePower.shield>0){
-    ctx.save(); ctx.strokeStyle='#88ffaa'; ctx.lineWidth=3; ctx.globalAlpha=.7;
-    ctx.shadowColor='#88ffaa'; ctx.shadowBlur=20;
-    ctx.beginPath(); ctx.arc(playerX+trayW/2,ty-46+bob,56,0,Math.PI*2); ctx.stroke();
-    ctx.restore();
+  
+  function restartGame() {
+    resetGameState();
+    document.getElementById('gameOverlay').classList.remove('show');
+    startGameSession();
   }
-
-  const cfg=WORLDS[world];
-  ctx.save();
-  ctx.translate(playerX+trayW/2,ty-44+bob);
-  ctx.font='72px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText(currentEmotion,0,0);
-  ctx.restore();
-
-  ctx.save(); ctx.shadowColor=cfg.trayGlow; ctx.shadowBlur=24;
-  const tg=ctx.createLinearGradient(playerX,ty,playerX,ty+trayH);
-  tg.addColorStop(0,cfg.tray1); tg.addColorStop(1,cfg.tray2);
-  ctx.fillStyle=tg; rr(ctx,playerX,ty,trayW,trayH,9); ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,.28)'; rr(ctx,playerX+6,ty+2,trayW-12,5,4); ctx.fill();
-  ctx.restore();
-}
-
-function drawChoices(){
-  currentChoices.forEach((ch,i)=>{
-    const bx=W*0.15+i*((W*0.7)/(currentChoices.length));
-    const by=130;
-  });
-}
-
-function drawItems(){
-  const cfg=WORLDS[world];
-  const ty=groundY-12;
-  const freezeMul=activePower.freeze>0?0.22:1;
-  for(let i=items.length-1;i>=0;i--){
-    const it=items[i];
-    it.y += it.vy*freezeMul;
-    it.x += it.vx*(activePower.freeze>0?.5:1);
-    it.rot = (it.rot||0)+ (it.rotSp||0);
-    it.wob = (it.wob||0)+.05;
-    if(it.kind==='answer' && activePower.hint>0 && it.correct){
-      it.glow='#ffffff';
+  
+  function resetGameState() {
+    score = 0; lives = 3; level = 1; coins = 0; fixedStars = 0; neededStars = 5; combo=0; streak=0;
+    items = []; particles = []; floaters = [];
+    activePower = { hint:0, freeze:0, shield:0 };
+    buildQuestion();
+    updateUI();
+  }
+  
+  function startGameSession() {
+    gameActive = true;
+    resetGameState();
+    groundY = H - 72;
+    playerX = W/2 - trayWidth/2;
+    targetX = playerX;
+    buildQuestion();
+    if(window.spawnTimerId) clearTimeout(window.spawnTimerId);
+    window.spawnTimerId = setTimeout(() => spawnItem(), 500);
+    updateUI();
+    showToast(`🧑‍💻 ${modeConfig[mode].name} mode — catch correct syntax!`, 2000);
+  }
+  
+  function drawBackground() {
+    const theme = worldThemes[world];
+    const grad = bgCtx.createLinearGradient(0,0,0,H);
+    grad.addColorStop(0, theme.grad1);
+    grad.addColorStop(0.6, theme.grad2);
+    grad.addColorStop(1, theme.grad3);
+    bgCtx.fillStyle = grad;
+    bgCtx.fillRect(0,0,W,H);
+    // draw stars
+    for(let s of starsBg) {
+      bgCtx.beginPath();
+      bgCtx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      bgCtx.fillStyle = theme.starColor;
+      bgCtx.fill();
     }
-    if(it.y>H+60){
-      if(it.kind==='answer' && it.correct) applyWrong(it.x,ty); // missed correct answer
-      items.splice(i,1); continue;
+    if(theme.cloud && cloudsBg.length) {
+      cloudsBg.forEach(c => {
+        bgCtx.fillStyle = "rgba(255,255,245,0.4)";
+        bgCtx.beginPath();
+        bgCtx.ellipse(c.x, c.y, c.w, c.h, 0, 0, Math.PI*2);
+        bgCtx.fill();
+      });
     }
-
-    const hit = it.y > ty-24 && it.y < ty+42;
-    if(hit){
-      const sameX = it.kind==='power' ? (it.x>playerX && it.x<playerX+trayW) : (it.x>playerX-12 && it.x<playerX+trayW);
-      if(sameX){
-        handleCatch(it);
-        items.splice(i,1);
-        continue;
+    // ground
+    bgCtx.fillStyle = "#2f2850";
+    bgCtx.fillRect(0, groundY, W, H-groundY);
+    bgCtx.fillStyle = "#9c88ff30";
+    bgCtx.fillRect(0, groundY-4, W, 6);
+  }
+  
+  function drawGameObjects() {
+    ctx.clearRect(0,0,W,H);
+    // draw falling items
+    for(let i=0; i<items.length; i++) {
+      const it = items[i];
+      it.y += it.vy;
+      it.x += it.vx;
+      ctx.font = `${it.size}px "Segoe UI Emoji", "Courier New", monospace`;
+      ctx.textAlign = "center";
+      ctx.shadowBlur = 8;
+      if(it.type === 'power') {
+        ctx.fillStyle = "#FFECC0";
+        ctx.fillText(it.text, it.x, it.y);
+      } else {
+        ctx.fillStyle = it.isCorrect ? "#FFE484" : "#FFAAAA";
+        ctx.fillText(it.text, it.x, it.y);
       }
+      // collision with tray
+      if(it.y + 12 > groundY-12 && it.x > playerX && it.x < playerX+trayWidth) {
+        if(it.type === 'power') { grantPower(it.powerType); items.splice(i,1); i--; }
+        else {
+          if(it.isCorrect) applyCorrect(it.x, it.y);
+          else applyWrong(it.x, it.y);
+          items.splice(i,1); i--;
+        }
+      } else if(it.y > H+70) { items.splice(i,1); i--; }
     }
-
-    ctx.save();
-    ctx.translate(it.x,it.y);
-    if(it.rot) ctx.rotate(it.rot);
-    const scale=1+Math.sin(it.wob)*.05;
-    ctx.scale(scale,scale);
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.shadowColor = it.kind==='power' ? '#88aaff' : (it.correct ? cfg.trayGlow : '#ff6666');
-    ctx.shadowBlur=20;
-    ctx.font=`${it.size||30}px serif`;
-    ctx.fillText(it.text,0,0);
-    ctx.restore();
-
-    if(it.kind==='answer'){
-      ctx.save();
-      ctx.strokeStyle = it.correct ? '#ffe566' : '#ff7777';
-      ctx.globalAlpha=.35;
-      ctx.lineWidth=2;
-      ctx.beginPath(); ctx.arc(it.x,it.y,(it.size||28)*.72,0,Math.PI*2); ctx.stroke();
-      ctx.restore();
+    // particles
+    for(let i=0;i<particles.length;i++) {
+      let p = particles[i];
+      p.x += p.vx; p.y += p.vy; p.life -= p.decay;
+      ctx.globalAlpha = p.life;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
+      ctx.fill();
+      if(p.life<=0) particles.splice(i,1), i--;
     }
-  }
-}
-
-function drawParticles(){
-  for(let i=particles.length-1;i>=0;i--){
-    const p=particles[i];
-    p.x+=p.vx; p.y+=p.vy; p.vy+=.13; p.l-=p.d;
-    if(p.l<=0){particles.splice(i,1);continue;}
-    ctx.save();
-    ctx.globalAlpha=p.l;
-    ctx.fillStyle=p.col;
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,Math.max(0,p.r*p.l),0,Math.PI*2);
-    ctx.fill();
-    ctx.restore();
-  }
-  for(let i=floaters.length-1;i>=0;i--){
-    const f=floaters[i];
-    f.y-=1.7; f.a-=.022;
-    if(f.a<=0){floaters.splice(i,1);continue;}
-    ctx.save();
-    ctx.globalAlpha=f.a;
-    ctx.fillStyle=f.col;
-    ctx.font=`bold ${f.size}px Nunito,sans-serif`;
-    ctx.textAlign='center';
-    ctx.shadowColor=f.col; ctx.shadowBlur=14;
-    ctx.fillText(f.t,f.x,f.y);
-    ctx.restore();
-  }
-}
-
-function updateHUD(){
-  document.getElementById('scoreVal').textContent=score;
-  document.getElementById('levelVal').textContent=level;
-  document.getElementById('coinVal').textContent=coins;
-  document.getElementById('livesVal').textContent='❤️'.repeat(lives)+'🖤'.repeat(3-lives);
-  const comboEl=document.getElementById('combo');
-  if(combo>=2){comboEl.textContent=`🔥 COMBO x${combo}`; comboEl.classList.add('show');}
-  else comboEl.classList.remove('show');
-  const pct=Math.min(100,(starsFixed/starsForLevel)*100);
-  document.getElementById('progressFill').style.width=pct+'%';
-  document.getElementById('progressLbl').textContent=`FIX THE SKY • ${starsFixed}/${starsForLevel}`;
-  ['hint','freeze','shield'].forEach(k=>{
-    const el=document.getElementById('pw'+k[0].toUpperCase()+k.slice(1));
-    const tEl=document.getElementById('pw'+k[0].toUpperCase()+k.slice(1)+'T');
-    if(activePower[k]>0){
-      el.classList.add('active');
-      tEl.textContent=Math.ceil(activePower[k]/60)+'s';
-    }else{
-      el.classList.remove('active');
-      tEl.textContent='';
+    ctx.globalAlpha = 1;
+    for(let f of floaters) {
+      f.y += f.vy;
+      f.life -= 0.02;
+      ctx.font = "bold 18px Nunito";
+      ctx.fillStyle = f.color;
+      ctx.fillText(f.text, f.x, f.y);
+      if(f.life<=0) floaters.splice(floaters.indexOf(f),1);
     }
-  });
-}
-
-function tickPowerups(){
-  ['hint','freeze','shield'].forEach(k=>{ if(activePower[k]>0) activePower[k]--; });
-  if(activePower.hint<=0) document.getElementById('gameTip').classList.remove('show');
-}
-
-function updatePlayer(){
-  const spd=activePower.freeze>0?5:11;
-  if(keys['ArrowLeft']||keys['a']) playerTargetX-=spd;
-  if(keys['ArrowRight']||keys['d']) playerTargetX+=spd;
-  playerTargetX=Math.max(0,Math.min(W-trayW,playerTargetX));
-  if(pointerDown) playerTargetX=pointerX-trayW/2;
-  playerX += (playerTargetX-playerX)*.22;
-}
-let keys={},pointerDown=false;
-
-function promptFromQuestion(q){
-  return q.q;
-}
-function showQuestionTip(){
-  document.getElementById('gameTip').textContent=currentQuestion?qText(currentQuestion):'';
-}
-function qText(q){ return q.q; }
-
-function maybeHint(){
-  if(activePower.hint>0){
-    showTip(`Hint: ${currentQuestion.a}`);
-    activePower.hint=0;
+    // draw player
+    let heroEmoji = hero === 'kid' ? '🧒' : (hero === 'robot' ? '🤖' : '🐱');
+    ctx.font = "56px serif";
+    ctx.fillStyle = "#ffe6b3";
+    ctx.shadowBlur = 16;
+    ctx.fillText(heroEmoji, playerX+trayWidth/2-20, groundY-38);
+    ctx.fillStyle = `rgba(255,200,100,0.9)`;
+    ctx.fillRect(playerX, groundY-16, trayWidth, trayHeight);
+    ctx.fillStyle = "#E3B87C";
+    ctx.fillRect(playerX+8, groundY-20, trayWidth-16, 6);
+    if(activePower.shield>0) {
+      ctx.beginPath();
+      ctx.arc(playerX+trayWidth/2, groundY-34, 44, 0, Math.PI*2);
+      ctx.strokeStyle = "#88ffaa";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+    ctx.shadowBlur = 0;
   }
-}
-
-function gameOver(){
-  gameRunning=false;
-  clearTimeout(spawnTimer);
-  sfxBad();
-  setTimeout(()=>{
-    document.getElementById('ovEmoji').textContent='🌙';
-    document.getElementById('ovTitle').textContent='Sky Needs You';
-    document.getElementById('ovScore').textContent=`Score: ${score} • Coins: ${coins}`;
-    document.getElementById('ovSub').textContent=`You reached Level ${level}. The sky can still be restored.`;
-    document.getElementById('overlay').classList.add('show');
-  },350);
-}
-function showWin(){
-  gameRunning=false;
-  clearTimeout(spawnTimer);
-  sfxWin();
-  document.getElementById('ovEmoji').textContent='✨';
-  document.getElementById('ovTitle').textContent='Sky Restored!';
-  document.getElementById('ovScore').textContent=`Score: ${score} • Coins: ${coins}`;
-  document.getElementById('ovSub').textContent='You fixed the stars and brought light back to the sky.';
-  document.getElementById('overlay').classList.add('show');
-}
-
-function startGame(){
-  try{
-    if(AC.state==='suspended') AC.resume();
-    sfxClick();
-    gameRunning=true;paused=false;frame=0;score=0;level=1;coins=0;lives=3;combo=0;streak=0;correct=0;wrong=0;
-    starsFixed=0;starsForLevel=5;timeNoMistake=0;timeSurvive=0;
-    items=[];particles=[];floaters=[];missionDone={}; activePower={hint:0,freeze:0,shield:0};
-    selectedAnswer=null; draggingId=null; currentQuestion=null; currentChoices=[];
-    hero=document.querySelector('#heroRow .choice.sel')?.dataset.hero||hero;
-    mode=document.querySelector('#modeRow .pill.sel')?.dataset.mode||mode;
-    world=document.querySelector('#worldRow .world.sel')?.dataset.world||world;
-    currentEmotion=HEROES[hero].emoji;
-    makeStars(); makeClouds(); playerX=W/2-trayW/2; playerTargetX=playerX;
+  
+  function tickPowerups() {
+    if(activePower.hint>0) activePower.hint--;
+    if(activePower.freeze>0) activePower.freeze--;
+    if(activePower.shield>0) activePower.shield--;
+    if(activePower.hint===0 && activePower.freeze===0 && activePower.shield===0) {}
+  }
+  
+  function animate() {
+    if(!gameActive) {
+      drawBackground();
+      ctx.clearRect(0,0,W,H);
+      if(window.raf) cancelAnimationFrame(window.raf);
+      return;
+    }
+    drawBackground();
+    tickPowerups();
+    // player movement
+    if (mouseDown && mouseX > 0) {
+      targetX = Math.min(W - trayWidth, Math.max(0, mouseX - trayWidth/2));
+    }
+    playerX += (targetX - playerX) * 0.22;
+    drawGameObjects();
+    updateUI();
+    window.raf = requestAnimationFrame(animate);
+  }
+  
+  function resizeCanvas() {
+    W = window.innerWidth; H = window.innerHeight;
+    bgCanvas.width = W; bgCanvas.height = H;
+    gameCanvas.width = W; gameCanvas.height = H;
+    groundY = H - 72;
+    playerX = Math.min(W - trayWidth, Math.max(0, playerX));
+    targetX = playerX;
+    starsBg = [];
+    for(let i=0;i<150;i++) starsBg.push({ x: Math.random()*W, y: Math.random()*H*0.8, r: 1+Math.random()*2 });
+    cloudsBg = [];
+    for(let i=0;i<4;i++) cloudsBg.push({ x: Math.random()*W, y: 40+Math.random()*100, w: 70+Math.random()*50, h: 30 });
+  }
+  
+  window.addEventListener('resize', () => { resizeCanvas(); });
+  window.addEventListener('mousemove', (e) => { if(gameActive) mouseX = e.clientX; });
+  window.addEventListener('mousedown', () => { mouseDown = true; });
+  window.addEventListener('mouseup', () => { mouseDown = false; });
+  window.addEventListener('touchmove', (e) => { if(gameActive && e.touches[0]) { mouseX = e.touches[0].clientX; mouseDown=true; e.preventDefault(); } });
+  window.addEventListener('touchend', () => { mouseDown = false; });
+  
+  document.getElementById('startBtn').addEventListener('click', () => {
     document.getElementById('homeScreen').classList.add('hidden');
-    document.getElementById('overlay').classList.remove('show');
-    document.getElementById('hud').style.display='flex';
-    document.getElementById('coinDisplay').style.display='block';
-    document.getElementById('powerBar').style.display='flex';
-    document.getElementById('progressWrap').style.display='block';
-    showTip(MODES[mode].tip,1800);
-    mission('⭐ Fix 5 stars to brighten the sky',2200);
-    if(spawnTimer) clearTimeout(spawnTimer);
-    spawnTimer=setTimeout(spawnItem,500);
-    if(!raf) loop();
-  }catch(err){
-    console.error(err);
-    alert('Start failed: '+err.message);
-  }
-}
-
-function restartGame(){ document.getElementById('overlay').classList.remove('show'); startGame(); }
-function goHome(){
-  gameRunning=false;
-  clearTimeout(spawnTimer);
-  document.getElementById('hud').style.display='none';
-  document.getElementById('coinDisplay').style.display='none';
-  document.getElementById('powerBar').style.display='none';
-  document.getElementById('progressWrap').style.display='none';
-  document.getElementById('overlay').classList.remove('show');
-  document.getElementById('homeScreen').classList.remove('hidden');
-  ctx.clearRect(0,0,W,H); bgCtx.clearRect(0,0,W,H);
-}
-
-document.getElementById('playBtn').addEventListener('click',startGame);
-document.getElementById('againBtn').addEventListener('click',restartGame);
-document.getElementById('homeBtn').addEventListener('click',goHome);
-
-document.addEventListener('keydown',e=>{keys[e.key]=true; if(e.key===' ') e.preventDefault();});
-document.addEventListener('keyup',e=>keys[e.key]=false);
-document.addEventListener('mousemove',e=>{if(gameRunning){pointerX=e.clientX; pointerY=e.clientY;}});
-document.addEventListener('mousedown',()=>pointerDown=true);
-document.addEventListener('mouseup',()=>pointerDown=false);
-document.addEventListener('touchstart',e=>{if(gameRunning&&e.touches[0]){pointerDown=true;pointerX=e.touches[0].clientX;}},{passive:true});
-document.addEventListener('touchmove',e=>{if(gameRunning&&e.touches[0]){pointerX=e.touches[0].clientX; e.preventDefault();}},{passive:false});
-document.addEventListener('touchend',()=>pointerDown=false);
-
-function isOverPlayer(x){
-  return x>playerX && x<playerX+trayW;
-}
-
-function processAnswer(it){
-  const correct = it.text===currentQuestion.a;
-  if(correct){
-    sfxGood();
-    score+=10;
-    coins+=2;
-    starsFixed++;
-    streak++;
-    combo++;
-    correct++;
-    setEmotion('good');
-    burst(it.x,it.y,WORLDS[world].trayGlow,16,true);
-    floatText(it.x,it.y-18,'+10 ⭐','#ffe566',22);
-    if(streak===3 && !missionDone.streak3){missionDone.streak3=true; coins+=8; mission('🏆 3 correct in a row! +8 coins');}
-    if(starsFixed>=starsForLevel) level++;
-    if(starsFixed>=starsForLevel){ levelUp(); }
-    if(combo>=5 && !missionDone.combo5){missionDone.combo5=true; coins+=12; mission('🏅 Combo Master! +12 coins');}
-    if(mode==='beginner' && score%30===0) grantPower('hint');
-    if(mode==='medium' && score%40===0) grantPower('freeze');
-    if(mode==='advanced' && score%50===0) grantPower('shield');
-  }else{
-    wrong++;
-    combo=0;
-    streak=0;
-    if(activePower.shield>0){ activePower.shield=0; showTip('Shield blocked the mistake!'); return; }
-    lives--;
-    sfxBad();
-    setEmotion('bad');
-    shake=14;
-    burst(it.x,it.y,'#ff6666',14);
-    floatText(it.x,it.y-18,'Oops!','#ff8888',20);
-    if(lives<=0){ gameOver(); return; }
-  }
-}
-
-function levelUp(){
-  level++;
-  starsFixed=0;
-  starsForLevel=Math.min(5+level*2,12);
-  makeStars();
-  sfxWin();
-  mission(`🎉 Level ${level}! The sky is brighter!`,2000);
-  burst(Math.random()*W,Math.random()*H*.5,'#ffe566',24,true);
-  if(level>=6){ showWin(); }
-}
-
-function spawnItem(){
-  if(!gameRunning||paused)return;
-  if(activePower.freeze>0){ spawnTimer=setTimeout(spawnItem,240); return; }
-  currentQuestion = randChoice(CHALLENGES[mode]);
-  const cfg=MODES[mode];
-  const powerChance = Math.random()<.11;
-  const x=Math.random()*(W-120)+60;
-  if(powerChance){
-    const p=randChoice(POWERUPS);
-    items.push({kind:'power',power:p.type,text:p.emoji,label:p.name,x,y:-60,vy:cfg.speed*.8,vx:(Math.random()-.5)*.4,size:34,wob:Math.random()*Math.PI*2,id:Math.random().toString(36).slice(2)});
-  }else{
-    const good=currentQuestion.a;
-    const bads=[...currentQuestion.bad];
-    const isCorrect=Math.random()<.45;
-    const text=isCorrect?good:randChoice(bads);
-    items.push({kind:'answer',text,correct:text===good,x,y:-60,vy:cfg.speed+(Math.random()*.35),vx:(Math.random()-.5)*.55,size:Math.max(24,Math.min(34,good.length<15?32:28)),rot:0,rotSp:(Math.random()-.5)*.04,wob:Math.random()*Math.PI*2,id:Math.random().toString(36).slice(2)});
-  }
-  const delay=Math.max(230,cfg.spawn-(level*35));
-  spawnTimer=setTimeout(spawnItem,delay+Math.random()*120);
-}
-
-function updateSkyProgress(){
-  const bright=Math.min(1,(level-1)*.2 + starsFixed/starsForLevel*.2);
-  document.body.style.background=`linear-gradient(180deg, rgba(8,16,47,1) 0%, rgba(30,45,114,${.85+bright*.15}) 40%, rgba(255,112,67,${.75+bright*.25}) 100%)`;
-}
-
-function loop(){
-  raf=requestAnimationFrame(loop);
-  if(!gameRunning)return;
-  frame++;
-  ctx.clearRect(0,0,W,H);
-  if(shake>0){ ctx.save(); ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake); shake*=.72; if(shake<.4) shake=0; }
-  updatePlayer();
-  tickPowerups();
-  updateSkyProgress();
-  if(!currentQuestion) currentQuestion=randChoice(CHALLENGES[mode]);
-  questionTime++;
-  timeSurvive++;
-
-  addBg();
-  drawItems();
-  drawPlayer();
-  drawParticles();
-  updateHUD();
-
-  if(shake>0) ctx.restore();
-  if(activePower.hint>0) document.getElementById('gameTip').classList.add('show');
-}
-
-let raf=0;
-window.addEventListener('pointermove',e=>{
-  if(gameRunning){ pointerX=e.clientX; }
-});
-
-window.addEventListener('pointerdown',e=>{
-  if(!gameRunning) return;
-  pointerDown=true;
-  pointerX=e.clientX;
-  const clickedPower = false;
-});
-window.addEventListener('pointerup',()=>pointerDown=false);
-
-startGame.toString;
+    resizeCanvas();
+    resetGameState();
+    startGameSession();
+    animate();
+  });
+  document.getElementById('restartBtn').addEventListener('click', () => { restartGame(); });
+  document.getElementById('homeBtnMenu').addEventListener('click', () => {
+    gameActive = false;
+    document.getElementById('gameOverlay').classList.remove('show');
+    document.getElementById('homeScreen').classList.remove('hidden');
+    cancelAnimationFrame(window.raf);
+  });
+  resizeCanvas();
+})();
 </script>
 </body>
 </html>
