@@ -14,7 +14,8 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;}
 .screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .4s,transform .4s;z-index:10;}
 .screen.hidden{opacity:0;pointer-events:none;transform:scale(.96);}
 
-#homeScreen{background:linear-gradient(180deg,#0d0630 0%,#1e0f5c 40%,#ff7043 100%);padding:20px 16px;justify-content:flex-start;overflow:auto;}
+#homeScreen{background:linear-gradient(180deg,#0d0630 0%,#1e0f5c 40%,#ff7043 100%);padding:20px 16px;justify-content:flex-start;overflow:auto;z-index:100;pointer-events:auto;}
+#homeScreen *{pointer-events:auto;}
 .home-logo{font-family:'Fredoka One',cursive;font-size:clamp(2.4rem,7vw,5rem);color:#ffe566;text-shadow:0 0 30px #ffe566aa,0 0 60px #ffaa0066;text-align:center;line-height:1.1;animation:logoBob 2.5s ease-in-out infinite;margin-top:10px;}
 @keyframes logoBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
 .home-sub{font-family:'Fredoka One',cursive;font-size:clamp(.9rem,3vw,1.3rem);color:#cce8ff;text-align:center;margin:8px 0 30px;opacity:.9;}
@@ -99,7 +100,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;}
     <div class="world-btn" data-world="galaxy" onclick="pickWorld(this)"><span class="w-emoji">🌌</span>Galaxy</div>
   </div>
 
-  <button class="btn-play" onclick="startGame()">▶ Play Now!</button>
+  <button class="btn-play" id="playBtn" type="button">▶ Play Now!</button>
   <div style="font-size:.78rem;color:#7788aa;margin-top:14px;">🖱️ Mouse · ⌨️ Arrow Keys · 📱 Touch</div>
 </div>
 
@@ -146,11 +147,14 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;}
 <script>
 const AC=new(window.AudioContext||window.webkitAudioContext)();
 function tone(f,t='sine',d=.15,v=.15,del=0){
-  try{const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);
-  o.type=t;o.frequency.setValueAtTime(f,AC.currentTime+del);
-  g.gain.setValueAtTime(v,AC.currentTime+del);
-  g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+del+d);
-  o.start(AC.currentTime+del);o.stop(AC.currentTime+del+d);}catch{}
+  try{
+    const o=AC.createOscillator(),g=AC.createGain();
+    o.connect(g);g.connect(AC.destination);
+    o.type=t;o.frequency.setValueAtTime(f,AC.currentTime+del);
+    g.gain.setValueAtTime(v,AC.currentTime+del);
+    g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+del+d);
+    o.start(AC.currentTime+del);o.stop(AC.currentTime+del+d);
+  }catch{}
 }
 function sfxStar(pts){[523,659,784][Math.min(pts-1,2)]&&tone([523,659,784][Math.min(pts-1,2)],'sine',.18,.2);if(pts>1)tone([523,659,784][Math.min(pts-1,2)]*1.5,'sine',.1,.1,.07);}
 function sfxCombo(){[523,659,784,1047].forEach((f,i)=>tone(f,'sine',.18,.15,i*.07));}
@@ -223,7 +227,6 @@ const CATCH_ITEMS=[
   {emoji:'⏱️',pts:0,size:32,glow:'#ffaa88',type:'slow',freq:.04,coin:0},
   {emoji:'🌈',pts:5,size:38,glow:'#ff88ff',type:'rainbow',freq:.02,coin:5}
 ];
-
 const AVOID_ITEMS=[
   {emoji:'☁️',pts:-2,size:38,glow:'#889999',type:'cloud',freq:.3},
   {emoji:'☄️',pts:-1,size:34,glow:'#ff6633',type:'meteor',freq:.4,life:true},
@@ -236,7 +239,6 @@ function pickItem(arr){
   for(const it of arr){r-=it.freq;if(r<=0)return it;}
   return arr[arr.length-1];
 }
-
 function rr(c,x,y,w,h,r){
   c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);
   c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
@@ -307,7 +309,7 @@ function spawnItem(){
   let t;
   if(bad) t={...pickItem(AVOID_ITEMS)};
   else t={...pickCatch()};
-  const speed=(2.5+level*.4+(Math.random()*.5))*(slowActive?.5:1);
+  const speed=(2.5+level*.4+(Math.random()*.5))*(slowActive?.55:1);
   items.push({
     x:Math.random()*(W-60)+30,y:-50,
     t,vy:speed,vx:(Math.random()-.5)*.6,
@@ -531,10 +533,7 @@ function showMission(txt,dur=2500){
 function checkMissions(){
   MISSIONS.forEach(m=>{
     if(!m.done&&m.check()){
-      m.done=true;
-      showMission(`✅ Mission done: ${m.desc}`,3000);
-      sfxWin();
-      coins+=10;
+      m.done=true;showMission(`✅ Mission done: ${m.desc}`,3000);sfxWin();coins+=10;
     }
   });
 }
@@ -601,28 +600,37 @@ function loop(){
 }
 
 async function startGame(){
-  try{if(AC.state==='suspended') await AC.resume();}catch{}
-  score=0;lives=3;level=1;coins=0;combo=0;starsThisLevel=0;starsForLevel=10;
-  timeAlive=0;timeNoHit=0;frameCount=0;spawnInterval=1000;
-  magnetActive=false;shieldActive=false;slowActive=false;
-  magnetTimer=shieldTimer=slowTimer=0;
-  items=[];particles=[];floatTexts=[];
-  MISSIONS.forEach(m=>m.done=false);
-  worldCfg=WORLDS[selWorld];charCfg=CHARS[selChar];
-  initGround();makeBgStars();makeClouds();
-  px=W/2-TRAY_W/2;ptarget=px;pvelX=0;pemotion='idle';
-  document.getElementById('homeScreen').classList.add('hidden');
-  document.getElementById('overlay').classList.remove('show');
-  document.getElementById('hud').style.display='flex';
-  document.getElementById('coinDisplay').style.display='block';
-  document.getElementById('starProgress').style.display='block';
-  document.getElementById('powerBar').style.display='flex';
-  gameRunning=true;paused=false;
-  if(spawnTimer)clearTimeout(spawnTimer);
-  setTimeout(spawnItem,600);
-  showMission('⭐ Catch the falling stars! Restore the sky!',2500);
-  sfxClick();
-  if(!rafId)loop();
+  try{
+    if(AC.state==='suspended') await AC.resume();
+    sfxClick();
+
+    score=0;lives=3;level=1;coins=0;combo=0;starsThisLevel=0;starsForLevel=10;
+    timeAlive=0;timeNoHit=0;frameCount=0;spawnInterval=1000;
+    magnetActive=false;shieldActive=false;slowActive=false;
+    magnetTimer=shieldTimer=slowTimer=0;
+    items=[];particles=[];floatTexts=[];
+    MISSIONS.forEach(m=>m.done=false);
+    worldCfg=WORLDS[selWorld];charCfg=CHARS[selChar];
+    initGround();makeBgStars();makeClouds();
+    px=W/2-TRAY_W/2;ptarget=px;pvelX=0;pemotion='idle';
+
+    document.getElementById('homeScreen').classList.add('hidden');
+    document.getElementById('overlay').classList.remove('show');
+    document.getElementById('hud').style.display='flex';
+    document.getElementById('coinDisplay').style.display='block';
+    document.getElementById('starProgress').style.display='block';
+    document.getElementById('powerBar').style.display='flex';
+
+    gameRunning=true;
+    paused=false;
+    if(spawnTimer) clearTimeout(spawnTimer);
+    setTimeout(spawnItem,600);
+    showMission('⭐ Catch the falling stars! Restore the sky!',2500);
+    if(!rafId) loop();
+  }catch(err){
+    console.error('startGame failed:', err);
+    alert('Start failed: ' + err.message);
+  }
 }
 
 function restartGame(){
@@ -656,6 +664,8 @@ function loseGame(){
     document.getElementById('overlay').classList.add('show');
   },400);
 }
+
+document.getElementById('playBtn').addEventListener('click', startGame);
 
 makeBgStars();
 makeClouds();
