@@ -1,850 +1,855 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Code Catch – Save the Syntax Sky</title>
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🌟 Star Coder Kids | Catch the Magic Syntax 🌟</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-body {
-  font-family: 'Segoe UI', 'Fredoka One', 'Nunito', system-ui, -apple-system, 'Comic Neue', cursive;
-  overflow: hidden;
-  touch-action: none;
-  background: #0a0f2a;
-  transition: background 0.4s ease;
-}
+        body {
+            background: linear-gradient(145deg, #0a1f3e 0%, #0c2b55 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Comic Neue', 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', 'Poppins', cursive, sans-serif;
+            overflow: hidden;
+            touch-action: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
 
-/* main canvas layers */
-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  pointer-events: none;
-}
-#canvas {
-  pointer-events: auto;  /* allow catching */
-}
+        /* Main game canvas */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
 
-/* UI panels */
-.screen {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 30;
-  backdrop-filter: blur(12px);
-  background: radial-gradient(circle at 20% 30%, rgba(10,15,50,0.88), rgba(4,8,28,0.94));
-  transition: opacity 0.35s ease, transform 0.3s ease;
-  overflow-y: auto;
-  padding: 20px;
-}
+        #gameCanvas {
+            z-index: 10;
+            cursor: grab;
+        }
 
-.screen.hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.97);
-}
+        #gameCanvas:active {
+            cursor: grabbing;
+        }
 
-.game-title {
-  font-family: 'Fredoka One', cursive;
-  font-size: clamp(2rem, 8vw, 4.6rem);
-  background: linear-gradient(135deg, #FFE6B0, #FFB347, #FF8C42);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  text-shadow: 0 0 40px rgba(255,200,100,0.6);
-  margin-bottom: 12px;
-  text-align: center;
-}
+        /* UI overlay */
+        .ui-panel {
+            position: absolute;
+            z-index: 30;
+            width: 100%;
+            pointer-events: none;
+        }
 
-.sub {
-  color: #bbbfff;
-  font-weight: 600;
-  margin-bottom: 32px;
-  text-align: center;
-  font-size: 1rem;
-  background: rgba(0,0,0,0.4);
-  padding: 6px 18px;
-  border-radius: 60px;
-}
+        /* Score & lives */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(12px);
+            border-radius: 0 0 48px 48px;
+            margin: 0 12px;
+            pointer-events: none;
+        }
 
-.panel-card {
-  background: rgba(20, 28, 58, 0.7);
-  backdrop-filter: blur(8px);
-  border-radius: 56px;
-  padding: 20px 24px;
-  margin: 12px 0;
-  width: 90%;
-  max-width: 550px;
-  border: 1px solid rgba(255,220,150,0.3);
-}
+        .stat {
+            background: #ffefc0;
+            border-radius: 60px;
+            padding: 8px 20px;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #2a1b0c;
+            box-shadow: 0 6px 0 #b97f2e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: monospace;
+        }
 
-.selector-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 14px;
-  margin: 12px 0 8px;
-}
+        .stat span {
+            font-size: 1.8rem;
+        }
 
-.option {
-  background: rgba(255,255,240,0.1);
-  border-radius: 48px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: 0.2s;
-  border: 2px solid transparent;
-  text-align: center;
-  font-weight: bold;
-  backdrop-filter: blur(4px);
-}
+        .lives {
+            background: #ffddd3;
+            color: #bf3e1c;
+        }
 
-.option .emoji-big {
-  font-size: 2.2rem;
-  display: block;
-}
+        /* Progress bar */
+        .progress-area {
+            position: absolute;
+            bottom: 28px;
+            left: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 60px;
+            padding: 10px 20px;
+            z-index: 28;
+            pointer-events: none;
+        }
 
-.option .label {
-  font-size: 0.75rem;
-  color: #ffecb3;
-}
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #ffecb3;
+            margin-bottom: 6px;
+        }
 
-.option.selected {
-  border-color: #FFD966;
-  background: rgba(255, 200, 100, 0.25);
-  box-shadow: 0 0 16px #ffcc44;
-  transform: scale(1.03);
-}
+        .progress-bg {
+            background: #2e2c4a;
+            border-radius: 40px;
+            height: 16px;
+            overflow: hidden;
+        }
 
-.btn-start {
-  background: linear-gradient(105deg, #FFB347, #FF7700);
-  border: none;
-  border-radius: 60px;
-  font-family: 'Fredoka One', cursive;
-  font-size: 1.6rem;
-  padding: 14px 38px;
-  color: #2c1a0a;
-  margin-top: 24px;
-  cursor: pointer;
-  box-shadow: 0 12px 22px rgba(0,0,0,0.3);
-  transition: 0.1s linear;
-}
-.btn-start:active { transform: scale(0.97); }
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ffcd7e, #ffa559);
+            border-radius: 40px;
+            transition: width 0.2s ease;
+        }
 
-/* HUD */
-#hud {
-  position: fixed;
-  top: 8px;
-  left: 0;
-  right: 0;
-  display: none;
-  justify-content: space-between;
-  padding: 12px 18px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
-  z-index: 25;
-  pointer-events: none;
-}
+        /* Power bar (kid friendly) */
+        .power-row {
+            position: absolute;
+            bottom: 110px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            z-index: 28;
+            pointer-events: none;
+        }
 
-.hud-item {
-  background: rgba(0,0,0,0.45);
-  backdrop-filter: blur(8px);
-  border-radius: 44px;
-  padding: 6px 15px;
-  font-weight: bold;
-  font-size: 1.3rem;
-  color: #fff3c9;
-  font-family: monospace;
-  letter-spacing: 1px;
-}
+        .power-chip {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 100px;
+            padding: 8px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffdca8;
+            border: 1px solid #ffbc6e;
+            transition: 0.1s;
+            opacity: 0.6;
+        }
 
-#combo-badge {
-  background: #ff66c0cc;
-  border-radius: 30px;
-  padding: 5px 16px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  transition: 0.1s;
-}
+        .power-chip.active {
+            opacity: 1;
+            background: #f5b64230;
+            box-shadow: 0 0 14px #ffbc6e;
+            border-color: #ffcf8a;
+        }
 
-#power-bar {
-  position: fixed;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: none;
-  gap: 20px;
-  background: rgba(0,0,0,0.5);
-  padding: 8px 20px;
-  border-radius: 60px;
-  backdrop-filter: blur(12px);
-  z-index: 25;
-}
+        .power-chip span {
+            font-size: 1.6rem;
+        }
 
-.powerup {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 26px;
-  opacity: 0.45;
-  transition: 0.1s;
-}
-.powerup.active {
-  opacity: 1;
-  filter: drop-shadow(0 0 8px gold);
-}
-.timer-badge {
-  font-size: 10px;
-  background: black;
-  border-radius: 20px;
-  padding: 2px 6px;
-  margin-top: 4px;
-}
+        /* Toast message for kids */
+        .toast-magic {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: #f9e45b;
+            color: #2f2a1f;
+            font-weight: bold;
+            font-size: 1.2rem;
+            padding: 12px 24px;
+            border-radius: 48px;
+            box-shadow: 0 10px 0 #b47c2e;
+            z-index: 40;
+            pointer-events: none;
+            opacity: 0;
+            transition: 0.2s;
+            white-space: nowrap;
+            font-family: monospace;
+        }
 
-#progress-area {
-  position: fixed;
-  bottom: 18px;
-  left: 20px;
-  right: 20px;
-  display: none;
-  background: #00000066;
-  border-radius: 30px;
-  padding: 6px 12px;
-  backdrop-filter: blur(8px);
-  z-index: 20;
-}
-.progress-text {
-  font-size: 12px;
-  font-weight: bold;
-  color: #ffd966;
-}
-.progress-bar-bg {
-  background: #2a2f55;
-  border-radius: 30px;
-  height: 14px;
-  overflow: hidden;
-  margin-top: 6px;
-}
-.progress-fill {
-  width: 0%;
-  height: 100%;
-  background: linear-gradient(90deg, #FFD966, #FFB347);
-  border-radius: 30px;
-}
+        /* Start screen (KIDS ONLY) */
+        .start-screen {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 20%, #1d3577, #050f2a);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            backdrop-filter: blur(3px);
+            transition: 0.4s;
+            text-align: center;
+            padding: 28px;
+        }
 
-#game-toast {
-  position: fixed;
-  top: 85px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-20px);
-  background: #2a1e3ccc;
-  backdrop-filter: blur(8px);
-  padding: 10px 24px;
-  border-radius: 60px;
-  color: #FFEC9F;
-  font-weight: bold;
-  pointer-events: none;
-  z-index: 35;
-  opacity: 0;
-  transition: 0.2s;
-  white-space: nowrap;
-}
+        .start-screen.hide {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.96);
+        }
 
-.game-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(6, 6, 22, 0.92);
-  backdrop-filter: blur(16px);
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  opacity: 0;
-  pointer-events: none;
-  transition: 0.3s;
-}
-.game-overlay.show {
-  opacity: 1;
-  pointer-events: all;
-}
+        .game-title {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, #FFEAA7, #FFBF69);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 18px #ffbb77;
+            margin-bottom: 12px;
+        }
 
-.overlay-content {
-  text-align: center;
-  background: rgba(0,0,0,0.6);
-  padding: 32px 24px;
-  border-radius: 72px;
-  max-width: 90%;
-}
-</style>
+        .sub {
+            color: #fee6b0;
+            font-size: 1.2rem;
+            margin-bottom: 36px;
+            background: #00000066;
+            padding: 6px 20px;
+            border-radius: 60px;
+        }
+
+        .hero-pick {
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+            margin: 28px 0;
+            flex-wrap: wrap;
+        }
+
+        .hero-card {
+            background: #f9e0a8;
+            border-radius: 80px;
+            padding: 16px 28px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 4px solid transparent;
+            box-shadow: 0 12px 0 #af7b41;
+        }
+
+        .hero-card.selected {
+            border-color: #ffdb7e;
+            background: #fff0c0;
+            transform: scale(1.05);
+            box-shadow: 0 6px 0 #ffb347;
+        }
+
+        .hero-emoji {
+            font-size: 4rem;
+            display: block;
+        }
+
+        .hero-name {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .play-btn {
+            background: #ffb347;
+            border: none;
+            font-size: 2.2rem;
+            font-weight: bold;
+            padding: 16px 48px;
+            border-radius: 80px;
+            color: #2f2a1f;
+            margin: 30px 0;
+            font-family: inherit;
+            cursor: pointer;
+            box-shadow: 0 12px 0 #9b5e1a;
+            transition: 0.07s linear;
+        }
+
+        .play-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 6px 0 #9b5e1a;
+        }
+
+        .footer-tip {
+            color: #b8c7ff;
+            background: #00000055;
+            border-radius: 40px;
+            padding: 5px 16px;
+            font-size: 0.8rem;
+        }
+
+        /* Game over panel */
+        .gameover-panel {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(14px);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.25s;
+        }
+
+        .gameover-panel.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .over-card {
+            background: #ffe5b4;
+            border-radius: 70px;
+            padding: 36px 30px;
+            text-align: center;
+            width: 80%;
+            max-width: 340px;
+        }
+
+        .restart-btn {
+            background: #ffa047;
+            border: none;
+            font-size: 1.5rem;
+            padding: 10px 30px;
+            border-radius: 40px;
+            font-weight: bold;
+            margin: 14px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 
-<canvas id="bgCanvas"></canvas>
 <canvas id="gameCanvas"></canvas>
-
-<!-- HOME SCREEN -->
-<div id="homeScreen" class="screen">
-  <div class="game-title">☄️ CODE CATCH<br>✦ SAVE SYNTAX SKY ✦</div>
-  <div class="sub">catch the correct code → restore the stars!</div>
-  
-  <div class="panel-card">
-    <div style="text-align:center; margin-bottom: 12px;">⭐ PICK YOUR CODING AVATAR ⭐</div>
-    <div class="selector-row" id="hero-select">
-      <div class="option" data-hero="kid"><span class="emoji-big">🧒</span><span class="label">KID CODER</span></div>
-      <div class="option" data-hero="robot"><span class="emoji-big">🤖</span><span class="label">ROBO BYTE</span></div>
-      <div class="option" data-hero="cat"><span class="emoji-big">🐱</span><span class="label">DEBUG KITTY</span></div>
+<div class="ui-panel">
+    <div class="top-bar">
+        <div class="stat">⭐ <span id="scoreValue">0</span></div>
+        <div class="stat lives">❤️ <span id="livesValue">3</span></div>
+        <div class="stat">🪙 <span id="coinsValue">0</span></div>
     </div>
-  </div>
-
-  <div class="panel-card">
-    <div style="text-align:center;">🎓 AGE / SKILL MODE 🎓</div>
-    <div class="selector-row" id="mode-select">
-      <div class="option" data-mode="beginner"><span class="emoji-big">🌱</span><span class="label">BEGINNER (Kids)</span></div>
-      <div class="option" data-mode="medium"><span class="emoji-big">⚡</span><span class="label">MEDIUM (Teens)</span></div>
-      <div class="option" data-mode="advanced"><span class="emoji-big">🧠</span><span class="label">ADVANCED (Adult)</span></div>
+    <div class="power-row">
+        <div class="power-chip" id="powerHint">💡 HINT <span id="hintTimer"></span></div>
+        <div class="power-chip" id="powerShield">🛡️ SHIELD <span id="shieldTimer"></span></div>
+        <div class="power-chip" id="powerStarMagnet">✨ MAGNET <span id="magnetTimer"></span></div>
     </div>
-  </div>
-
-  <div class="panel-card">
-    <div style="text-align:center;">✨ WORLD THEME ✨</div>
-    <div class="selector-row" id="world-select">
-      <div class="option" data-world="sky"><span class="emoji-big">☁️</span><span class="label">CLOUDY SKY</span></div>
-      <div class="option" data-world="space"><span class="emoji-big">🚀</span><span class="label">DEEP SPACE</span></div>
-      <div class="option" data-world="galaxy"><span class="emoji-big">🌌</span><span class="label">PURPLE GALAXY</span></div>
+    <div class="progress-area">
+        <div class="progress-label"><span>🌟 FIX THE STARS 🌟</span> <span id="starCounter">0 / 5</span></div>
+        <div class="progress-bg"><div class="progress-fill" id="starFill"></div></div>
     </div>
-  </div>
+</div>
+<div id="toastMsg" class="toast-magic">✨ MAGIC ✨</div>
 
-  <button class="btn-start" id="startBtn">🌟 START ADVENTURE 🌟</button>
-  <div style="margin-top: 18px; font-size:12px; color:#aaaaff;">← → or mouse drag | catch correct syntax & avoid bugs! 🐞</div>
+<!-- START SCREEN (KIDS ONLY) -->
+<div id="startScreen" class="start-screen">
+    <div class="game-title">🌟 CODE CATCHER JR 🌟</div>
+    <div class="sub">✨ Catch the RIGHT code & save the stars! ✨</div>
+    <div style="font-size: 1.4rem; font-weight: bold; color:#FFE5A3;">🎮 Pick your coder buddy 🎮</div>
+    <div class="hero-pick">
+        <div class="hero-card selected" data-hero="kid"><span class="hero-emoji">🧒</span><span class="hero-name">Sunny Coder</span></div>
+        <div class="hero-card" data-hero="robot"><span class="hero-emoji">🤖</span><span class="hero-name">Byte Buddy</span></div>
+        <div class="hero-card" data-hero="cat"><span class="hero-emoji">🐱</span><span class="hero-name">Debug Kitty</span></div>
+    </div>
+    <button class="play-btn" id="startGameBtn">⭐ PLAY NOW ⭐</button>
+    <div class="footer-tip">🐞 Move mouse or finger → catch correct syntax 🐞<br>❌ avoid wrong brackets & bugs ❌</div>
 </div>
 
-<!-- HUD -->
-<div id="hud">
-  <div class="hud-item">⭐ SCORE: <span id="scoreSpan">0</span></div>
-  <div class="hud-item" id="combo-badge">🔥 x1</div>
-  <div class="hud-item">❤️ <span id="livesSpan">3</span></div>
-  <div class="hud-item">🪙 <span id="coinSpan">0</span></div>
-  <div class="hud-item">📈 LV <span id="levelSpan">1</span></div>
-</div>
-
-<div id="power-bar">
-  <div class="powerup" id="pwrHint">💡 HINT<span class="timer-badge" id="hintTimer"></span></div>
-  <div class="powerup" id="pwrFreeze">❄️ FREEZE<span class="timer-badge" id="freezeTimer"></span></div>
-  <div class="powerup" id="pwrShield">🛡️ SHIELD<span class="timer-badge" id="shieldTimer"></span></div>
-</div>
-
-<div id="progress-area">
-  <div class="progress-text">✨ FIX THE CODE STARS: <span id="fixedCount">0</span> / <span id="needCount">5</span></div>
-  <div class="progress-bar-bg"><div class="progress-fill" id="progressFill"></div></div>
-</div>
-
-<div id="game-toast">✨ MESSAGE ✨</div>
-
-<div id="gameOverlay" class="game-overlay">
-  <div class="overlay-content">
-    <div style="font-size: 5rem;" id="overlayEmoji">🌙</div>
-    <div style="font-size: 2rem; font-weight: bold;" id="overlayTitle">GAME OVER</div>
-    <div style="margin: 12px;" id="overlayStats">score: 0</div>
-    <div style="margin: 6px;">✨✨✨</div>
-    <button class="btn-start" id="restartBtn">🔄 RESTART</button>
-    <button id="homeBtnMenu" style="margin-top: 12px; background:#3e2c63; padding:10px 20px; border-radius:40px; border:none; color:white;">🏠 MAIN MENU</button>
-  </div>
+<div id="gameOverlay" class="gameover-panel">
+    <div class="over-card">
+        <span style="font-size: 4rem;">🌟🌙</span>
+        <h2 id="gameoverText">Oh no! The sky got dark!</h2>
+        <p id="finalScoreMsg">Your Score: 0  🪙 Coins: 0</p>
+        <button id="restartGameBtn" class="restart-btn">🔄 PLAY AGAIN</button>
+        <button id="homeBtnOverlay" class="restart-btn" style="background:#6c5b7b;">🏠 HOME</button>
+    </div>
 </div>
 
 <script>
-(function(){
-  // ------------- SETUP ------------
-  const bgCanvas = document.getElementById('bgCanvas');
-  const gameCanvas = document.getElementById('gameCanvas');
-  const bgCtx = bgCanvas.getContext('2d');
-  const ctx = gameCanvas.getContext('2d');
-  let W, H;
-  let gameActive = false;
-  let animFrame;
-  let lastTimestamp = 0;
-  
-  // game state
-  let score = 0, lives = 3, level = 1, coins = 0;
-  let fixedStars = 0, neededStars = 5;
-  let combo = 0, streak = 0;
-  let items = [];
-  let particles = [];
-  let floaters = [];
-  let starsBg = [];
-  let cloudsBg = [];
-  
-  // powerups
-  let activePower = { hint: 0, freeze: 0, shield: 0 };
-  
-  // player
-  let playerX = 0, targetX = 0;
-  const trayWidth = 140, trayHeight = 22;
-  let groundY = 0;
-  let mouseX = 0, mouseDown = false;
-  
-  // coding puzzle system
-  let currentChallenge = null;
-  let currentChoicesSet = [];
-  
-  // selected options
-  let hero = 'kid';
-  let mode = 'beginner';
-  let world = 'sky';
-  
-  // MODES CONFIG (speed, spawn rate)
-  const modeConfig = {
-    beginner: { speed: 1.4, spawnDelay: 1350, choicesCount: 3, hintChance: 0.2, name: '🌱 Beginner' },
-    medium: { speed: 2.0, spawnDelay: 1000, choicesCount: 4, hintChance: 0.15, name: '⚡ Medium' },
-    advanced: { speed: 2.7, spawnDelay: 800, choicesCount: 4, hintChance: 0.1, name: '🧠 Advanced' }
-  };
-  
-  // CODING CHALLENGES DATABASE: fun but educational!
-  const challengesDB = {
-    beginner: [
-      { text: "print('Hello')", correct: "print('Hello')", wrongs: ["print(Hello)", "Print('Hello')", "echo Hello"] },
-      { text: "for i in range(3):", correct: "for i in range(3):", wrongs: ["for i in range3", "for i in range(3)", "for i=0 to 3"] },
-      { text: "if x == 5:", correct: "if x == 5:", wrongs: ["if x = 5:", "if x ==5", "if x=5"] },
-      { text: "def hello():", correct: "def hello():", wrongs: ["function hello()", "def hello()", "def hello:"] },
-      { text: "list = [1,2,3]", correct: "[1,2,3]", wrongs: ["(1,2,3)", "{1,2,3}", "[1 2 3]"] }
-    ],
-    medium: [
-      { text: "lambda x: x*2", correct: "lambda x: x*2", wrongs: ["lambda x: x*2;", "def double", "lambda x, x*2"] },
-      { text: "try: pass\nexcept:", correct: "except:", wrongs: ["catch:", "error:", "finally"] },
-      { text: "class Car:", correct: "class Car:", wrongs: ["Class Car", "object Car", "def Car"] },
-      { text: "len('code')", correct: "len('code')", wrongs: ["length('code')", "len(code)", "sizeof"] }
-    ],
-    advanced: [
-      { text: "map(lambda x:x**2, lst)", correct: "map(lambda x:x**2, lst)", wrongs: ["map(x**2,lst)", "map(lambda x: x**2)", "map(pow)"] },
-      { text: "@decorator\ndef func():", correct: "@decorator", wrongs: ["@decorator", "#decorator", "decorator"] },
-      { text: "[x for x in range(5)]", correct: "[x for x in range(5)]", wrongs: ["[x for x in 5]", "{x for x in range(5)}", "list comp"] },
-      { text: "self.__init__", correct: "__init__", wrongs: ["constructor", "init", "_init_"] }
-    ]
-  };
-  
-  function getRandomChallenge() {
-    const bank = challengesDB[mode] || challengesDB.beginner;
-    const idx = Math.floor(Math.random() * bank.length);
-    return { ...bank[idx] };
-  }
-  
-  function buildQuestion() {
-    const base = getRandomChallenge();
-    currentChallenge = base;
-    let opts = [base.correct, ...base.wrongs.slice(0, modeConfig[mode].choicesCount-1)];
-    while(opts.length < modeConfig[mode].choicesCount) opts.push("???");
-    currentChoicesSet = opts.sort(() => Math.random() - 0.5);
-  }
-  
-  // world themes
-  const worldThemes = {
-    sky: { grad1:"#0a1f4a", grad2:"#2d4d8a", grad3:"#ff9865", starColor:"#fff5cc", cloud:true, glow:"#ffdd99" },
-    space: { grad1:"#03001C", grad2:"#0F0C29", grad3:"#302b63", starColor:"#c2c9ff", cloud:false, glow:"#b0aaff" },
-    galaxy: { grad1:"#190933", grad2:"#3b1f6e", grad3:"#a342ff", starColor:"#ffbbff", cloud:false, glow:"#e5aaff" }
-  };
-  
-  // UI elements selection
-  document.querySelectorAll('#hero-select .option').forEach(el => {
-    el.addEventListener('click', () => {
-      document.querySelectorAll('#hero-select .option').forEach(o => o.classList.remove('selected'));
-      el.classList.add('selected');
-      hero = el.dataset.hero;
-    });
-  });
-  document.querySelectorAll('#mode-select .option').forEach(el => {
-    el.addEventListener('click', () => {
-      document.querySelectorAll('#mode-select .option').forEach(o => o.classList.remove('selected'));
-      el.classList.add('selected');
-      mode = el.dataset.mode;
-    });
-  });
-  document.querySelectorAll('#world-select .option').forEach(el => {
-    el.addEventListener('click', () => {
-      document.querySelectorAll('#world-select .option').forEach(o => o.classList.remove('selected'));
-      el.classList.add('selected');
-      world = el.dataset.world;
-    });
-  });
-  // default selection
-  document.querySelector('#hero-select .option[data-hero="kid"]').classList.add('selected');
-  document.querySelector('#mode-select .option[data-mode="beginner"]').classList.add('selected');
-  document.querySelector('#world-select .option[data-world="sky"]').classList.add('selected');
-  
-  function showToast(msg, duration=1600) {
-    const toast = document.getElementById('game-toast');
-    toast.textContent = msg;
-    toast.style.opacity = '1';
-    toast.style.transform = 'translateX(-50%) translateY(0px)';
-    clearTimeout(window.toastTimeout);
-    window.toastTimeout = setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateX(-50%) translateY(-20px)';
-    }, duration);
-  }
-  
-  function playSound(type) {
-    // simple beep via web audio
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!window.audioCtx) {
-      try { window.audioCtx = new AudioCtx(); } catch(e) {}
-    }
-    const actx = window.audioCtx;
-    if (!actx) return;
-    const osc = actx.createOscillator();
-    const gain = actx.createGain();
-    osc.connect(gain);
-    gain.connect(actx.destination);
-    osc.type = 'sine';
-    let freq = type === 'catch' ? 880 : (type === 'power' ? 660 : 340);
-    let duration = 0.12;
-    if(type === 'wrong') { freq = 220; duration = 0.22; }
-    osc.frequency.value = freq;
-    gain.gain.value = 0.15;
-    osc.start();
-    gain.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + duration);
-    osc.stop(actx.currentTime + duration);
-  }
-  
-  function addParticles(x,y,color,count=12) {
-    for(let i=0;i<count;i++){
-      particles.push({
-        x,y,
-        vx: (Math.random()-0.5)*5,
-        vy: (Math.random()-0.5)*5 - 2,
-        life: 0.9,
-        decay: 0.02+Math.random()*0.03,
-        color: color
-      });
-    }
-  }
-  
-  function addFloater(x,y,text,color="#ffd966") {
-    floaters.push({x,y,text,life:1,vy:-1.8,color});
-  }
-  
-  function applyCorrect(itemX, itemY) {
-    score += 10;
-    coins += 1;
-    streak ++;
-    combo ++;
-    fixedStars ++;
-    if(combo > 2) score += combo;
-    showToast(`✅ +10 ${currentChallenge?.correct?.slice(0,14)}`, 600);
-    addParticles(itemX, itemY, '#FFE484', 14);
-    addFloater(itemX, itemY-20, `+10⭐`, '#FFD966');
-    playSound('catch');
-    if(streak >= 3) { showToast("🔥 STREAK! +3 COINS", 1000); coins += 3; }
-    if(fixedStars >= neededStars) levelUp();
-    updateUI();
-  }
-  
-  function applyWrong(itemX, itemY) {
-    if(activePower.shield > 0) {
-      activePower.shield = Math.max(0, activePower.shield-1);
-      showToast("🛡️ Shield blocked error!", 800);
-      return;
-    }
-    lives --;
-    combo = 0;
-    streak = 0;
-    addParticles(itemX, itemY, '#ff6a6a', 18);
-    addFloater(itemX, itemY-15, "🐞 BUG!", "#ff8888");
-    playSound('wrong');
-    showToast(`💔 Wrong syntax! Lives: ${lives}`, 1200);
-    if(lives <= 0) gameOver();
-    updateUI();
-  }
-  
-  function levelUp() {
-    level++;
-    fixedStars = 0;
-    neededStars = Math.min(5 + Math.floor(level/2), 14);
-    coins += 8;
-    showToast(`🎉 LEVEL ${level} ! Sky grows brighter ✨`, 1800);
-    addParticles(W/2, H/3, '#FFD966', 36);
-    playSound('catch');
-    // powerup reward per level
-    if(level % 2 === 0) activePower.hint = (activePower.hint||0) + 3;
-    updateUI();
-  }
-  
-  function grantPower(type) {
-    if(type === 'hint') activePower.hint = 5;
-    if(type === 'freeze') activePower.freeze = 7;
-    if(type === 'shield') activePower.shield = 3;
-    showToast(`✨ POWERUP: ${type.toUpperCase()} ✨`, 1000);
-    playSound('power');
-    updateUI();
-  }
-  
-  function spawnItem() {
-    if(!gameActive) return;
-    if(activePower.freeze > 0) {
-      setTimeout(spawnItem, 280);
-      return;
-    }
-    buildQuestion();
-    const cfg = modeConfig[mode];
-    const isPower = Math.random() < 0.12;
-    const xPos = 40 + Math.random() * (W - 120);
-    if(isPower) {
-      const pwrList = ['hint','freeze','shield'];
-      const pwr = pwrList[Math.floor(Math.random()*3)];
-      items.push({
-        type: 'power', powerType: pwr,
-        text: pwr === 'hint' ? '💡' : (pwr === 'freeze' ? '❄️' : '🛡️'),
-        x: xPos, y: -40, vy: cfg.speed,
-        vx: (Math.random()-0.5)*0.6,
-        size: 28
-      });
-    } else {
-      const correctAnswer = currentChallenge.correct;
-      let isCorrectDrop = Math.random() < 0.55;  // slightly more correct to keep fun
-      let displayText = isCorrectDrop ? correctAnswer : currentChallenge.wrongs[Math.floor(Math.random() * currentChallenge.wrongs.length)];
-      items.push({
-        type: 'code',
-        text: displayText,
-        isCorrect: (displayText === correctAnswer),
-        x: xPos, y: -40,
-        vy: cfg.speed + (Math.random()*0.4),
-        vx: (Math.random()-0.5)*0.5,
-        size: 22 + Math.min(12, Math.floor(displayText.length/3)),
-        rotation: 0
-      });
-    }
-    let delayFactor = Math.max(500, cfg.spawnDelay - level * 25);
-    setTimeout(spawnItem, delayFactor + Math.random()*150);
-  }
-  
-  function updateUI() {
-    document.getElementById('scoreSpan').innerText = score;
-    document.getElementById('livesSpan').innerText = lives;
-    document.getElementById('coinSpan').innerText = coins;
-    document.getElementById('levelSpan').innerText = level;
-    document.getElementById('fixedCount').innerText = fixedStars;
-    document.getElementById('needCount').innerText = neededStars;
-    let percent = (fixedStars/neededStars)*100;
-    document.getElementById('progressFill').style.width = `${percent}%`;
-    const comboDiv = document.getElementById('combo-badge');
-    if(combo>=2) comboDiv.innerHTML = `🔥 x${combo}`;
-    else comboDiv.innerHTML = `⚡ x1`;
-    // powerup timers
-    document.getElementById('hintTimer').innerText = activePower.hint>0 ? activePower.hint : '';
-    document.getElementById('freezeTimer').innerText = activePower.freeze>0 ? activePower.freeze : '';
-    document.getElementById('shieldTimer').innerText = activePower.shield>0 ? activePower.shield : '';
-    ['pwrHint','pwrFreeze','pwrShield'].forEach((id,i)=>{
-      const el = document.getElementById(id);
-      if((i===0 && activePower.hint>0) || (i===1 && activePower.freeze>0) || (i===2 && activePower.shield>0))
-        el.classList.add('active');
-      else el.classList.remove('active');
-    });
-  }
-  
-  function gameOver() {
-    gameActive = false;
-    document.getElementById('overlayEmoji').innerText = '💻🌧️';
-    document.getElementById('overlayTitle').innerText = 'SYNTAX COLLAPSE';
-    document.getElementById('overlayStats').innerHTML = `⭐ Score: ${score}<br>🪙 Coins: ${coins}<br>📈 Level: ${level}`;
-    document.getElementById('gameOverlay').classList.add('show');
-  }
-  
-  function restartGame() {
-    resetGameState();
-    document.getElementById('gameOverlay').classList.remove('show');
-    startGameSession();
-  }
-  
-  function resetGameState() {
-    score = 0; lives = 3; level = 1; coins = 0; fixedStars = 0; neededStars = 5; combo=0; streak=0;
-    items = []; particles = []; floaters = [];
-    activePower = { hint:0, freeze:0, shield:0 };
-    buildQuestion();
-    updateUI();
-  }
-  
-  function startGameSession() {
-    gameActive = true;
-    resetGameState();
-    groundY = H - 72;
-    playerX = W/2 - trayWidth/2;
-    targetX = playerX;
-    buildQuestion();
-    if(window.spawnTimerId) clearTimeout(window.spawnTimerId);
-    window.spawnTimerId = setTimeout(() => spawnItem(), 500);
-    updateUI();
-    showToast(`🧑‍💻 ${modeConfig[mode].name} mode — catch correct syntax!`, 2000);
-  }
-  
-  function drawBackground() {
-    const theme = worldThemes[world];
-    const grad = bgCtx.createLinearGradient(0,0,0,H);
-    grad.addColorStop(0, theme.grad1);
-    grad.addColorStop(0.6, theme.grad2);
-    grad.addColorStop(1, theme.grad3);
-    bgCtx.fillStyle = grad;
-    bgCtx.fillRect(0,0,W,H);
-    // draw stars
-    for(let s of starsBg) {
-      bgCtx.beginPath();
-      bgCtx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-      bgCtx.fillStyle = theme.starColor;
-      bgCtx.fill();
-    }
-    if(theme.cloud && cloudsBg.length) {
-      cloudsBg.forEach(c => {
-        bgCtx.fillStyle = "rgba(255,255,245,0.4)";
-        bgCtx.beginPath();
-        bgCtx.ellipse(c.x, c.y, c.w, c.h, 0, 0, Math.PI*2);
-        bgCtx.fill();
-      });
-    }
-    // ground
-    bgCtx.fillStyle = "#2f2850";
-    bgCtx.fillRect(0, groundY, W, H-groundY);
-    bgCtx.fillStyle = "#9c88ff30";
-    bgCtx.fillRect(0, groundY-4, W, 6);
-  }
-  
-  function drawGameObjects() {
-    ctx.clearRect(0,0,W,H);
-    // draw falling items
-    for(let i=0; i<items.length; i++) {
-      const it = items[i];
-      it.y += it.vy;
-      it.x += it.vx;
-      ctx.font = `${it.size}px "Segoe UI Emoji", "Courier New", monospace`;
-      ctx.textAlign = "center";
-      ctx.shadowBlur = 8;
-      if(it.type === 'power') {
-        ctx.fillStyle = "#FFECC0";
-        ctx.fillText(it.text, it.x, it.y);
-      } else {
-        ctx.fillStyle = it.isCorrect ? "#FFE484" : "#FFAAAA";
-        ctx.fillText(it.text, it.x, it.y);
-      }
-      // collision with tray
-      if(it.y + 12 > groundY-12 && it.x > playerX && it.x < playerX+trayWidth) {
-        if(it.type === 'power') { grantPower(it.powerType); items.splice(i,1); i--; }
-        else {
-          if(it.isCorrect) applyCorrect(it.x, it.y);
-          else applyWrong(it.x, it.y);
-          items.splice(i,1); i--;
+    (function(){
+        // ---------- KID ONLY MODE (NO TEEN/ADULT) ----------
+        // All difficulty is kid-friendly, fun and learning with bright visuals.
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let W, H;
+        let gameRunning = false;
+        let animationId = null;
+        
+        // Game stats
+        let score = 0;
+        let lives = 3;
+        let coins = 0;
+        let fixedStars = 0;
+        let starsNeeded = 5;
+        let level = 1;
+        let combo = 0;
+        let streak = 0;
+        
+        // Powerups timers (seconds in frames, but we use frame counter)
+        let activeHint = 0;
+        let activeShield = 0;
+        let activeMagnet = 0;
+        
+        // Falling objects
+        let items = [];
+        let particles = [];
+        let floaters = [];
+        
+        // Player
+        let playerX = 0;
+        let targetX = 0;
+        const CATCHER_W = 130;
+        const CATCHER_H = 24;
+        let groundY = 0;
+        let pointerX = 0, pointerDown = false;
+        
+        // Kid's avatar
+        let hero = 'kid';      // kid, robot, cat
+        let heroEmojiMap = { kid: '🧒', robot: '🤖', cat: '🐱' };
+        
+        // COLOR THEME: Kid-friendly worlds (only sky/rainbow)
+        let worldTheme = {
+            sky1: "#a2d9ff",
+            sky2: "#f9e6b3",
+            ground: "#b6d7a8",
+            starColor: "#FFE484",
+            glow: "#FFC857"
+        };
+        
+        // ---- CODING QUESTIONS for KIDS (super simple, colorful syntax) ----
+        const kidChallenges = [
+            { text: "print('Hello')", correct: "print('Hello')", wrongs: ["print(Hello)", "Print Hello", "echo Hello"] },
+            { text: "for i in range(3):", correct: "for i in range(3):", wrongs: ["for i in range3", "loop i=3", "for i to 3"] },
+            { text: "if x == 5:", correct: "if x == 5:", wrongs: ["if x = 5:", "if x equals 5", "when x=5"] },
+            { text: "def hello():", correct: "def hello():", wrongs: ["function hello", "def hello", "new hello()"] },
+            { text: "⭐ star = 'magic'", correct: "star = 'magic'", wrongs: ["star == 'magic'", "star magic", "let star"] },
+            { text: "while True:", correct: "while True:", wrongs: ["while true", "repeat forever", "while True"] },
+            { text: "[1, 2, 3]", correct: "[1, 2, 3]", wrongs: ["(1, 2, 3)", "{1, 2, 3}", "[1 2 3]"] },
+            { text: "{}  # dictionary", correct: "{}", wrongs: ["[]", "()", "{ }"] }
+        ];
+        
+        let currentChallenge = null;
+        let currentCorrectAnswer = "";
+        let currentChoicesList = [];
+        
+        function pickRandomChallenge() {
+            const idx = Math.floor(Math.random() * kidChallenges.length);
+            return { ...kidChallenges[idx] };
         }
-      } else if(it.y > H+70) { items.splice(i,1); i--; }
-    }
-    // particles
-    for(let i=0;i<particles.length;i++) {
-      let p = particles[i];
-      p.x += p.vx; p.y += p.vy; p.life -= p.decay;
-      ctx.globalAlpha = p.life;
-      ctx.fillStyle = p.color;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
-      ctx.fill();
-      if(p.life<=0) particles.splice(i,1), i--;
-    }
-    ctx.globalAlpha = 1;
-    for(let f of floaters) {
-      f.y += f.vy;
-      f.life -= 0.02;
-      ctx.font = "bold 18px Nunito";
-      ctx.fillStyle = f.color;
-      ctx.fillText(f.text, f.x, f.y);
-      if(f.life<=0) floaters.splice(floaters.indexOf(f),1);
-    }
-    // draw player
-    let heroEmoji = hero === 'kid' ? '🧒' : (hero === 'robot' ? '🤖' : '🐱');
-    ctx.font = "56px serif";
-    ctx.fillStyle = "#ffe6b3";
-    ctx.shadowBlur = 16;
-    ctx.fillText(heroEmoji, playerX+trayWidth/2-20, groundY-38);
-    ctx.fillStyle = `rgba(255,200,100,0.9)`;
-    ctx.fillRect(playerX, groundY-16, trayWidth, trayHeight);
-    ctx.fillStyle = "#E3B87C";
-    ctx.fillRect(playerX+8, groundY-20, trayWidth-16, 6);
-    if(activePower.shield>0) {
-      ctx.beginPath();
-      ctx.arc(playerX+trayWidth/2, groundY-34, 44, 0, Math.PI*2);
-      ctx.strokeStyle = "#88ffaa";
-      ctx.lineWidth = 3;
-      ctx.stroke();
-    }
-    ctx.shadowBlur = 0;
-  }
-  
-  function tickPowerups() {
-    if(activePower.hint>0) activePower.hint--;
-    if(activePower.freeze>0) activePower.freeze--;
-    if(activePower.shield>0) activePower.shield--;
-    if(activePower.hint===0 && activePower.freeze===0 && activePower.shield===0) {}
-  }
-  
-  function animate() {
-    if(!gameActive) {
-      drawBackground();
-      ctx.clearRect(0,0,W,H);
-      if(window.raf) cancelAnimationFrame(window.raf);
-      return;
-    }
-    drawBackground();
-    tickPowerups();
-    // player movement
-    if (mouseDown && mouseX > 0) {
-      targetX = Math.min(W - trayWidth, Math.max(0, mouseX - trayWidth/2));
-    }
-    playerX += (targetX - playerX) * 0.22;
-    drawGameObjects();
-    updateUI();
-    window.raf = requestAnimationFrame(animate);
-  }
-  
-  function resizeCanvas() {
-    W = window.innerWidth; H = window.innerHeight;
-    bgCanvas.width = W; bgCanvas.height = H;
-    gameCanvas.width = W; gameCanvas.height = H;
-    groundY = H - 72;
-    playerX = Math.min(W - trayWidth, Math.max(0, playerX));
-    targetX = playerX;
-    starsBg = [];
-    for(let i=0;i<150;i++) starsBg.push({ x: Math.random()*W, y: Math.random()*H*0.8, r: 1+Math.random()*2 });
-    cloudsBg = [];
-    for(let i=0;i<4;i++) cloudsBg.push({ x: Math.random()*W, y: 40+Math.random()*100, w: 70+Math.random()*50, h: 30 });
-  }
-  
-  window.addEventListener('resize', () => { resizeCanvas(); });
-  window.addEventListener('mousemove', (e) => { if(gameActive) mouseX = e.clientX; });
-  window.addEventListener('mousedown', () => { mouseDown = true; });
-  window.addEventListener('mouseup', () => { mouseDown = false; });
-  window.addEventListener('touchmove', (e) => { if(gameActive && e.touches[0]) { mouseX = e.touches[0].clientX; mouseDown=true; e.preventDefault(); } });
-  window.addEventListener('touchend', () => { mouseDown = false; });
-  
-  document.getElementById('startBtn').addEventListener('click', () => {
-    document.getElementById('homeScreen').classList.add('hidden');
-    resizeCanvas();
-    resetGameState();
-    startGameSession();
-    animate();
-  });
-  document.getElementById('restartBtn').addEventListener('click', () => { restartGame(); });
-  document.getElementById('homeBtnMenu').addEventListener('click', () => {
-    gameActive = false;
-    document.getElementById('gameOverlay').classList.remove('show');
-    document.getElementById('homeScreen').classList.remove('hidden');
-    cancelAnimationFrame(window.raf);
-  });
-  resizeCanvas();
-})();
-</script>
-</body>
-</html>
+        
+        function generateNewQuestion() {
+            const chal = pickRandomChallenge();
+            currentChallenge = chal;
+            currentCorrectAnswer = chal.correct;
+            // make multiple choices (2 wrong + correct)
+            let options = [chal.correct, ...chal.wrongs.slice(0,2)];
+            while(options.length < 3) options.push("⭐ code? ⭐");
+            currentChoicesList = options.sort(() => Math.random() - 0.5);
+        }
+        
+        // Helper UI
+        function showKidMessage(msg, duration = 1500) {
+            const toast = document.getElementById('toastMsg');
+            toast.textContent = msg;
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(-50%) translateY(0px)';
+            clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(-20px)';
+            }, duration);
+        }
+        
+        function playSound(type) {
+            // Web Audio simple beep for kids (no permission needed)
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!window.audioCtxGlobal) {
+                    window.audioCtxGlobal = new AudioCtx();
+                }
+                const actx = window.audioCtxGlobal;
+                if (actx.state === 'suspended') {
+                    actx.resume();
+                }
+                const osc = actx.createOscillator();
+                const gain = actx.createGain();
+                osc.connect(gain);
+                gain.connect(actx.destination);
+                if (type === 'catch') {
+                    osc.frequency.value = 880;
+                    gain.gain.value = 0.2;
+                    osc.type = 'sine';
+                    gain.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + 0.2);
+                    osc.start();
+                    osc.stop(actx.currentTime + 0.2);
+                } else if (type === 'wrong') {
+                    osc.frequency.value = 280;
+                    gain.gain.value = 0.18;
+                    osc.type = 'sawtooth';
+                    gain.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + 0.25);
+                    osc.start();
+                    osc.stop(actx.currentTime + 0.25);
+                } else if (type === 'power') {
+                    osc.frequency.value = 660;
+                    gain.gain.value = 0.15;
+                    osc.type = 'triangle';
+                    gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.18);
+                    osc.start();
+                    osc.stop(actx.currentTime + 0.18);
+                }
+            } catch(e) { console.log("audio error"); }
+        }
+        
+        function addParticles(x, y, color, count = 12) {
+            for(let i=0;i<count;i++) {
+                particles.push({
+                    x, y, vx: (Math.random()-0.5)*5, vy: (Math.random()-0.5)*4 - 1,
+                    life: 0.9, decay: 0.02, color: color
+                });
+            }
+        }
+        
+        function addFloatingText(x, y, text, color="#FFD966") {
+            floaters.push({ x, y, text, life: 1.0, vy: -1.6, color });
+        }
+        
+        function applyCorrectItem(itemX, itemY) {
+            score += 10;
+            coins += 1;
+            streak++;
+            combo++;
+            fixedStars++;
+            addParticles(itemX, itemY, "#FFE484", 15);
+            addFloatingText(itemX, itemY-15, "✨ +10 ✨", "#FFF2B5");
+            playSound('catch');
+            showKidMessage("✅ PERFECT! 🌟", 700);
+            if(streak >= 3) {
+                coins += 2;
+                showKidMessage("🔥 AWESOME STREAK! +2 coins 🔥", 900);
+                addFloatingText(itemX, itemY-30, "🔥 STREAK!", "#FFB347");
+            }
+            updateUI();
+            if(fixedStars >= starsNeeded) {
+                levelUp();
+            }
+        }
+        
+        function applyWrongItem(itemX, itemY) {
+            if(activeShield > 0) {
+                activeShield--;
+                showKidMessage("🛡️ SHIELD saved you! 🛡️", 800);
+                addFloatingText(itemX, itemY-20, "🛡️ BLOCK!", "#88ffaa");
+                return;
+            }
+            lives--;
+            combo = 0;
+            streak = 0;
+            addParticles(itemX, itemY, "#FFA07A", 18);
+            addFloatingText(itemX, itemY-18, "🐞 BUG! -1 ❤️", "#FFA07A");
+            playSound('wrong');
+            showKidMessage("❌ OOPS! That's a bug! ❌", 1000);
+            if(lives <= 0) gameOver();
+            updateUI();
+        }
+        
+        function levelUp() {
+            level++;
+            fixedStars = 0;
+            starsNeeded = Math.min(5 + Math.floor(level/2), 12);
+            coins += 5;
+            showKidMessage(`🎉 LEVEL ${level}! SKY SPARKLES ✨`, 1800);
+            addParticles(W/2, H/3, "#F9D56E", 28);
+            playSound('catch');
+            // reward powerup each level for kids
+            if(level % 2 === 0) activeHint = 4;
+            else if(level % 3 === 0) activeShield = 2;
+            else activeMagnet = 5;
+            updateUI();
+        }
+        
+        function activatePower(powerType) {
+            if(powerType === 'hint') { activeHint = 5; showKidMessage("💡 HINT ACTIVATED! See correct answer glow!", 1400); }
+            if(powerType === 'shield') { activeShield = 3; showKidMessage("🛡️ SHIELD READY! protects from bugs!", 1300); }
+            if(powerType === 'magnet') { activeMagnet = 6; showKidMessage("🧲 MAGNET MODE! stars fly to you!", 1400); }
+            playSound('power');
+            updateUI();
+        }
+        
+        function spawnItem() {
+            if(!gameRunning) return;
+            // magnet does not affect spawn delay but just attraction.
+            generateNewQuestion();
+            const baseSpeed = 1.7 + (level * 0.12);
+            const isPowerup = Math.random() < 0.12;
+            let xPos = 40 + Math.random() * (W - 80);
+            if(isPowerup) {
+                const powerList = ['hint', 'shield', 'magnet'];
+                const chosen = powerList[Math.floor(Math.random()*3)];
+                items.push({
+                    type: 'power',
+                    power: chosen,
+                    text: chosen === 'hint' ? '💡' : (chosen === 'shield' ? '🛡️' : '🧲'),
+                    x: xPos, y: -40, vy: baseSpeed, vx: (Math.random()-0.5)*0.5,
+                    size: 32,
+                });
+            } else {
+                // make some correct and some wrong (mix)
+                const isCorrectDrop = Math.random() < 0.55; // more correct for kids fun
+                let displayText = isCorrectDrop ? currentCorrectAnswer : currentChallenge.wrongs[Math.floor(Math.random() * currentChallenge.wrongs.length)];
+                items.push({
+                    type: 'code',
+                    text: displayText,
+                    isCorrect: (displayText === currentCorrectAnswer),
+                    x: xPos, y: -40,
+                    vy: baseSpeed + Math.random()*0.4,
+                    vx: (Math.random()-0.5)*0.6,
+                    size: 22 + Math.min(12, Math.floor(displayText.length/3)),
+                    rotation: 0,
+                    originalX: xPos
+                });
+            }
+            let delay = Math.max(600, 1100 - level * 28);
+            setTimeout(() => spawnItem(), delay + Math.random() * 200);
+        }
+        
+        function updateUI() {
+            document.getElementById('scoreValue').innerText = score;
+            document.getElementById('livesValue').innerText = lives;
+            document.getElementById('coinsValue').innerText = coins;
+            document.getElementById('starCounter').innerText = `${fixedStars} / ${starsNeeded}`;
+            let percent = (fixedStars/starsNeeded)*100;
+            document.getElementById('starFill').style.width = `${percent}%`;
+            const hintTimerSpan = document.getElementById('hintTimer');
+            const shieldTimerSpan = document.getElementById('shieldTimer');
+            const magnetTimerSpan = document.getElementById('magnetTimer');
+            hintTimerSpan.innerText = activeHint > 0 ? ` ${activeHint}s` : '';
+            shieldTimerSpan.innerText = activeShield > 0 ? ` ${activeShield}s` : '';
+            magnetTimerSpan.innerText = activeMagnet > 0 ? ` ${activeMagnet}s` : '';
+            document.getElementById('powerHint').classList.toggle('active', activeHint > 0);
+            document.getElementById('powerShield').classList.toggle('active', activeShield > 0);
+            document.getElementById('powerStarMagnet').classList.toggle('active', activeMagnet > 0);
+        }
+        
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById('finalScoreMsg').innerHTML = `🎈 Your Score: ${score} &nbsp; 🪙 Coins: ${coins}<br>⭐ You fixed ${fixedStars} stars!`;
+            document.getElementById('gameoverText').innerHTML = lives <= 0 ? "⭐ Don't worry! Try again! 🌙" : "✨ Game Finished ✨";
+            document.getElementById('gameOverlay').classList.add('show');
+        }
+        
+        function resetGame() {
+            score = 0; lives = 3; coins = 0; fixedStars = 0; starsNeeded = 5; level = 1; combo = 0; streak = 0;
+            activeHint = 0; activeShield = 0; activeMagnet = 0;
+            items = []; particles = []; floaters = [];
+            generateNewQuestion();
+            updateUI();
+            gameRunning = true;
+        }
+        
+        function startGameSession() {
+            resetGame();
+            gameRunning = true;
+            document.getElementById('startScreen').classList.add('hide');
+            document.getElementById('gameOverlay').classList.remove('show');
+            if(window.spawnInterval) clearTimeout(window.spawnInterval);
+            setTimeout(() => spawnItem(), 600);
+            showKidMessage("🐣 Catch the RIGHT code! Avoid bugs!", 1800);
+        }
+        
+        function goHome() {
+            gameRunning = false;
+            document.getElementById('startScreen').classList.remove('hide');
+            document.getElementById('gameOverlay').classList.remove('show');
+            if(window.spawnInterval) clearTimeout(window.spawnInterval);
+            items = [];
+        }
+        
+        // DRAW EVERYTHING
+        function drawBackground() {
+            const grad = ctx.createLinearGradient(0, 0, 0, H);
+            grad.addColorStop(0, "#ffd6a5");
+            grad.addColorStop(0.6, "#c3e2f7");
+            grad.addColorStop(1, "#f9e0a0");
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, W, H);
+            // draw small stars decoration
+            for(let i=0;i<80;i++){
+                ctx.fillStyle = `rgba(255,235,150,${0.3+Math.sin(Date.now()*0.002+i)*0.2})`;
+                ctx.beginPath();
+                ctx.arc( (i*131)%W, (i*79)%(H*0.6), 2, 0, Math.PI*2);
+                ctx.fill();
+            }
+            // ground grass
+            ctx.fillStyle = "#a7d489";
+            ctx.fillRect(0, groundY, W, H-groundY);
+            ctx.fillStyle = "#88b56e";
+            for(let g=0;g<12;g++) ctx.fillRect(0, groundY-6+g*2, W, 3);
+        }
+        
+        function drawGame() {
+            if(!gameRunning && !document.getElementById('startScreen').classList.contains('hide')) return;
+            drawBackground();
+            // items
+            for(let i=0;i<items.length;i++) {
+                const it = items[i];
+                it.y += it.vy;
+                it.x += it.vx;
+                if(activeMagnet > 0 && it.type === 'code') {
+                    let magnetPull = (playerX + CATCHER_W/2) - it.x;
+                    it.x += magnetPull * 0.045;
+                }
+                ctx.font = `${it.size}px "Segoe UI Emoji", "Courier New", monospace`;
+                ctx.textAlign = "center";
+                ctx.shadowBlur = 8;
+                if(it.type === 'power') {
+                    ctx.fillStyle = "#FFF0B5";
+                    ctx.fillText(it.text, it.x, it.y);
+                } else {
+                    // highlight correct answer if hint active
+                    if(activeHint > 0 && it.isCorrect) {
+                        ctx.fillStyle = "#FFF176";
+                        ctx.shadowColor = "#ffcc44";
+                        ctx.fillText("✨ " + it.text + " ✨", it.x, it.y);
+                    } else {
+                        ctx.fillStyle = it.isCorrect ? "#FFE484" : "#FFB7B2";
+                        ctx.fillText(it.text, it.x, it.y);
+                    }
+                }
+                // collision detection
+                if(it.y + 16 > groundY-12 && it.x > playerX && it.x < playerX + CATCHER_W) {
+                    if(it.type === 'power') {
+                        activatePower(it.power);
+                        items.splice(i,1); i--; continue;
+                    } else {
+                        if(it.isCorrect) applyCorrectItem(it.x, it.y);
+                        else applyWrongItem(it.x, it.y);
+                        items.splice(i,1); i--;
+                    }
+                } else if(it.y > H + 80) {
+                    items.splice(i,1); i--;
+                }
+            }
+            // particles
+            for(let i=0;i<particles.length;i++) {
+                let p = particles[i];
+                p.x += p.vx; p.y += p.vy; p.life -= p.decay;
+                ctx.globalAlpha = p.life;
+                ctx.fillStyle = p.color;
+                ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2); ctx.fill();
+                if(p.life <= 0) particles.splice(i,1), i--;
+            }
+            ctx.globalAlpha = 1;
+            for(let f=0;f<floaters.length;f++) {
+                let fl = floaters[f];
+                fl.y += fl.vy;
+                fl.life -= 0.02;
+                ctx.font = "bold 20px 'Comic Neue'";
+                ctx.fillStyle = fl.color;
+                ctx.fillText(fl.text, fl.x, fl.y);
+                if(fl.life<=0) floaters.splice(f,1), f--;
+            }
+            // player catcher
+            const avatar = heroEmojiMap[hero] || '🧒';
+            ctx.font = "52px 'Segoe UI Emoji'";
+            ctx.fillStyle = "#ffffff";
+            ctx.shadowBlur = 12;
+            ctx.fillText(avatar, playerX + CATCHER_W/2 - 28, groundY - 28);
+            ctx.fillStyle = "#FFCF96";
+            ctx.shadowBlur = 5;
+            ctx.fillRect(playerX, groundY-16, CATCHER_W, CATCHER_H);
+            ctx.fillStyle = "#F2B84E";
+            ctx.fillRect(playerX+8, groundY-20, CATCHER_W-16, 8);
+            if(activeShield > 0) {
+                ctx.beginPath();
+                ctx.arc(playerX + CATCHER_W/2, groundY-34, 48, 0, Math.PI*2);
+                ctx.strokeStyle = "#A4FFB5";
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                ctx.fillStyle = "#A4FFB580";
+                ctx.beginPath(); ctx.arc(playerX + CATCHER_W/2, groundY-34, 44, 0, Math.PI*2); ctx.fill();
+            }
+            ctx.shadowBlur = 0;
+            // powerup timers
+            if(activeHint > 0) activeHint--;
+            if(activeShield > 0) activeShield--;
+            if(activeMagnet > 0) activeMagnet--;
+            updateUI();
+        }
+        
+        function animate() {
+            if(!gameRunning && !document.getElementById('startScreen').classList.contains('hide')) {
+                if(animationId) cancelAnimationFrame(animationId);
+                animationId = null;
+                return;
+            }
+            drawGame();
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        function resizeAndPlace() {
+            W = window.innerWidth;
+            H = window.innerHeight;
+            canvas.width = W; canvas.height = H;
+            groundY = H - 64;
+            playerX = W/2 - CATCHER_W/2;
+            targetX = playerX;
+        }
+        
+        // Event listeners
+        function handleMove(clientX) {
+            if(!gameRunning) return;
+            let rect = canvas.getBoundingClientRect();
+            let canvasX = (clientX - rect.left) * (W / rect.width);
+            targetX = Math.min(W - CATCHER_W, Math.max(0, canvasX - CATCHER_W/2));
+            playerX += (targetX - playerX) * 0.3;
+        }
+        
+        canvas.addEventListener('mousemove', (e) => { if(gameRunning && pointerDown) handleMove(e.clientX); });
+        canvas.addEventListener('mousedown', () => pointerDown = true);
+        window.addEventListener('mouseup', () => pointerDown = false);
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if(gameRunning) handleMove(e.touches[0].clientX); pointerDown=true; }, {passive:false});
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); handleMove(e.touches[0].clientX); pointerDown=true; });
+        window.addEventListener('touchend', () => pointerDown=false);
+        
+        // Hero selection
+        document.querySelectorAll('.hero-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.hero-card').forEach(c=>c.classList.remove('selected'));
+                card.classList.add('selected');
+                hero = card.dataset.hero;
+            });
+        });
+        
+        document.getElementById('startGameBtn').addEventListener('click', () => {
+            startGameSession();
+            animate();
+            resizeAndPlace();
+        });
+        document.getElementById('restartGameBtn').addEventListener('click', () => {
+            document.getElementById('gameOverlay').classList.remove('show');
+            startGameSession();
+            animate();
+        });
+        document.getElementById('homeBtnOverlay').addEventListener('click', () => {
+            document.getElementById('gameOverlay').classList.remove('show');
+            goHome();
+        });
+        window.addEventListener('resize', () => { resizeAndPlace(); if(gameRunning) drawGame(); });
+        resizeAndPlace();
+        generate
