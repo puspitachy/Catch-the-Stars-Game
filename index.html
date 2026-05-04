@@ -893,6 +893,18 @@
 </div>
 
 <script>
+    function kidSpeak(text) {
+    window.speechSynthesis.cancel();
+
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.pitch = 1.8;
+    speech.rate = 0.85;
+
+    const voices = window.speechSynthesis.getVoices();
+    speech.voice = voices[0];
+
+    window.speechSynthesis.speak(speech);
+}
     // ================= 🎤 KID VOICE SYSTEM =================
 function speakCharacter(text) {
     window.speechSynthesis.cancel();
@@ -972,7 +984,7 @@ const voiceLines = {
 function speakRandom(type) {
     const arr = voiceLines[type];
     const text = arr[Math.floor(Math.random() * arr.length)];
-    speakCorrect(text);
+    speakCharacter(text); // ✅ correct
 }
     (function(){
         const canvas = document.getElementById("gameCanvas");
