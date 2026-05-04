@@ -1148,7 +1148,7 @@ function speakRandom(type) {
         function speakHint(correctAnswer) {
     kidSpeak("Hint! Look carefully. The correct code looks like " + correctAnswer);
 }
-}
+
         function playTone(actx, freq, wave, volume, start, length) {
             const osc = actx.createOscillator();
             const gain = actx.createGain();
@@ -1162,28 +1162,37 @@ function speakRandom(type) {
             osc.stop(start + length);
         }
 
-        function playSound(type) {
-            try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                window.audioCtxGlobal = window.audioCtxGlobal || new AudioCtx();
-                const actx = window.audioCtxGlobal;
-                if (actx.state === "suspended") actx.resume();
-                const now = actx.currentTime;
-                const songs = {
-                    start: [[523, "triangle", 0.11, 0, 0.12], [659, "triangle", 0.11, 0.1, 0.12], [784, "triangle", 0.12, 0.2, 0.16]],
-                    catch: [[880, "sine", 0.16, 0, 0.12], [1175, "sine", 0.12, 0.1, 0.12]],
-                    streak: [[784, "square", 0.1, 0, 0.09], [988, "square", 0.1, 0.08, 0.09], [1319, "square", 0.08, 0.16, 0.12]],
-                    wrong: [[330, "sawtooth", 0.13, 0, 0.16], [220, "sawtooth", 0.1, 0.12, 0.2]],
-                    power: [[659, "triangle", 0.14, 0, 0.12], [988, "triangle", 0.1, 0.11, 0.14]],
-                    shield: [[392, "sine", 0.12, 0, 0.16], [392, "sine", 0.08, 0.12, 0.12]],
-                    level: [[523, "triangle", 0.12, 0, 0.12], [659, "triangle", 0.12, 0.11, 0.12], [784, "triangle", 0.12, 0.22, 0.12], [1047, "triangle", 0.1, 0.33, 0.2]],
-                    gameover: [[294, "sine", 0.12, 0, 0.18], [247, "sine", 0.1, 0.16, 0.18], [196, "sine", 0.1, 0.32, 0.26]]
-                };
-                (songs[type] || songs.catch).forEach(([freq, wave, volume, offset, length]) => {
-                    playTone(actx, freq, wave, volume, now + offset, length);
-                });
-            } catch(e) {}
-        }
+        // ===== REAL AUDIO FROM YOUR GITHUB =====
+const sounds = {
+    catch: new Audio("./cheer.wav"),
+    streak: new Audio("./cheer.wav"),
+    wrong: new Audio("./game over cartoon.mp3"),
+    power: new Audio("./bonus.mp3"),
+    shield: new Audio("./bonus.mp3"),
+    level: new Audio("./mixkit-game-level-completed-2059.wav"),
+    gameover: new Audio("./game over cartoon.mp3"),
+    win: new Audio("./winner.mp3"),
+    clock: new Audio("./clock.mp3")
+};
+
+// unlock browser audio
+document.addEventListener("click", () => {
+    Object.values(sounds).forEach(s => {
+        s.volume = 0.5;
+        s.play().then(() => {
+            s.pause();
+            s.currentTime = 0;
+        }).catch(()=>{});
+    });
+}, { once: true });
+
+// NEW playSound function
+function playSound(type){
+    const s = sounds[type];
+    if(!s) return;
+    s.currentTime = 0;
+    s.play().catch(()=>{});
+}
 
         function addParticles(x, y, color, count = 12) {
             for (let i = 0; i < count; i++) {
@@ -1219,7 +1228,8 @@ function speakRandom(type) {
     
     speakCorrect(item); // 🎤 USE THIS
 
-    score += 10;("Yes! " + item.correctAnswer + " is correct. " + item.why);
+    speakCharacter("Yes! " + item.correctAnswer + " is correct. " + item.why);
+score += 10;
 
 
     score += 10;
@@ -1245,8 +1255,7 @@ function speakRandom(type) {
 
         function applyWrongItem(item) {    
 
-    speakCorrect("Ooho! That is not correct. " + item.why);
-
+speakWrong(item);
     if (activeShield > 0) {
                 activeShield = Math.max(0, activeShield - 1);
                 showKidMessage(`🛡️ Shield! Correct was ${item.correctAnswer}.`, 1200);
