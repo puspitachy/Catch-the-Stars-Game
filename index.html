@@ -894,28 +894,71 @@
 
 <script>
     // ================= 🎤 KID VOICE SYSTEM =================
-function kidSpeak(text) {
+function speakCharacter(text) {
     window.speechSynthesis.cancel();
 
     const speech = new SpeechSynthesisUtterance(text);
 
-    speech.lang = "en-US";
-    speech.rate = 0.85;   // slower = clearer
-    speech.pitch = 1.8;   // higher = more child-like
-    speech.volume = 1;
-
     const voices = window.speechSynthesis.getVoices();
 
-    // Try to find a softer/kid-like voice
-    const bestVoice = voices.find(v =>
-        v.name.toLowerCase().includes("female") ||
-        v.name.toLowerCase().includes("google") ||
-        v.name.toLowerCase().includes("samantha")
-    );
+    // 🎯 different voice per character
+    if (hero === "kid") {
+        speech.pitch = 1.9;
+        speech.rate = 0.8;
+    } 
+    else if (hero === "robot") {
+        speech.pitch = 1.1;
+        speech.rate = 0.9;
+    } 
+    else if (hero === "cat") {
+        speech.pitch = 2;
+        speech.rate = 0.85;
+    }
 
-    if (bestVoice) speech.voice = bestVoice;
+    // choose best available voice
+    const voice =
+        voices.find(v => v.name.includes("Google")) ||
+        voices.find(v => v.name.includes("Samantha")) ||
+        voices[0];
+
+    if (voice) speech.voice = voice;
 
     window.speechSynthesis.speak(speech);
+}
+    function speakCorrect(item) {
+    if (hero === "kid") {
+        speakCharacter("Yaaay! This is correct! " + item.why);
+    }
+    else if (hero === "robot") {
+        speakCharacter("Correct. " + item.why);
+    }
+    else if (hero === "cat") {
+        speakCharacter("Meeeow! That’s correct! " + item.why);
+    }
+}
+
+function speakWrong(item) {
+    if (hero === "kid") {
+        speakCharacter("Oh nooo! Try again. " + item.why);
+    }
+    else if (hero === "robot") {
+        speakCharacter("Error detected. " + item.why);
+    }
+    else if (hero === "cat") {
+        speakCharacter("Hiss! That’s wrong! " + item.why);
+    }
+}
+
+function speakHint(correctAnswer) {
+    if (hero === "kid") {
+        speakCharacter("Hmm... look carefully! Maybe " + correctAnswer);
+    }
+    else if (hero === "robot") {
+        speakCharacter("Hint. The correct syntax is similar to " + correctAnswer);
+    }
+    else if (hero === "cat") {
+        speakCharacter("Purr... I think it's something like " + correctAnswer);
+    }
 }
 
 const voiceLines = {
@@ -929,7 +972,7 @@ const voiceLines = {
 function speakRandom(type) {
     const arr = voiceLines[type];
     const text = arr[Math.floor(Math.random() * arr.length)];
-    kidSpeak(text);
+    speakCorrect(text);
 }
     (function(){
         const canvas = document.getElementById("gameCanvas");
@@ -1103,8 +1146,8 @@ function speakRandom(type) {
             }, duration);
         }
         function speakHint(correctAnswer) {
-    const hint = "Hint! Look carefully... something like " + correctAnswer;
-    kidSpeak(hint);
+    kidSpeak("Hint! Look carefully. The correct code looks like " + correctAnswer);
+}
 }
         function playTone(actx, freq, wave, volume, start, length) {
             const osc = actx.createOscillator();
@@ -1173,9 +1216,11 @@ function speakRandom(type) {
         }
 
         function applyCorrectItem(item) {
-            speakRandom("correct"); // already added before
+    
+    speakCorrect(item); // 🎤 USE THIS
 
-    kidSpeak("Great job! " + item.why); // 🎤 ADD THIS
+    score += 10;("Yes! " + item.correctAnswer + " is correct. " + item.why);
+
 
     score += 10;
             coins += 1;
@@ -1199,9 +1244,8 @@ function speakRandom(type) {
         }
 
         function applyWrongItem(item) {    
-            speakRandom("wrong"); // already added before
 
-    kidSpeak("Oops! The correct answer is " + item.correctAnswer + ". " + item.why); // 🎤 ADD THIS
+    speakCorrect("Ooho! That is not correct. " + item.why);
 
     if (activeShield > 0) {
                 activeShield = Math.max(0, activeShield - 1);
@@ -1244,7 +1288,7 @@ function speakRandom(type) {
            if (powerType === "hint") {
     activeHint = 6;
 
-    speakHint(currentChallenge.correct); // 🎤 ADD THIS
+    speakHint(currentChallenge.correct); // 🎤 USE THIS
 
     showKidMessage("💡 HINT! Correct answers glow!", 1300);
 }
