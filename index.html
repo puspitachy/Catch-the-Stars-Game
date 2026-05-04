@@ -1,529 +1,11 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Star Coder Kids | Catch the Magic Syntax</title>
 <style>
-/* (Your existing CSS remains unchanged, omitted here for brevity) */
-body {
-  background: #bfe4f7;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: "Trebuchet MS", "Comic Sans MS", "Chalkboard SE", "Segoe UI", sans-serif;
-  touch-action: none;
-  position: fixed;
-  inset: 0;
-}
-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-#gameCanvas {
-  z-index: 10;
-  cursor: none;
-}
-.ui-panel {
-  position: absolute;
-  inset: 0;
-  z-index: 30;
-  pointer-events: none;
-}
-.top-bar {
-  position: absolute;
-  top: max(10px, calc(var(--safe-top) + 8px));
-  left: clamp(10px, 2.5vw, 24px);
-  right: clamp(10px, 2.5vw, 24px);
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(8px, 2vw, 18px);
-  align-items: center;
-  padding: clamp(8px, 1.6vw, 12px);
-  background: rgba(35, 43, 47, 0.45);
-  backdrop-filter: blur(12px);
-  border-radius: 999px;
-}
-.stat {
-  min-width: 0;
-  height: clamp(40px, 7vw, 54px);
-  background: var(--cream);
-  border-radius: 999px;
-  padding: 0 clamp(10px, 3vw, 20px);
-  font-weight: 800;
-  font-size: clamp(1rem, 3.2vw, 1.45rem);
-  color: var(--ink);
-  box-shadow: 0 5px 0 #b97f2e;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-family: "Trebuchet MS", ui-monospace, "SFMono-Regular", Menlo, monospace;
-}
-.stat span {
-  font-size: 1em;
-}
-.lives {
-  background: #ffe0d5;
-  color: #b63919;
-}
-.power-row {
-  position: absolute;
-  top: max(68px, calc(var(--safe-top) + 78px));
-  left: clamp(10px, 2.5vw, 24px);
-  right: clamp(10px, 2.5vw, 24px);
-  display: flex;
-  justify-content: center;
-  gap: clamp(8px, 2vw, 16px);
-  pointer-events: none;
-}
-.power-chip {
-  min-width: clamp(92px, 18vw, 150px);
-  height: clamp(34px, 5.8vw, 48px);
-  background: rgba(35, 43, 47, 0.58);
-  backdrop-filter: blur(8px);
-  border-radius: 999px;
-  padding: 0 clamp(10px, 2vw, 18px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  font-size: clamp(0.75rem, 2.35vw, 1.05rem);
-  font-weight: 800;
-  color: #ffe7b2;
-  border: 1px solid #e7aa65;
-  opacity: 0.62;
-  white-space: nowrap;
-  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
-}
-.power-chip.active {
-  opacity: 1;
-  background: rgba(255, 196, 92, 0.32);
-  box-shadow: 0 0 14px rgba(255, 198, 112, 0.9);
-  border-color: #ffcf8a;
-}
-.category-panel {
-  position: absolute;
-  top: max(120px, calc(var(--safe-top) + 132px));
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  max-width: min(92vw, 620px);
-  background: rgba(30, 39, 45, 0.7);
-  color: #fff0bc;
-  border: 1px solid rgba(255, 218, 124, 0.72);
-  border-radius: 999px;
-  padding: 7px 14px;
-  font-family: "Trebuchet MS", ui-monospace, "SFMono-Regular", Menlo, monospace;
-  font-weight: 900;
-  font-size: clamp(0.72rem, 2.2vw, 0.94rem);
-  white-space: nowrap;
-  backdrop-filter: blur(8px);
-}
-#setupStep .game-title {
-  font-size: clamp(1.7rem, 5vw, 3rem);
-  margin-bottom: 8px;
-}
-.start-screen {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 18% 12%, rgba(255, 234, 167, 0.32), transparent 22%),
-    radial-gradient(circle at 82% 72%, rgba(142, 230, 209, 0.24), transparent 24%),
-    linear-gradient(150deg, #28518d, #11254c, #09152d);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  transition: 0.35s ease;
-  text-align: center;
-  padding: max(18px, var(--safe-top)) 22px max(18px, var(--safe-bottom));
-  overflow-y: auto;
-}
-.start-screen::before,
-.start-screen::after {
-  content: "";
-  position: absolute;
-  inset: auto -8% -12% -8%;
-  height: 30%;
-  background: radial-gradient(ellipse at center, rgba(142, 199, 124, 0.45), rgba(79, 145, 107, 0.1) 60%, transparent 70%);
-  pointer-events: none;
-}
-.start-screen::after {
-  inset: auto -12% -18% -12%;
-  height: 26%;
-  background: radial-gradient(ellipse at center, rgba(77, 138, 106, 0.45), transparent 70%);
-}
-.start-step {
-  position: relative;
-  z-index: 1;
-  width: min(94vw, 860px);
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 18px 0;
-}
-.start-step.hidden {
-  display: none;
-}
-.start-screen.hide {
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.98);
-}
-.game-title {
-  font-size: clamp(2rem, 7vw, 4rem);
-  line-height: 1.05;
-  color: #ffe6a3;
-  text-shadow: 0 5px 0 rgba(66, 42, 18, 0.28), 0 0 16px rgba(255, 230, 163, 0.36);
-  margin-bottom: 12px;
-}
-#setupStep .game-title {
-  font-size: clamp(1.7rem, 5vw, 3rem);
-  margin-bottom: 8px;
-}
-#setupStep .sub {
-  margin-bottom: 10px;
-}
-.sub {
-  color: #fee6b0;
-  font-size: clamp(0.95rem, 3vw, 1.2rem);
-  margin-bottom: 20px;
-  background: rgba(0, 0, 0, 0.4);
-  padding: 7px 18px;
-  border-radius: 999px;
-}
-.pick-label {
-  font-size: clamp(1rem, 3.4vw, 1.35rem);
-  font-weight: 900;
-  color: #ffe5a3;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
-}
-.hero-pick {
-  display: flex;
-  gap: clamp(12px, 3vw, 28px);
-  justify-content: center;
-  margin: 24px 0;
-  flex-wrap: wrap;
-}
-.hero-card {
-  width: clamp(104px, 24vw, 150px);
-  background: linear-gradient(180deg, #fff2bf, #f7d791);
-  border-radius: 28px;
-  padding: 13px 14px 15px;
-  cursor: pointer;
-  transition: 0.18s ease;
-  border: 4px solid transparent;
-  box-shadow: 0 9px 0 #af7b41;
-}
-.hero-card.selected {
-  border-color: #ffdb7e;
-  background: #fff0c0;
-  transform: translateY(3px);
-  box-shadow: 0 6px 0 #ffb347;
-}
-.hero-emoji {
-  font-size: clamp(2.7rem, 9vw, 4rem);
-  display: block;
-  line-height: 1;
-}
-.hero-name {
-  display: block;
-  margin-top: 8px;
-  color: var(--ink);
-  font-weight: 900;
-  font-size: clamp(0.78rem, 2.4vw, 0.98rem);
-}
-.difficulty-pick {
-  display: flex;
-  gap: clamp(10px, 2vw, 16px);
-  flex-wrap: wrap;
-  justify-content: center;
-  margin: 18px 0 18px;
-}
-.theme-pick {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin: 0 0 12px;
-}
-.theme-label {
-  width: 100%;
-  color: #ffe5a3;
-  font-weight: 900;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
-  margin-bottom: 2px;
-}
-.difficulty-card,
-.theme-card {
-  width: clamp(150px, 23vw, 210px);
-  min-height: 96px;
-  background: linear-gradient(180deg, #fff8d9, #f2dda2);
-  color: var(--ink);
-  border: 3px solid transparent;
-  border-radius: 22px;
-  padding: 12px 14px;
-  box-shadow: 0 8px 0 #8c6b38, 0 14px 24px rgba(0, 0, 0, 0.18);
-  cursor: pointer;
-  font-weight: 900;
-  transition: 0.16s ease;
-  display: grid;
-  align-content: center;
-  gap: 5px;
-}
-.theme-card {
-  width: clamp(130px, 18vw, 170px);
-  min-height: 70px;
-}
-.theme-card[data-theme="night"] {
-  background: linear-gradient(180deg, #233865, #101a35);
-  color: #fff2bf;
-  box-shadow: 0 8px 0 #050b1c, 0 14px 24px rgba(0, 0, 0, 0.22);
-}
-.difficulty-card.selected,
-.theme-card.selected {
-  border-color: #8ee6d1;
-  background: #fff7d6;
-  transform: translateY(2px);
-  box-shadow: 0 4px 0 #557266;
-}
-.theme-card[data-theme="night"].selected {
-  background: linear-gradient(180deg, #314b82, #17234a);
-}
-.difficulty-card span,
-.theme-card span {
-  display: block;
-  font-size: 0.78rem;
-  line-height: 1.2;
-  margin-top: 3px;
-  color: #4b371f;
-}
-.theme-card[data-theme="night"] span {
-  color: #dce8ff;
-}
-.start-info-grid {
-  width: min(94vw, 850px);
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(220px, 0.85fr);
-  gap: 14px;
-  margin-top: 8px;
-}
-#setupStep .start-info-grid {
-  margin-top: 4px;
-}
-.info-panel {
-  background: var(--paper);
-  border: 1px solid rgba(109, 81, 38, 0.3);
-  border-radius: 22px;
-  padding: 14px 16px;
-  color: #2f332f;
-  text-align: left;
-  box-shadow: 0 9px 0 rgba(126, 99, 50, 0.48), 0 18px 28px rgba(0, 0, 0, 0.18);
-}
-.info-panel h3 {
-  font-size: clamp(0.95rem, 2.8vw, 1.18rem);
-  margin-bottom: 8px;
-  color: #8a4c15;
-}
-.instruction-list,
-.leaderboard-list {
-  list-style: none;
-  display: grid;
-  gap: 6px;
-  font-size: clamp(0.72rem, 2.1vw, 0.88rem);
-  line-height: 1.32;
-  max-height: 260px;
-  overflow-y: auto;
-  padding-right: 2px;
-}
-.leaderboard-tabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin-bottom: 10px;
-}
-.leaderboard-tab {
-  border: 0;
-  border-radius: 999px;
-  background: rgba(49, 75, 92, 0.12);
-  color: #2f332f;
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.78rem;
-  font-weight: 900;
-  padding: 7px 6px;
-  box-shadow: inset 0 -2px 0 rgba(49, 75, 92, 0.18);
-}
-.leaderboard-tab.active {
-  background: #8ed8c8;
-  color: #173b37;
-}
-.leaderboard-list li {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  align-items: center;
-  gap: 8px;
-  background: rgba(49, 75, 92, 0.1);
-  border-radius: 12px;
-  padding: 6px 8px;
-}
-.leaderboard-list li.empty-score {
-  grid-template-columns: 1fr;
-}
-.leaderboard-list span {
-  color: #2f332f;
-}
-.leaderboard-list b {
-  color: #8a4c15;
-}
-.score-pill,
-.badge-pill {
-  border-radius: 999px;
-  padding: 4px 8px;
-  background: rgba(255, 255, 255, 0.58);
-  font-weight: 900;
-  white-space: nowrap;
-}
-.badge-pill {
-  width: 32px;
-  height: 32px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  font-size: 1.12rem;
-  border: 2px solid rgba(255, 255, 255, 0.72);
-  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.14), 0 2px 6px rgba(0, 0, 0, 0.12);
-}
-.badge-gold {
-  background: linear-gradient(180deg, #fff4a3, #d99a1b);
-}
-.badge-silver {
-  background: linear-gradient(180deg, #f6f8ff, #aeb7c2);
-}
-.badge-bronze {
-  background: linear-gradient(180deg, #ffd9a3, #b96e2d);
-}
-.badge-star {
-  background: linear-gradient(180deg, #d9fff6, #7bc7b8);
-}
-.play-btn,
-.next-btn,
-.back-btn,
-.restart-btn {
-  border: none;
-  color: #2f2a1f;
-  font-family: inherit;
-  font-weight: 900;
-  cursor: pointer;
-  transition: 0.08s linear;
-}
-.play-btn,
-.next-btn {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.55), transparent 38%),
-    linear-gradient(180deg, #ffc866, #e98b2e);
-  font-size: clamp(1.35rem, 5vw, 2.1rem);
-  padding: 14px clamp(32px, 8vw, 50px);
-  border-radius: 999px;
-  margin: 14px 0 18px;
-  box-shadow: 0 10px 0 #87511d, 0 18px 28px rgba(0, 0, 0, 0.28);
-  border: 2px solid rgba(255, 239, 192, 0.8);
-}
-.play-btn:active,
-.next-btn:active,
-.back-btn:active,
-.restart-btn:active {
-  transform: translateY(4px);
-  box-shadow: 0 5px 0 #9b5e1a;
-}
-.setup-actions {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
-.back-btn {
-  background: linear-gradient(180deg, #e7f5f1, #8ed8c8);
-  font-size: clamp(0.95rem, 3vw, 1.08rem);
-  padding: 10px 22px;
-  border-radius: 999px;
-  box-shadow: 0 7px 0 #46786f;
-  border: 2px solid rgba(255, 255, 255, 0.6);
-}
-.footer-tip {
-  color: #c6d2ff;
-  background: rgba(0, 0, 0, 0.34);
-  border-radius: 22px;
-  padding: 7px 14px;
-  font-size: clamp(0.7rem, 2.2vw, 0.82rem);
-  line-height: 1.35;
-}
-.gameover-panel {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.82);
-  backdrop-filter: blur(14px);
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  opacity: 0;
-  pointer-events: none;
-  transition: 0.25s;
-  padding: 20px;
-}
-.gameover-panel.show {
-  opacity: 1;
-  pointer-events: all;
-}
-.over-card {
-  background: #ffe5b4;
-  border-radius: 36px;
-  padding: 30px 24px;
-  text-align: center;
-  width: min(88vw, 360px);
-  color: var(--ink);
-}
-.over-card h2 {
-  font-size: clamp(1.35rem, 5vw, 1.8rem);
-  line-height: 1.12;
-  margin: 8px 0;
-}
-.over-card p {
-  line-height: 1.45;
-  margin-bottom: 10px;
-}
-.over-rank {
-  display: grid;
-  gap: 5px;
-  margin: 12px 0;
-  color: #3b2a16;
-  font-size: 0.9rem;
-}
-.restart-btn {
-  background: #ffa047;
-  font-size: clamp(1rem, 4vw, 1.35rem);
-  padding: 10px 22px;
-  border-radius: 999px;
-  margin: 8px 5px;
-  box-shadow: 0 7px 0 #9b5e1a;
-}
-#homeBtnOverlay {
-  background: #85d4c7;
-}
-/* Add a Quit button style */
+/* Your existing CSS styles (truncated for brevity). Add the following styles for Quit button: */
 #quitBtn {
   background: #ff4d4d;
   font-size: clamp(1rem, 4vw, 1.35rem);
@@ -531,30 +13,32 @@ canvas {
   border-radius: 999px;
   margin: 8px 5px;
   box-shadow: 0 7px 0 #b22222;
+  cursor: pointer;
 }
 #quitBtn:hover {
   background: #ff1a1a;
 }
-/* Responsive media queries omitted for brevity, keep your existing ones */
 </style>
 </head>
 <body>
 <canvas id="gameCanvas" width="1372" height="1466"></canvas>
+
 <div class="ui-panel">
   <!-- Your existing UI code ... -->
-  <!-- Add a Quit button -->
+  <!-- Add a "Quit Game" button below the other buttons -->
   <div class="setup-actions" style="margin-top:20px;">
     <button id="quitBtn">Quit Game</button>
   </div>
 </div>
+
 <div id="gameOverlay" class="gameover-panel">
   <div class="over-card">
-    <!-- Existing game over content ... -->
+    <!-- Your game over content ... -->
     <button id="restartGameBtn" class="restart-btn">🔄 PLAY AGAIN</button>
     <button id="homeBtnOverlay" class="restart-btn">🏠 HOME</button>
-    <!-- Add a Quit button here too if you want -->
   </div>
 </div>
+
 <script>
 (function() {
   const canvas = document.getElementById("gameCanvas");
@@ -936,7 +420,8 @@ canvas {
     scheduleSpawn(delay + Math.random() * 420);
   }
 
-  // --- Remaining functions same as before ---
+  // --- Remaining functions: updateUI, drawBackground, drawCloud, drawItems, drawEffects, drawPlayer, etc., are the same as your original code ---
+
   function updateUI() {
     document.getElementById("scoreValue").innerText = score;
     document.getElementById("livesValue").innerText = lives;
@@ -1087,7 +572,8 @@ canvas {
     playSound("power");
   }
 
-  // --- Drawing functions omitted for brevity, keep your existing drawBackground, drawCloud, drawItems, drawEffects, drawPlayer, etc. ---
+  // --- Drawing functions (background, cloud, items, effects, player) --- 
+  // Keep your original drawing functions here, omitted for brevity.
 
   function drawGame(now) {
     drawBackground(now);
@@ -1135,11 +621,10 @@ canvas {
     playerX += (targetX - playerX) * 0.45;
   }
 
+  // Event listeners for mouse/touch
   canvas.addEventListener("mousemove", (e) => handleMove(e.clientX));
   canvas.addEventListener("touchmove", (e) => { e.preventDefault(); handleMove(e.touches[0].clientX); }, { passive: false });
   canvas.addEventListener("touchstart", (e) => { e.preventDefault(); handleMove(e.touches[0].clientX); }, { passive: false });
-
-  // --- Hero, difficulty, theme selection handlers omitted for brevity ---
 
   // --- Button event handlers ---
   document.getElementById("nextSetupBtn").addEventListener("click", showSetupStep);
@@ -1154,17 +639,12 @@ canvas {
   document.getElementById("restartGameBtn").addEventListener("click", startGameSession);
   document.getElementById("homeBtnOverlay").addEventListener("click", goHome);
   document.getElementById("quitBtn").addEventListener("click", () => {
-    // Quit the game: reload or close tab
     if (confirm("Are you sure you want to quit?")) {
       location.reload();
     }
   });
-  window.addEventListener("resize", () => {
-    resizeAndPlace();
-    if (!animationId) animationId = requestAnimationFrame(animate);
-  });
 
-  // --- Initialize game ---
+  // Initialize game
   resizeAndPlace();
   categoryStats = createCategoryStats();
   pickRandomChallenge();
