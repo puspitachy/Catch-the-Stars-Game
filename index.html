@@ -898,18 +898,22 @@ function kidSpeak(text) {
     window.speechSynthesis.cancel();
 
     const speech = new SpeechSynthesisUtterance(text);
+
     speech.lang = "en-US";
-    speech.rate = 0.9;
-    speech.pitch = 1.6;
+    speech.rate = 0.85;   // slower = clearer
+    speech.pitch = 1.8;   // higher = more child-like
     speech.volume = 1;
 
     const voices = window.speechSynthesis.getVoices();
-    const kidVoice = voices.find(v =>
+
+    // Try to find a softer/kid-like voice
+    const bestVoice = voices.find(v =>
         v.name.toLowerCase().includes("female") ||
-        v.name.toLowerCase().includes("child")
+        v.name.toLowerCase().includes("google") ||
+        v.name.toLowerCase().includes("samantha")
     );
 
-    if (kidVoice) speech.voice = kidVoice;
+    if (bestVoice) speech.voice = bestVoice;
 
     window.speechSynthesis.speak(speech);
 }
@@ -1098,7 +1102,10 @@ function speakRandom(type) {
                 toast.style.transform = "translateX(-50%) translateY(-16px)";
             }, duration);
         }
-
+        function speakHint(correctAnswer) {
+    const hint = "Hint! Look carefully... something like " + correctAnswer;
+    kidSpeak(hint);
+}
         function playTone(actx, freq, wave, volume, start, length) {
             const osc = actx.createOscillator();
             const gain = actx.createGain();
@@ -1166,8 +1173,11 @@ function speakRandom(type) {
         }
 
         function applyCorrectItem(item) {
-            speakRandom("correct"); // ✅ ADD THIS LINE
-            score += 10;
+            speakRandom("correct"); // already added before
+
+    kidSpeak("Great job! " + item.why); // 🎤 ADD THIS
+
+    score += 10;
             coins += 1;
             streak++;
             fixedStars++;
@@ -1189,9 +1199,11 @@ function speakRandom(type) {
         }
 
         function applyWrongItem(item) {    
-            speakRandom("wrong"); // ✅ ADD THIS
+            speakRandom("wrong"); // already added before
 
-            if (activeShield > 0) {
+    kidSpeak("Oops! The correct answer is " + item.correctAnswer + ". " + item.why); // 🎤 ADD THIS
+
+    if (activeShield > 0) {
                 activeShield = Math.max(0, activeShield - 1);
                 showKidMessage(`🛡️ Shield! Correct was ${item.correctAnswer}.`, 1200);
                 addFloatingText(item.x, item.y - 20, "🛡️ BLOCK!", "#88ffaa");
@@ -1229,10 +1241,13 @@ function speakRandom(type) {
         }
 
         function activatePower(powerType) {
-            if (powerType === "hint") {
-                activeHint = 6;
-                showKidMessage("💡 HINT! Correct answers glow!", 1300);
-            }
+           if (powerType === "hint") {
+    activeHint = 6;
+
+    speakHint(currentChallenge.correct); // 🎤 ADD THIS
+
+    showKidMessage("💡 HINT! Correct answers glow!", 1300);
+}
             if (powerType === "shield") {
                 activeShield = 3;
                 showKidMessage("🛡️ SHIELD READY!", 1200);
