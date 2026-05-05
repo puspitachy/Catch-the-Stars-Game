@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Code Catcher Jr ⚙️</title>
+<title>Code Catcher JR — Catch the Code!</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap');
 :root {
@@ -40,9 +40,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
 .tut-icon{font-size:2rem;display:block;margin-bottom:.4rem;}
 .tut-label{font-weight:800;font-size:.85rem;color:var(--accent);margin-bottom:.25rem;}
 .tut-desc{font-size:.75rem;color:var(--muted);line-height:1.4;}
-.tut-controls{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin:.8rem 0;}
-.ctrl-card{background:rgba(0,229,255,.08);border:2px solid rgba(0,229,255,.3);border-radius:14px;padding:.6rem 1rem;text-align:center;font-size:.8rem;font-weight:700;}
-.ctrl-icon{font-size:1.8rem;display:block;margin-bottom:.3rem;}
+.btn-row{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:.8rem;}
 
 /* STAGE SELECT */
 #stageScreen{background:radial-gradient(ellipse at 50% 0%,#1a2040,#0d0f1a 70%);padding:1rem;overflow-y:auto;}
@@ -60,12 +58,20 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
 .stage-name{font-family:'Fredoka One',cursive;font-size:1.1rem;}
 .stage-info{font-size:.72rem;color:var(--muted);margin-top:.3rem;line-height:1.4;}
 .stage-stars{font-size:.95rem;margin-top:.4rem;letter-spacing:1px;}
+.lb-box{background:var(--panel2);border-radius:14px;padding:.8rem;width:min(95vw,680px);margin:.5rem 0;}
+.lb-box h3{color:var(--accent);font-family:'Fredoka One',cursive;margin-bottom:.5rem;font-size:1rem;}
+.lb-row{display:flex;align-items:center;gap:.6rem;padding:.35rem .5rem;border-radius:8px;font-size:.8rem;font-weight:700;}
+.lb-row:nth-child(odd){background:rgba(255,255,255,.04);}
+.lb-rank{width:1.5rem;color:var(--yellow);}
+.lb-name{flex:1;}
+.lb-score{color:var(--yellow);}
+.lb-tabs{display:flex;gap:.4rem;margin-bottom:.6rem;}
+.lb-tab{background:rgba(255,255,255,.06);border:none;color:var(--muted);font:inherit;font-weight:800;font-size:.75rem;padding:.3rem .8rem;border-radius:999px;cursor:pointer;}
+.lb-tab.active{background:var(--accent);color:#000;}
 
 /* GAME SCREEN */
 #gameScreen{z-index:10;flex-direction:column;}
 canvas{position:fixed;inset:0;width:100%;height:100%;display:block;}
-
-/* TOP BAR */
 .topbar{position:fixed;top:0;left:0;right:0;z-index:30;background:rgba(10,12,26,.93);backdrop-filter:blur(8px);border-bottom:2px solid rgba(0,229,255,.15);padding:.4rem .6rem;display:flex;align-items:center;gap:.4rem;flex-wrap:nowrap;}
 .hstat{background:var(--panel2);border-radius:10px;padding:.28rem .6rem;font-weight:800;font-size:.82rem;display:flex;align-items:center;gap:.25rem;border:1px solid rgba(255,255,255,.07);white-space:nowrap;}
 .hstat.lives{color:var(--red);}
@@ -74,16 +80,10 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;}
 .topbar-right{margin-left:auto;display:flex;gap:.35rem;}
 .ibtn{background:var(--panel2);border:1.5px solid rgba(255,255,255,.1);border-radius:9px;padding:.28rem .48rem;cursor:pointer;font-size:1rem;transition:.15s;color:var(--text);}
 .ibtn:hover{border-color:var(--accent);}
-
-/* POWER BAR */
 .powerbar{position:fixed;top:50px;left:0;right:0;z-index:28;background:rgba(10,12,26,.85);border-bottom:1px solid rgba(255,255,255,.06);padding:.28rem .6rem;display:flex;align-items:center;gap:.4rem;}
 .pchip{display:flex;align-items:center;gap:.3rem;background:var(--panel2);border:1.5px solid rgba(255,255,255,.1);border-radius:999px;padding:.22rem .65rem;font-size:.75rem;font-weight:800;color:var(--muted);cursor:pointer;transition:.18s;white-space:nowrap;}
 .pchip:hover{border-color:var(--accent);color:var(--text);}
-.pchip.active{color:var(--yellow);border-color:var(--yellow);background:rgba(255,229,102,.12);box-shadow:0 0 10px rgba(255,229,102,.35);}
-.pchip.hint-btn{cursor:pointer;}
-.hint-uses{font-size:.68rem;color:var(--muted);margin-left:auto;}
-
-/* PROGRESS BAR */
+.pchip.active{color:var(--yellow);border-color:var(--yellow);background:rgba(255,229,102,.12);}
 .progbar{position:fixed;top:84px;left:0;right:0;z-index:27;padding:.28rem .7rem;background:rgba(10,12,26,.8);}
 .prog-label{display:flex;justify-content:space-between;font-size:.7rem;font-weight:800;color:var(--muted);margin-bottom:.22rem;}
 .prog-bg{background:#1a1f38;border-radius:999px;height:9px;overflow:hidden;}
@@ -91,860 +91,371 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;}
 .star-row{display:flex;gap:.25rem;justify-content:center;margin-top:.22rem;}
 .star-pip{font-size:.95rem;transition:.2s;}
 
-/* COUNTDOWN */
+/* Countdown */
 #countdown{position:fixed;inset:0;z-index:45;display:flex;align-items:center;justify-content:center;flex-direction:column;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);}
 #countdown.hidden{display:none;}
 .cd-number{font-family:'Fredoka One',cursive;font-size:clamp(5rem,18vw,9rem);color:var(--yellow);text-shadow:0 0 40px rgba(255,229,102,.7);animation:cdpop .6s cubic-bezier(.36,1.7,.5,1);}
 @keyframes cdpop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
 .cd-msg{color:var(--accent);font-weight:800;font-size:clamp(.9rem,2.5vw,1.2rem);margin-top:.5rem;text-align:center;padding:0 1rem;}
 
-/* TOAST */
+/* Toast */
 #toast{position:fixed;top:130px;left:50%;transform:translateX(-50%);z-index:40;pointer-events:none;opacity:0;transition:.25s;min-width:200px;max-width:min(88vw,460px);}
 .toast-inner{background:var(--panel);border:2px solid var(--accent);border-radius:16px;padding:.65rem 1rem;font-weight:800;font-size:clamp(.78rem,2.5vw,.9rem);text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.5);line-height:1.4;}
 .tc{border-color:#00c853;color:#69ff85;}
 .tw{border-color:var(--red);color:#ff8099;}
 .ti{border-color:var(--accent);color:var(--accent);}
 
-/* OVERLAYS */
+/* Overlays */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(14px);z-index:55;display:flex;align-items:center;justify-content:center;flex-direction:column;}
 .overlay.hidden{display:none;}
 .card{background:var(--panel);border-radius:26px;padding:1.8rem 1.5rem;text-align:center;width:min(90vw,400px);}
 .card h2{font-family:'Fredoka One',cursive;font-size:1.8rem;margin:.4rem 0;}
 .card p{font-size:.88rem;color:var(--muted);line-height:1.5;margin-bottom:.8rem;}
-
-/* BUTTONS */
 .btn{border:none;font-family:'Nunito',sans-serif;font-weight:900;cursor:pointer;border-radius:999px;transition:.12s;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;font-size:inherit;}
 .btn:active{transform:translateY(3px) scale(.97);}
-.btn-primary{background:linear-gradient(135deg,#ffe566,#ff9f2e);color:#1a0f00;font-size:clamp(.95rem,2.8vw,1.2rem);padding:.75rem 2rem;box-shadow:0 6px 0 #8a5200,0 12px 20px rgba(0,0,0,.35);}
+.btn-primary{background:linear-gradient(135deg,#ffe566,#ff9f2e);color:#1a0f00;font-size:clamp(.95rem,2.8vw,1.2rem);padding:.75rem 2rem;box-shadow:0 6px 0 #8a5200;}
 .btn-secondary{background:var(--panel2);color:var(--accent);font-size:.9rem;padding:.55rem 1.3rem;border:2px solid var(--accent);}
-.btn-danger{background:linear-gradient(135deg,#ff4d6d,#c41a3c);color:#fff;font-size:.88rem;padding:.5rem 1.2rem;box-shadow:0 4px 0 #7a0020;}
-.btn-green{background:linear-gradient(135deg,#00c853,#00962e);color:#fff;font-size:.88rem;padding:.5rem 1.2rem;box-shadow:0 4px 0 #005a1a;}
-.btn-row{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:.8rem;}
 
-/* LEVEL COMPLETE / STAGE COMPLETE */
-#lvlCompleteOverlay .card h2{color:var(--yellow);}
-#stageCompleteOverlay .card h2{color:#69ff85;font-size:2.2rem;}
-.big-stars{font-size:2.4rem;letter-spacing:4px;margin:.5rem 0;animation:pop .5s cubic-bezier(.36,1.6,.5,1);}
-@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-.badge-pill{display:inline-block;background:linear-gradient(135deg,var(--yellow),#ff9f2e);color:#1a0f00;font-family:'Fredoka One',cursive;font-size:1rem;padding:.4rem 1.5rem;border-radius:999px;margin:.5rem auto;box-shadow:0 5px 0 #8a5200;}
+/* Side Controls */
+.side-controls{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:100;background:rgba(10,12,26,.9);backdrop-filter:blur(12px);border-radius:28px;padding:12px 8px;display:flex;flex-direction:column;gap:12px;border:1px solid rgba(0,229,255,.3);}
+.side-btn{background:var(--panel2);border:none;border-radius:50px;width:44px;height:44px;font-size:1.5rem;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;color:var(--text);}
+.side-btn:hover{background:var(--accent);color:#000;}
+.volume-slider-container{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--panel2);padding:8px 4px;border-radius:40px;}
+.vol-icon{font-size:1rem;margin-bottom:4px;}
+input[type=range]{writing-mode:bt-lr;width:60px;height:4px;-webkit-appearance:slider-vertical;background:var(--accent);border-radius:4px;}
 
-/* GAME OVER */
-#gameOverOverlay .card{border:2px solid var(--red);}
-#gameOverOverlay .card h2{color:var(--red);}
+/* Instruction Modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;display:flex;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:.2s;}
+.modal.show{visibility:visible;opacity:1;}
+.modal-content{background:var(--panel);border-radius:32px;padding:1.5rem;width:min(90vw,500px);max-height:80vh;overflow-y:auto;border:2px solid var(--accent);}
+.modal-content h2{color:var(--yellow);margin-bottom:1rem;}
+.modal-content ul{list-style:none;padding:0;}
+.modal-content li{margin:.8rem 0;display:flex;gap:10px;align-items:center;font-size:.9rem;border-bottom:1px solid rgba(255,255,255,.1);padding:.5rem;}
 
-/* PAUSE */
-#pauseOverlay .card h2{color:var(--yellow);}
-
-/* LEADERBOARD */
-.lb-box{background:var(--panel2);border-radius:14px;padding:.8rem;width:min(95vw,680px);margin:.5rem 0;}
-.lb-box h3{color:var(--accent);font-family:'Fredoka One',cursive;margin-bottom:.5rem;font-size:1rem;}
-.lb-row{display:flex;align-items:center;gap:.6rem;padding:.35rem .5rem;border-radius:8px;font-size:.8rem;font-weight:700;}
-.lb-row:nth-child(odd){background:rgba(255,255,255,.04);}
-.lb-rank{width:1.5rem;color:var(--yellow);font-family:'Fredoka One',cursive;}
-.lb-name{flex:1;}
-.lb-score{color:var(--yellow);font-family:'Fredoka One',cursive;}
-.lb-tabs{display:flex;gap:.4rem;margin-bottom:.6rem;}
-.lb-tab{background:rgba(255,255,255,.06);border:none;color:var(--muted);font:inherit;font-weight:800;font-size:.75rem;padding:.3rem .8rem;border-radius:999px;cursor:pointer;}
-.lb-tab.active{background:var(--accent);color:#000;}
-
-@media(max-width:480px){
-  .stage-grid{grid-template-columns:1fr 1fr 1fr;}
-  .tut-grid{grid-template-columns:1fr 1fr;}
-  .topbar{flex-wrap:wrap;}
-}
+.btn-close{background:var(--accent);color:#000;border:none;padding:.5rem 1.5rem;border-radius:40px;margin-top:1rem;font-weight:800;cursor:pointer;}
 </style>
 </head>
 <body>
 
+<!-- Title Screen -->
 <div class="screen" id="titleScreen">
   <div class="machine-anim" id="titleMachine">⚙️</div>
   <div class="title-logo">CODE CATCHER JR</div>
   <div class="title-sub">⚡ Feed the machine. Learn Python!</div>
-  <div style="font-size:.82rem;font-weight:700;color:var(--muted);margin-bottom:.4rem;">Pick your buddy:</div>
   <div class="buddy-row">
     <div class="buddy-card sel" data-hero="kid"><span class="buddy-emoji">🧒</span><span class="buddy-name">Sunny</span></div>
     <div class="buddy-card" data-hero="robot"><span class="buddy-emoji">🤖</span><span class="buddy-name">Byte</span></div>
     <div class="buddy-card" data-hero="cat"><span class="buddy-emoji">🐱</span><span class="buddy-name">Pixel</span></div>
   </div>
   <button class="btn btn-primary" id="titlePlayBtn">⚡ LET'S PLAY!</button>
-  <div style="color:var(--muted);font-size:.72rem;margin-top:.6rem;">Move your mouse or finger to control!</div>
 </div>
 
+<!-- Tutorial -->
 <div class="screen hidden" id="tutorialScreen">
   <div class="tut-title">🎮 How to Play!</div>
   <div class="tut-grid">
-    <div class="tut-card"><span class="tut-icon">🖱️</span><span class="tut-label">Move</span><span class="tut-desc">Move mouse or finger left & right</span></div>
-    <div class="tut-card"><span class="tut-icon">⌨️</span><span class="tut-label">Arrow Keys</span><span class="tut-desc">← → arrow keys work too!</span></div>
-    <div class="tut-card"><span class="tut-icon">✅</span><span class="tut-label">Correct Code</span><span class="tut-desc">Catch the RIGHT code — it glows blue!</span></div>
-    <div class="tut-card"><span class="tut-icon">❌</span><span class="tut-label">Wrong Code</span><span class="tut-desc">Avoid the red ones — bugs steal hearts!</span></div>
-    <div class="tut-card"><span class="tut-icon">❤️</span><span class="tut-label">Hearts</span><span class="tut-desc">You have hearts. Lose them all = game over!</span></div>
-    <div class="tut-card"><span class="tut-icon">⭐</span><span class="tut-label">Stars</span><span class="tut-desc">Catch correct ones to fill your stars!</span></div>
-    <div class="tut-card"><span class="tut-icon">💡</span><span class="tut-label">Hint</span><span class="tut-desc">Tap HINT at top to see which is correct!</span></div>
-    <div class="tut-card"><span class="tut-icon">🏆</span><span class="tut-label">Goal</span><span class="tut-desc">Fill all stars to pass the level!</span></div>
+    <div class="tut-card"><span class="tut-icon">🖱️</span><span class="tut-label">Move</span><span class="tut-desc">Move mouse or finger</span></div>
+    <div class="tut-card"><span class="tut-icon">⌨️</span><span class="tut-label">Arrow Keys</span><span class="tut-desc">← → move left/right</span></div>
+    <div class="tut-card"><span class="tut-icon">✅</span><span class="tut-label">Correct Code</span><span class="tut-desc">Catch right code +10</span></div>
+    <div class="tut-card"><span class="tut-icon">❌</span><span class="tut-label">Wrong Code</span><span class="tut-desc">Avoid bugs - lose heart</span></div>
+    <div class="tut-card"><span class="tut-icon">💡</span><span class="tut-label">HINT</span><span class="tut-desc">Glows correct answer</span></div>
+    <div class="tut-card"><span class="tut-icon">🏆</span><span class="tut-label">Goal</span><span class="tut-desc">Fill stars to pass</span></div>
   </div>
-  <div class="btn-row">
-    <button class="btn btn-secondary" id="tutBackBtn">← Back</button>
-    <button class="btn btn-primary" id="tutNextBtn">Got it! Pick Stage ▶</button>
-  </div>
+  <div class="btn-row"><button class="btn btn-secondary" id="tutBackBtn">← Back</button><button class="btn btn-primary" id="tutNextBtn">Pick Stage ▶</button></div>
 </div>
 
-<div class="screen hidden" id="stageScreen" style="overflow-y:auto;padding:1rem;">
+<!-- Stage Select -->
+<div class="screen hidden" id="stageScreen">
   <div class="stage-title">🗺️ Pick a Stage</div>
-  <div style="color:var(--muted);font-size:.8rem;margin-bottom:.6rem;text-align:center;">3 levels in each stage. Clear all 3 to earn your badge!</div>
   <div class="stage-grid">
-    <div class="stage-card easy" data-stage="easy">
-      <div class="stage-icon">🌱</div>
-      <div class="stage-name" style="color:#4fc3f7;">Easy</div>
-      <div class="stage-info">Slow & calm · 5 hearts · 1 item at a time</div>
-      <div class="stage-stars" id="easyStars">☆☆☆</div>
-    </div>
-    <div class="stage-card medium" data-stage="medium">
-      <div class="stage-icon">⚡</div>
-      <div class="stage-name" style="color:var(--yellow);">Medium</div>
-      <div class="stage-info">A bit faster · 3 hearts · hints unlocked!</div>
-      <div class="stage-stars" id="mediumStars">☆☆☆</div>
-    </div>
-    <div class="stage-card hard" data-stage="hard">
-      <div class="stage-icon">🔥</div>
-      <div class="stage-name" style="color:var(--red);">Hard</div>
-      <div class="stage-info">Fast & tricky · 2 hearts · all powers!</div>
-      <div class="stage-stars" id="hardStars">☆☆☆</div>
-    </div>
+    <div class="stage-card easy" data-stage="easy"><div class="stage-icon">🌱</div><div class="stage-name" style="color:#4fc3f7;">Easy</div><div class="stage-info">5 hearts · slow</div><div class="stage-stars" id="easyStars">☆☆☆</div></div>
+    <div class="stage-card medium" data-stage="medium"><div class="stage-icon">⚡</div><div class="stage-name" style="color:var(--yellow);">Medium</div><div class="stage-info">3 hearts · hints</div><div class="stage-stars" id="mediumStars">☆☆☆</div></div>
+    <div class="stage-card hard" data-stage="hard"><div class="stage-icon">🔥</div><div class="stage-name" style="color:var(--red);">Hard</div><div class="stage-info">2 hearts · fast</div><div class="stage-stars" id="hardStars">☆☆☆</div></div>
   </div>
-
-  <div class="lb-box">
-    <h3>🏆 Leaderboard</h3>
-    <div class="lb-tabs">
-      <button class="lb-tab active" data-lb="easy">Easy</button>
-      <button class="lb-tab" data-lb="medium">Medium</button>
-      <button class="lb-tab" data-lb="hard">Hard</button>
-    </div>
-    <div id="lbList"></div>
-  </div>
-
-  <div class="btn-row" style="margin-top:.6rem;">
-    <button class="btn btn-secondary" id="stageBackBtn">← Back</button>
-  </div>
+  <div class="lb-box"><h3>🏆 Leaderboard</h3><div class="lb-tabs"><button class="lb-tab active" data-lb="easy">Easy</button><button class="lb-tab" data-lb="medium">Medium</button><button class="lb-tab" data-lb="hard">Hard</button></div><div id="lbList"></div></div>
+  <div class="btn-row"><button class="btn btn-secondary" id="stageBackBtn">← Back</button></div>
 </div>
 
-<div class="screen hidden" id="gameScreen">
-  <canvas id="gameCanvas"></canvas>
-  <div class="topbar">
-    <div class="hstat score">⭐ <span id="hScore">0</span></div>
-    <div class="hstat lives">❤️ <span id="hLives">5</span></div>
-    <div class="hstat lvl">⚙️ Lv <span id="hLvl">1</span>/3</div>
-    <div class="hstat" style="color:var(--purple);">🏅 <span id="hStage">Easy</span></div>
-    <div class="topbar-right">
-      <button class="ibtn" id="pauseBtn">⏸</button>
-      <button class="ibtn" id="quitBtn">🏠</button>
-    </div>
-  </div>
-
-  <div class="powerbar">
-    <div class="pchip hint-btn" id="pHint" title="Tap for hint!">💡 HINT</div>
-    <div class="pchip" id="pShield">🛡️ SHIELD</div>
-    <div class="pchip" id="pMagnet">✨ MAGNET</div>
-    <div class="hint-uses" id="hintUses">Hints: 5 left</div>
-  </div>
-
-  <div class="progbar">
-    <div class="prog-label"><span id="progMsg">Catch 5 correct to pass!</span><span id="progCount">0/5</span></div>
-    <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
-    <div class="star-row" id="starRow"></div>
-  </div>
+<!-- Game Screen -->
+<div class="screen hidden" id="gameScreen"><canvas id="gameCanvas"></canvas>
+  <div class="topbar"><div class="hstat score">⭐ <span id="hScore">0</span></div><div class="hstat lives">❤️ <span id="hLives">5</span></div><div class="hstat lvl">⚙️ Lv <span id="hLvl">1</span>/3</div><div class="hstat">🏅 <span id="hStage">Easy</span></div><div class="topbar-right"><button class="ibtn" id="pauseBtn">⏸</button><button class="ibtn" id="quitGameBtn">🏠</button></div></div>
+  <div class="powerbar"><div class="pchip" id="pHint">💡 HINT</div><div class="pchip" id="pShield">🛡️ SHIELD</div><div class="pchip" id="pMagnet">✨ MAGNET</div><span id="hintUses" style="margin-left:auto;font-size:.68rem;">Hints: 5</span></div>
+  <div class="progbar"><div class="prog-label"><span id="progMsg">Catch 5 correct!</span><span id="progCount">0/5</span></div><div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div><div class="star-row" id="starRow"></div></div>
 </div>
 
-<div id="countdown" class="hidden">
-  <div class="cd-number" id="cdNum">3</div>
-  <div class="cd-msg" id="cdMsg">Get ready!</div>
+<!-- Countdown -->
+<div id="countdown" class="hidden"><div class="cd-number" id="cdNum">3</div><div class="cd-msg" id="cdMsg">Get ready!</div></div>
+<div id="toast"><div class="toast-inner" id="toastInner">✨</div></div>
+
+<!-- Side Controls -->
+<div class="side-controls">
+  <button class="side-btn" id="musicToggleBtn" title="Music On/Off">🎵</button>
+  <div class="volume-slider-container"><span class="vol-icon">🔊</span><input type="range" id="volumeSlider" min="0" max="100" value="50" orient="vertical" style="height:60px;"></div>
+  <button class="side-btn" id="themeToggleBtn" title="Day/Night">🌙</button>
+  <button class="side-btn" id="instructionBtn" title="Instructions">❓</button>
+  <button class="side-btn" id="quitSideBtn" title="Quit">🏠</button>
 </div>
 
-<div id="toast"><div class="toast-inner" id="toastInner">Nice!</div></div>
+<!-- Instruction Modal -->
+<div id="instructionModal" class="modal"><div class="modal-content"><h2>📖 How to Play</h2><ul><li>🖱️ Move left/right with mouse or finger</li><li>✅ Catch GREEN correct code → +10 points + star</li><li>❌ Avoid RED bugs → lose a heart</li><li>💡 HINT makes the right answer glow</li><li>🛡️ SHIELD blocks one bug</li><li>✨ MAGNET pulls correct code toward you</li><li>⭐ Fill all stars to complete level!</li></ul><button class="btn-close" id="closeModalBtn">Got it!</button></div></div>
 
-<div class="overlay hidden" id="pauseOverlay">
-  <div class="card">
-    <div style="font-size:3rem;">⏸️</div>
-    <h2>PAUSED</h2>
-    <p>Take a breather! 😊</p>
-    <div class="btn-row">
-      <button class="btn btn-green" id="resumeBtn">▶️ Resume</button>
-      <button class="btn btn-secondary" id="pauseQuitBtn">🏠 Home</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay hidden" id="lvlCompleteOverlay">
-  <div class="card">
-    <div id="lcEmoji" style="font-size:3rem;">🎉</div>
-    <h2 id="lcTitle">Level 1 Done!</h2>
-    <div class="big-stars" id="lcStars">⭐⭐⭐</div>
-    <p id="lcMsg">Amazing job! Keep going!</p>
-    <div id="lcPowerAnnounce"></div>
-    <div class="btn-row">
-      <button class="btn btn-primary" id="nextLvlBtn">Next Level ▶</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay hidden" id="stageCompleteOverlay">
-  <div class="card">
-    <div id="scEmoji" style="font-size:3.5rem;">🏆</div>
-    <h2 id="scTitle">Easy Complete!</h2>
-    <div class="big-stars" id="scStars">⭐⭐⭐</div>
-    <div class="badge-pill" id="scBadge">🌱 Easy Master!</div>
-    <p id="scMsg" style="margin:.6rem 0;">You are a Code Star! 🌟</p>
-    <div class="btn-row">
-      <button class="btn btn-primary" id="nextStageBtn">Next Stage 🚀</button>
-      <button class="btn btn-secondary" id="scHomeBtn">🏠 Home</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay hidden" id="gameOverOverlay">
-  <div class="card">
-    <div style="font-size:3rem;">💥</div>
-    <h2>Oh No!</h2>
-    <p id="goMsg">Don't give up — every coder learns from bugs! 🐛</p>
-    <div style="color:var(--yellow);font-weight:800;margin-bottom:.6rem;" id="goScore">Score: 0</div>
-    <div class="btn-row">
-      <button class="btn btn-primary" id="retryBtn">🔄 Try Again</button>
-      <button class="btn btn-secondary" id="goHomeBtn">🏠 Home</button>
-    </div>
-  </div>
-</div>
+<!-- Level Complete & Game Over Overlays -->
+<div class="overlay hidden" id="lvlCompleteOverlay"><div class="card"><div id="lcEmoji">🎉</div><h2 id="lcTitle">Level Done!</h2><div class="big-stars" id="lcStars">⭐⭐⭐</div><button class="btn btn-primary" id="nextLvlBtn">Next Level ▶</button></div></div>
+<div class="overlay hidden" id="stageCompleteOverlay"><div class="card"><div>🏆</div><h2 id="scTitle">Stage Complete!</h2><div class="big-stars" id="scStars">⭐⭐⭐</div><button class="btn btn-primary" id="nextStageBtn">Next Stage</button><button class="btn btn-secondary" id="scHomeBtn">Home</button></div></div>
+<div class="overlay hidden" id="gameOverOverlay"><div class="card"><div>💥</div><h2>Game Over</h2><p id="goMsg">Try again!</p><button class="btn btn-primary" id="retryBtn">Try Again</button><button class="btn btn-secondary" id="goHomeBtn">Home</button></div></div>
+<div class="overlay hidden" id="pauseOverlay"><div class="card"><div>⏸️</div><h2>Paused</h2><button class="btn btn-primary" id="resumeBtn">Resume</button><button class="btn btn-secondary" id="pauseQuitBtn">Home</button></div></div>
 
 <script>
-// Sound System
-let actx = null;
-function getACtx() {
-  if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
-  return actx;
+// ==================== AUDIO & MUSIC SYSTEM ====================
+let bgAudio = null;
+let audioContext = null;
+let masterVolume = 0.5;
+let musicEnabled = true;
+function initAudio() {
+  if (!bgAudio) {
+    bgAudio = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3");
+    bgAudio.loop = true;
+    bgAudio.volume = masterVolume;
+  }
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
 }
-function playTone(freq, type, vol, dur, delay = 0) {
+function playClick() {
   try {
-    const a = getACtx();
-    const o = a.createOscillator();
-    const g = a.createGain();
-    o.connect(g);
-    g.connect(a.destination);
-    o.frequency.value = freq;
-    o.type = type;
-    const t = a.currentTime + delay;
-    g.gain.setValueAtTime(vol, t);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.start(t);
-    o.stop(t + dur + 0.05);
+    if (!audioContext) initAudio();
+    const o = audioContext.createOscillator();
+    const g = audioContext.createGain();
+    o.connect(g); g.connect(audioContext.destination);
+    o.frequency.value = 880;
+    o.type = "sine";
+    g.gain.value = masterVolume * 0.15;
+    o.start(); o.stop(audioContext.currentTime + 0.08);
   } catch(e) {}
 }
-function sndTap() { playTone(700, 'sine', 0.12, 0.06); }
-function sndCorrect() { playTone(523, 'sine', 0.18, 0.12); playTone(659, 'sine', 0.18, 0.14, 0.1); playTone(784, 'sine', 0.18, 0.18, 0.2); }
-function sndWrong() { playTone(220, 'sawtooth', 0.18, 0.1); playTone(180, 'sawtooth', 0.18, 0.14, 0.12); }
-function sndLevelUp() { [523, 587, 659, 784, 880, 1046].forEach((f, i) => playTone(f, 'sine', 0.15, 0.22, i * 0.09)); }
-function sndPowerup() { playTone(440, 'sine', 0.12, 0.07); playTone(880, 'sine', 0.16, 0.12, 0.07); }
-function sndCountdown() { playTone(880, 'sine', 0.18, 0.12); }
-function sndGo() { playTone(1046, 'sine', 0.2, 0.3); playTone(1318, 'sine', 0.2, 0.3, 0.15); playTone(1568, 'sine', 0.2, 0.4, 0.3); }
-function sndGameOver() { playTone(330, 'sawtooth', 0.2, 0.3); playTone(247, 'sawtooth', 0.2, 0.4, 0.25); playTone(196, 'sawtooth', 0.2, 0.5, 0.5); }
-
-document.addEventListener('click', () => { try { getACtx(); } catch(e) {} }, { once: true });
-document.addEventListener('touchstart', () => { try { getACtx(); } catch(e) {} }, { once: true });
-
-// Speech System
-let hero = 'kid';
-let speechBusy = false;
-let speechQueue = [];
-function flushSpeech() {
-  if (speechBusy || !speechQueue.length) return;
-  const { text, pitch, rate } = speechQueue.shift();
-  speechBusy = true;
-  const u = new SpeechSynthesisUtterance(text);
-  u.pitch = pitch;
-  u.rate = rate;
-  const voices = speechSynthesis.getVoices() || [];
-  const v = voices.find(v => v.name.includes('Google US') || v.name.includes('Samantha') || v.name.includes('Karen')) || voices[0];
-  if (v) u.voice = v;
-  u.onend = u.onerror = () => { speechBusy = false; setTimeout(flushSpeech, 120); };
-  speechSynthesis.speak(u);
+function playCorrectSound() {
+  try { if (!audioContext) initAudio(); const o=audioContext.createOscillator(), g=audioContext.createGain(); o.connect(g); g.connect(audioContext.destination); o.frequency.value=523; g.gain.value=masterVolume*0.2; o.start(); o.stop(audioContext.currentTime+0.12); } catch(e) {}
 }
-function heroSay(text) {
-  speechQueue = [];
-  speechSynthesis.cancel();
-  speechBusy = false;
-  let pitch = 1.7, rate = 0.85;
-  if (hero === 'kid') { pitch = 1.95; rate = 0.82; }
-  else if (hero === 'robot') { pitch = 0.6; rate = 0.9; }
-  else if (hero === 'cat') { pitch = 2.1; rate = 0.8; }
-  speechQueue.push({ text, pitch, rate });
-  flushSpeech();
+function playWrongSound() {
+  try { if (!audioContext) initAudio(); const o=audioContext.createOscillator(), g=audioContext.createGain(); o.connect(g); g.connect(audioContext.destination); o.frequency.value=220; g.gain.value=masterVolume*0.15; o.start(); o.stop(audioContext.currentTime+0.15); } catch(e) {}
 }
-if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+function setMasterVolume(val) { masterVolume = val; if (bgAudio) bgAudio.volume = masterVolume; }
+function toggleMusic() { musicEnabled = !musicEnabled; if (bgAudio) { if (musicEnabled) bgAudio.play().catch(e=>console.log); else bgAudio.pause(); } }
+function startMusic() { if (bgAudio && musicEnabled) bgAudio.play().catch(e=>console.log); }
+document.addEventListener("click", () => { initAudio(); startMusic(); }, { once: true });
+document.getElementById("musicToggleBtn").onclick = () => { playClick(); toggleMusic(); };
+document.getElementById("volumeSlider").oninput = (e) => { masterVolume = e.target.value / 100; setMasterVolume(masterVolume); };
+document.getElementById("themeToggleBtn").onclick = () => { playClick(); document.body.style.setProperty('--bg', document.body.style.getPropertyValue('--bg') === '#0d0f1a' ? '#f0f4fa' : '#0d0f1a'); };
+document.getElementById("instructionBtn").onclick = () => { playClick(); document.getElementById("instructionModal").classList.add("show"); };
+document.getElementById("closeModalBtn").onclick = () => { playClick(); document.getElementById("instructionModal").classList.remove("show"); };
+document.getElementById("quitSideBtn").onclick = () => { playClick(); gameRunning=false; show("titleScreen"); };
 
-// Challenge Database
-const ALL_CHALLENGES = [
-  { cat: 'Basics', diff: 1, correct: 'print("Hi")', wrongs: ['print(Hi)', 'Print "Hi"', 'echo "Hi"'], why: 'Yes! print needs magic brackets and quotes to talk! 🗣️', wrongWhy: 'Oops! We need brackets AND quotes — no quotes means no words! 😅' },
-  { cat: 'Basics', diff: 1, correct: 'x = 5', wrongs: ['x == 5', 'x := 5', 'set x 5'], why: 'One equals = puts a number in a box called x! 📦', wrongWhy: 'Two equals == is for checking, not storing! We need just one! 👆' },
-  { cat: 'Basics', diff: 1, correct: 'name = "Ada"', wrongs: ['name == "Ada"', 'name "Ada"', 'let name'], why: 'One = and quotes saves the name in our box! 🎁', wrongWhy: 'Need one = and quotes around the name! Like a gift in a box! 🎁' },
-  { cat: 'Basics', diff: 1, correct: 'print(name)', wrongs: ['print name', 'echo(name)', 'show name'], why: 'print() with brackets shows what is inside! 📢', wrongWhy: 'print needs round brackets () to work its magic! 🪄' },
-  { cat: 'Loops', diff: 2, correct: 'for i in range(3):', wrongs: ['for i in range3', 'loop i=3', 'repeat 3'], why: 'for loops need range() with brackets and a colon at the end! 🔄', wrongWhy: 'Missing the brackets around 3 and the colon! Almost there! 🔄' },
-  { cat: 'Loops', diff: 2, correct: 'while True:', wrongs: ['while true', 'repeat forever', 'while True'], why: 'Capital T in True and a colon — Python is picky! 👑', wrongWhy: 'Python likes capital T — True not true! It matters! 🔤' },
-  { cat: 'Logic', diff: 3, correct: 'if x == 5:', wrongs: ['if x = 5:', 'if x is 5', 'when x==5'], why: '== checks if things match — like asking "are you 5?" 🔍', wrongWhy: 'One = stores things, two == compares things! Different jobs! ⚖️' },
-  { cat: 'Logic', diff: 3, correct: 'else:', wrongs: ['or else', 'else', 'otherwise:'], why: 'else with a colon — the colon tells Python a block starts! 📝', wrongWhy: 'else needs a colon at the end so Python knows what to do next! 📝' },
-  { cat: 'Functions', diff: 3, correct: 'def hello():', wrongs: ['function hello()', 'def hello', 'new hello()'], why: 'def starts a function — like naming your own magic spell! 🪄', wrongWhy: 'Python uses def to make functions, not function! 🐍' },
-  { cat: 'Collect', diff: 2, correct: '[1, 2, 3]', wrongs: ['(1, 2, 3)', '{1, 2, 3}', '[1 2 3]'], why: 'Square brackets [ ] make a list — like a shopping list! 🛒', wrongWhy: 'Lists need square brackets [ ] not round () or curly {} ones! 🛒' },
-];
-
-const STAGE_CFG = {
-  easy: { label: 'Easy', emoji: '🌱', badge: '🌱 Easy Master!', color: '#4fc3f7', lives: 5, starsNeeded: 5, baseSpeed: 0.22, spawnDelay: 2800, correctChance: 0.88, maxDiff: 1, hintCost: 0.06, wrongPenalty: 0.06, powers: { 1: [], 2: [], 3: ['hint'] }, announces: { 2: '', 3: '💡 You unlocked HINT! Tap it at the top for help!' } },
-  medium: { label: 'Medium', emoji: '⚡', badge: '⚡ Medium Hero!', color: '#ffe566', lives: 3, starsNeeded: 5, baseSpeed: 0.32, spawnDelay: 2200, correctChance: 0.65, maxDiff: 2, hintCost: 0.08, wrongPenalty: 0.08, powers: { 1: ['hint'], 2: ['hint', 'magnet'], 3: ['hint', 'magnet', 'shield'] }, announces: { 1: '💡 HINT is ready! Use it when stuck!', 2: '✨ MAGNET unlocked! It pulls correct code to you!', 3: '🛡️ SHIELD unlocked! Blocks one bug!' } },
-  hard: { label: 'Hard', emoji: '🔥', badge: '🔥 Code Master!', color: '#ff4d6d', lives: 2, starsNeeded: 5, baseSpeed: 0.46, spawnDelay: 1700, correctChance: 0.5, maxDiff: 3, hintCost: 0.1, wrongPenalty: 0.1, powers: { 1: ['hint', 'shield'], 2: ['hint', 'shield', 'magnet'], 3: ['hint', 'shield', 'magnet'] }, announces: { 1: 'All powers from the start — you need them! 💪', 2: 'Halfway there! Keep going!', 3: 'Final level! You can do this! 🔥' } },
-};
-
-let currentStage = 'easy', currentLevel = 1;
+// ==================== GAME STATE ====================
+let hero = "kid";
+let currentStage = "easy", currentLevel = 1;
 let score = 0, lives = 5, caughtCorrect = 0, starsNeeded = 5;
-let hintProgress = 1.0;
-let hintUsesLeft = 5;
-let activeShield = false, activeMagnet = false, hintActive = false, hintTimer = 0;
-let availPowers = [];
-let gameRunning = false, gamePaused = false;
-let stageStars = { easy: [0, 0, 0], medium: [0, 0, 0], hard: [0, 0, 0] };
-let lbData = [];
+let activeShield = false, activeMagnet = false, hintActive = false, hintTimer = 0, hintUsesLeft = 5;
+let gameRunning = false, gamePaused = false, waitingForFeedback = false;
+let currentItem = null, particles = [], floaters = [];
 let arrowLeft = false, arrowRight = false;
-let currentItem = null;
-let spawnTimer = null;
-let waitingForFeedback = false;
-let currentChallenge = null;
-let particles = [];
-let floaters = [];
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
 let W = 0, H = 0, machX = 0, machW = 120, groundY = 0, targetX = 0;
-let machState = 'idle', machTimer = 0;
 let animId = null, lastTime = 0;
 
-// Helper Functions
-function roundRect(x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-  ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y);
-  ctx.closePath();
-}
-ctx.roundRect = roundRect;
+const STAGE_CFG = {
+  easy: { label: "Easy", lives: 5, starsNeeded: 5, baseSpeed: 0.22, correctChance: 0.88, powers: { 1: [], 2: [], 3: ["hint"] } },
+  medium: { label: "Medium", lives: 3, starsNeeded: 5, baseSpeed: 0.32, correctChance: 0.65, powers: { 1: ["hint"], 2: ["hint","magnet"], 3: ["hint","magnet","shield"] } },
+  hard: { label: "Hard", lives: 2, starsNeeded: 5, baseSpeed: 0.46, correctChance: 0.5, powers: { 1: ["hint","shield"], 2: ["hint","shield","magnet"], 3: ["hint","shield","magnet"] } }
+};
+const challenges = [
+  { correct: 'print("Hi")', wrongs: ['print(Hi)','Print Hi'], why: '✅ print needs quotes!' },
+  { correct: 'x = 5', wrongs: ['x == 5','x :=5'], why: '✅ one = stores value' },
+  { correct: 'for i in range(3):', wrongs: ['for i=3','loop 3'], why: '✅ for needs range and colon' },
+  { correct: 'if x == 5:', wrongs: ['if x=5:','if x is 5'], why: '✅ == compares values' },
+];
+function getRandomChallenge() { return challenges[Math.floor(Math.random() * challenges.length)]; }
+function updateStarsUI() { for(let s of ["easy","medium","hard"]) document.getElementById(s+"Stars").innerHTML="☆☆☆"; }
 
-const LB_KEY = 'ccjrLB_v2';
-function loadLB() { try { lbData = JSON.parse(localStorage.getItem(LB_KEY)) || []; } catch(e) { lbData = []; } }
-function saveLB() { localStorage.setItem(LB_KEY, JSON.stringify(lbData.slice(0, 60))); }
-function heroName() { return hero === 'kid' ? 'Sunny' : hero === 'robot' ? 'Byte' : 'Pixel'; }
-function addLBEntry() { loadLB(); lbData.push({ name: heroName(), score, level: currentLevel, stage: currentStage, date: new Date().toLocaleDateString() }); saveLB(); }
-function renderLB(stage) {
-  const list = document.getElementById('lbList');
-  const rows = lbData.filter(r => r.stage === stage).sort((a, b) => b.score - a.score).slice(0, 5);
-  if (!rows.length) { list.innerHTML = '<div style="color:var(--muted);font-size:.8rem;padding:.3rem 0;">No scores yet — be first! 🏆</div>'; return; }
-  const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
-  list.innerHTML = rows.map((r, i) => `<div class="lb-row"><span class="lb-rank">${medals[i] || i + 1}</span><span class="lb-name">${r.name}</span><span class="lb-score">${r.score}</span></div>`).join('');
-}
-function loadStars() { try { stageStars = JSON.parse(localStorage.getItem('ccjrStars')) || stageStars; } catch(e) {} updateStarDisplay(); }
-function saveStars() { localStorage.setItem('ccjrStars', JSON.stringify(stageStars)); }
-function updateStarDisplay() {
-  ['easy', 'medium', 'hard'].forEach(s => {
-    const total = stageStars[s].reduce((a, b) => a + b, 0);
-    const el = document.getElementById(s + 'Stars');
-    if (el) el.textContent = '⭐'.repeat(total) + '☆'.repeat(3 - total);
-  });
-}
-function show(id) { document.querySelectorAll('.screen,.overlay').forEach(s => s.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
-function showOverlay(id) { document.getElementById(id).classList.remove('hidden'); }
-function hideOverlay(id) { document.getElementById(id).classList.add('hidden'); }
-let toastTimer = null;
-function toast(msg, type = 'i', dur = 2600) {
-  const el = document.getElementById('toast'), inner = document.getElementById('toastInner');
-  inner.textContent = msg;
-  inner.className = 'toast-inner t' + type;
-  el.style.opacity = '1';
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.style.opacity = '0', dur);
-}
-function addFloat(x, y, text, color = '#ffe566') { floaters.push({ x, y, text, color, life: 1, vy: -1.6 }); }
-function addParticles(x, y, color, n = 14) { for (let i = 0; i < n; i++) particles.push({ x, y, vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 5 - 1.5, life: 0.9, decay: 0.022 + Math.random() * 0.012, color, r: 3 + Math.random() * 3 }); }
-function pickChallenge() { 
-  const cfg = STAGE_CFG[currentStage];
-  const pool = ALL_CHALLENGES.filter(c => c.diff <= cfg.maxDiff);
-  currentChallenge = pool[Math.floor(Math.random() * pool.length)] || ALL_CHALLENGES[0];
-}
-function spawnItem() {
-  if (!gameRunning || gamePaused || waitingForFeedback || currentItem) return;
-  pickChallenge();
-  const cfg = STAGE_CFG[currentStage];
-  const spd = cfg.baseSpeed * (1 + (currentLevel - 1) * 0.18);
-  const isPower = Math.random() < 0.08 && availPowers.length > 0;
-  
-  if (isPower) {
-    const p = availPowers[Math.floor(Math.random() * availPowers.length)];
-    const icons = { hint: '💡', shield: '🛡️', magnet: '✨' };
-    const x = 60 + Math.random() * (W - 120);
-    currentItem = { type: 'power', power: p, text: icons[p], x: x, y: -50, vy: spd * 0.65, vx: 0, w: 54, h: 54 };
-  } else {
-    const isCorrect = Math.random() < cfg.correctChance;
-    const text = isCorrect ? currentChallenge.correct : currentChallenge.wrongs[Math.floor(Math.random() * currentChallenge.wrongs.length)];
-    const fs = Math.max(14, Math.min(20, W / Math.max(10, text.length * 1.1)));
-    const tw = text.length * fs * 0.63 + 28;
-    const margin = tw / 2 + 20;
-    const x = margin + Math.random() * Math.max(1, W - margin * 2);
-    currentItem = { 
-      type: 'code', text, x, y: -50, vy: spd, vx: (Math.random() - 0.5) * 0.3, 
-      isCorrect, correctAnswer: currentChallenge.correct, 
-      why: isCorrect ? currentChallenge.why : currentChallenge.wrongWhy, 
-      fs, w: tw, h: fs + 20 
-    };
-  }
-}
-function onCorrect(it) {
-  score += 15 + (currentLevel * 3);
-  caughtCorrect++;
-  machState = 'happy';
-  machTimer = 1.4;
-  addParticles(it.x, it.y, '#00e5ff', 16);
-  addFloat(it.x, it.y - 20, `+${15 + currentLevel * 3} ⭐`, '#69ff85');
-  sndCorrect();
-  toast('✅ ' + it.why, 'c', 3000);
-  waitingForFeedback = true;
-  heroSay(it.why);
-  setTimeout(() => { waitingForFeedback = false; }, 2200);
-  if (caughtCorrect >= starsNeeded) {
-    setTimeout(() => levelComplete(), 400);
-  }
-  updateHUD();
-}
-function onWrong(it) {
-  machState = 'spark';
-  machTimer = 1.0;
-  addParticles(it.x, it.y, '#ff4d6d', 18);
-  addFloat(it.x, it.y - 20, 'BUG! 💥', '#ff4d6d');
-  if (activeShield) {
-    activeShield = false;
-    addFloat(machX + machW / 2, groundY - 80, '🛡️ Blocked!', '#69ff85');
-    sndPowerup();
-    toast('🛡️ Shield blocked it! Correct was: ' + it.correctAnswer, 'i', 2500);
-    waitingForFeedback = true;
-    heroSay('Shield saved you! ' + it.why);
-    setTimeout(() => { waitingForFeedback = false; }, 2000);
-    updateHUD();
-    return;
-  }
-  lives--;
-  sndWrong();
-  toast('❌ ' + it.why, 'w', 3000);
-  waitingForFeedback = true;
-  heroSay(it.why);
-  setTimeout(() => { waitingForFeedback = false; }, 2200);
-  if (lives <= 0) setTimeout(() => gameOver(), 600);
-  updateHUD();
-}
-function onPower(p) {
-  if (p === 'hint' && !hintActive) { triggerHint(); }
-  else if (p === 'shield') { activeShield = true; toast('🛡️ Shield ready! Next bug = blocked!', 'i'); sndPowerup(); }
-  else if (p === 'magnet') { activeMagnet = true; setTimeout(() => activeMagnet = false, 8000); toast('✨ Magnet on! Correct code comes to you!', 'i'); sndPowerup(); }
-  updateHUD();
-}
-function triggerHint() {
-  if (hintUsesLeft <= 0) { toast('💡 No hints left for this level!', 'i', 1500); return; }
-  if (!availPowers.includes('hint') && currentStage === 'easy' && currentLevel < 3) { toast('💡 Hints unlock in Level 3 of Easy!', 'i', 2000); return; }
-  hintUsesLeft--;
-  hintActive = true;
-  hintTimer = 5;
-  sndPowerup();
-  toast('💡 Look for the glowing one!', 'i', 2000);
-  heroSay('Check the glowing code — that is the right one!');
-  updateHUD();
-  setTimeout(() => { hintActive = false; }, 5000);
-}
-function levelComplete() {
-  gameRunning = false;
-  sndLevelUp();
-  const starsEarned = 3; // Always give max stars for simplicity
-  stageStars[currentStage][currentLevel - 1] = Math.max(stageStars[currentStage][currentLevel - 1], starsEarned);
-  saveStars();
-  addLBEntry();
-  
-  if (currentLevel >= 3) {
-    heroSay('You are a Code Star! Amazing work!');
-    setTimeout(() => {
-      const cfg = STAGE_CFG[currentStage];
-      document.getElementById('scTitle').textContent = cfg.label + ' Stage Complete!';
-      document.getElementById('scEmoji').textContent = cfg.emoji;
-      document.getElementById('scBadge').textContent = cfg.badge;
-      document.getElementById('scStars').innerHTML = '⭐'.repeat(starsEarned) + '☆'.repeat(3 - starsEarned);
-      document.getElementById('scMsg').innerHTML = `You are a Code Star! Score: ${score} 🌟`;
-      document.getElementById('nextStageBtn').style.display = currentStage !== 'hard' ? 'inline-flex' : 'none';
-      showOverlay('stageCompleteOverlay');
-    }, 500);
-  } else {
-    heroSay('Level ' + currentLevel + ' complete! You are awesome!');
-    setTimeout(() => {
-      document.getElementById('lcTitle').textContent = `Level ${currentLevel} Done! 🎉`;
-      document.getElementById('lcEmoji').textContent = starsEarned === 3 ? '🏆' : starsEarned === 2 ? '🎉' : '👍';
-      document.getElementById('lcStars').innerHTML = '⭐'.repeat(starsEarned) + '☆'.repeat(3 - starsEarned);
-      document.getElementById('lcMsg').innerHTML = starsEarned === 3 ? 'Perfect score! Amazing! 🏆' : `Great job! Score: ${score}`;
-      document.getElementById('lcPowerAnnounce').innerHTML = STAGE_CFG[currentStage].announces[currentLevel + 1] ? `<div class="power-announce">${STAGE_CFG[currentStage].announces[currentLevel + 1]}</div>` : '';
-      showOverlay('lvlCompleteOverlay');
-    }, 500);
-  }
-}
-function gameOver() {
-  gameRunning = false;
-  sndGameOver();
-  addLBEntry();
-  heroSay('Oh no! But great try! Come on, let us do it again!');
-  document.getElementById('goMsg').innerHTML = `You reached Level ${currentLevel}. Every coder learns from bugs! 🐛`;
-  document.getElementById('goScore').innerHTML = `Score: ${score}`;
-  setTimeout(() => showOverlay('gameOverOverlay'), 500);
-}
-function startGame(stage, level = 1) {
-  currentStage = stage;
-  currentLevel = level;
-  const cfg = STAGE_CFG[stage];
-  score = 0;
-  lives = cfg.lives;
-  caughtCorrect = 0;
-  starsNeeded = cfg.starsNeeded;
-  hintUsesLeft = 5;
-  hintActive = false;
-  hintTimer = 0;
-  activeShield = false;
-  activeMagnet = false;
-  availPowers = cfg.powers[level] || [];
-  particles = [];
-  floaters = [];
-  currentItem = null;
-  waitingForFeedback = false;
-  gamePaused = false;
-  gameRunning = false;
-  
-  resizeCanvas();
-  machX = W / 2 - machW / 2;
-  targetX = machX;
-  updateHUD();
-  show('gameScreen');
-  
-  heroSay(`Level ${level}! Catch ${starsNeeded} correct code to pass! Let's go!`);
-  runCountdown(() => {
-    gameRunning = true;
-    lastTime = performance.now();
-    if (!animId) animId = requestAnimationFrame(gameLoop);
-    spawnItem();
-  });
-}
-function runCountdown(cb) {
-  const el = document.getElementById('countdown');
-  const numEl = document.getElementById('cdNum');
-  const msgEl = document.getElementById('cdMsg');
-  el.classList.remove('hidden');
-  let n = 3;
-  numEl.textContent = n;
-  msgEl.textContent = `Catch ${starsNeeded} ⭐ to pass Level ${currentLevel}!`;
-  sndCountdown();
-  const tick = setInterval(() => {
-    n--;
-    if (n > 0) {
-      numEl.textContent = n;
-      sndCountdown();
-      return;
-    }
-    clearInterval(tick);
-    numEl.textContent = 'GO!';
-    numEl.style.color = '#69ff85';
-    msgEl.textContent = 'Feed the machine! 🤖';
-    sndGo();
-    setTimeout(() => {
-      el.classList.add('hidden');
-      numEl.style.color = '';
-      numEl.textContent = '3';
-      cb();
-    }, 900);
-  }, 1000);
-}
-function restartLevel() { startGame(currentStage, currentLevel); }
-function startNextLevel() { startGame(currentStage, currentLevel + 1); }
-function startNextStage() { const order = ['easy', 'medium', 'hard']; const idx = order.indexOf(currentStage); if (idx < order.length - 1) startGame(order[idx + 1], 1); else show('titleScreen'); }
+function show(id) { document.querySelectorAll(".screen").forEach(s=>s.classList.add("hidden")); document.getElementById(id).classList.remove("hidden"); }
+function toast(msg,type,dur=2000){ let el=document.getElementById("toastInner"); el.textContent=msg; el.className="toast-inner t"+type; document.getElementById("toast").style.opacity="1"; setTimeout(()=>document.getElementById("toast").style.opacity="0",dur); }
+
 function updateHUD() {
-  document.getElementById('hScore').textContent = score;
-  document.getElementById('hLives').textContent = lives;
-  document.getElementById('hLvl').textContent = currentLevel;
-  document.getElementById('hStage').textContent = STAGE_CFG[currentStage].label;
-  document.getElementById('hintUses').textContent = `Hints: ${hintUsesLeft} left`;
-  const starRow = document.getElementById('starRow');
-  starRow.innerHTML = '';
-  for (let i = 0; i < starsNeeded; i++) {
-    const pip = document.createElement('span');
-    pip.className = 'star-pip';
-    pip.textContent = i < caughtCorrect ? '⭐' : '☆';
-    starRow.appendChild(pip);
-  }
-  const catchFrac = Math.min(1, caughtCorrect / starsNeeded);
-  document.getElementById('progFill').style.width = (catchFrac * 100) + '%';
-  const left = starsNeeded - caughtCorrect;
-  document.getElementById('progMsg').textContent = left <= 0 ? '✨ Done! Amazing!' : left === 1 ? '🔥 Only 1 more to go!' : `Catch ${left} more to pass!`;
-  document.getElementById('progCount').textContent = `${caughtCorrect}/${starsNeeded}`;
-  const ap = STAGE_CFG[currentStage].powers[currentLevel] || [];
-  const hintEl = document.getElementById('pHint');
-  const shieldEl = document.getElementById('pShield');
-  const magEl = document.getElementById('pMagnet');
-  hintEl.style.opacity = ap.includes('hint') ? '1' : '0.3';
-  hintEl.style.pointerEvents = ap.includes('hint') ? 'auto' : 'none';
-  shieldEl.style.opacity = ap.includes('shield') ? '1' : '0.3';
-  magEl.style.opacity = ap.includes('magnet') ? '1' : '0.3';
-  hintEl.className = 'pchip hint-btn' + (hintActive ? ' active' : '');
-  shieldEl.className = 'pchip' + (activeShield ? ' active' : '');
-  magEl.className = 'pchip' + (activeMagnet ? ' active' : '');
-  hintEl.innerHTML = hintActive ? `💡 ON (${Math.ceil(hintTimer)}s)` : '💡 HINT';
-  shieldEl.innerHTML = activeShield ? '🛡️ READY' : '🛡️ SHIELD';
-  magEl.innerHTML = activeMagnet ? '✨ ON' : '✨ MAGNET';
+  document.getElementById("hScore").innerHTML=score;
+  document.getElementById("hLives").innerHTML=lives;
+  document.getElementById("hLvl").innerHTML=currentLevel;
+  document.getElementById("hStage").innerHTML=STAGE_CFG[currentStage].label;
+  document.getElementById("hintUses").innerHTML=`Hints: ${hintUsesLeft}`;
+  let starHtml=""; for(let i=0;i<starsNeeded;i++) starHtml+=`<span class="star-pip">${i<caughtCorrect?"⭐":"☆"}</span>`;
+  document.getElementById("starRow").innerHTML=starHtml;
+  let perc=(caughtCorrect/starsNeeded)*100;
+  document.getElementById("progFill").style.width=perc+"%";
+  document.getElementById("progCount").innerHTML=`${caughtCorrect}/${starsNeeded}`;
+  let left=starsNeeded-caughtCorrect;
+  document.getElementById("progMsg").innerHTML=left<=0?"✨ Done!":`Catch ${left} more!`;
+  let pows=STAGE_CFG[currentStage].powers[currentLevel]||[];
+  document.getElementById("pHint").style.opacity=pows.includes("hint")?"1":"0.3";
+  document.getElementById("pShield").style.opacity=pows.includes("shield")?"1":"0.3";
+  document.getElementById("pMagnet").style.opacity=pows.includes("magnet")?"1":"0.3";
+  document.getElementById("pHint").classList.toggle("active", hintActive);
+  document.getElementById("pShield").classList.toggle("active", activeShield);
+  document.getElementById("pMagnet").classList.toggle("active", activeMagnet);
 }
-function drawBG(now) {
-  const g = ctx.createLinearGradient(0, 0, 0, H);
-  g.addColorStop(0, '#090b16');
-  g.addColorStop(1, '#0d1a28');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = 'rgba(0,229,255,.1)';
-  ctx.fillRect(0, groundY, W, 2);
-  ctx.fillStyle = 'rgba(0,229,255,.04)';
-  ctx.fillRect(0, groundY, W, H - groundY);
-}
-function drawEffects() {
-  for (let i = particles.length - 1; i >= 0; i--) {
-    const p = particles[i];
-    p.x += p.vx;
-    p.y += p.vy;
-    p.vy += 0.1;
-    p.life -= p.decay;
-    ctx.globalAlpha = Math.max(0, p.life);
-    ctx.fillStyle = p.color;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    ctx.fill();
-    if (p.life <= 0) particles.splice(i, 1);
-  }
-  ctx.globalAlpha = 1;
-  ctx.font = '800 15px Nunito';
-  ctx.textAlign = 'center';
-  for (let i = floaters.length - 1; i >= 0; i--) {
-    const f = floaters[i];
-    f.y += f.vy;
-    f.life -= 0.018;
-    ctx.globalAlpha = Math.max(0, f.life);
-    ctx.fillStyle = f.color;
-    ctx.fillText(f.text, f.x, f.y);
-    if (f.life <= 0) floaters.splice(i, 1);
-  }
-  ctx.globalAlpha = 1;
-}
-function drawItem(it) {
-  ctx.save();
-  if (it.type === 'power') {
-    ctx.font = '28px Segoe UI Emoji';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.shadowBlur = 14;
-    ctx.shadowColor = '#ffe566';
-    ctx.fillText(it.text, it.x, it.y);
+
+function spawnItem() {
+  if(!gameRunning||gamePaused||waitingForFeedback||currentItem) return;
+  let cfg=STAGE_CFG[currentStage];
+  let spd=cfg.baseSpeed*(1+(currentLevel-1)*0.18);
+  let isPower=Math.random()<0.08 && (STAGE_CFG[currentStage].powers[currentLevel]||[]).length>0;
+  if(isPower){
+    let pows=STAGE_CFG[currentStage].powers[currentLevel];
+    let power=pows[Math.floor(Math.random()*pows.length)];
+    let icons={hint:"💡",shield:"🛡️",magnet:"✨"};
+    currentItem={type:"power",power,text:icons[power],x:50+Math.random()*(W-100),y:-50,vy:spd*0.6,w:50,h:50};
   } else {
-    const hinted = hintActive && it.isCorrect;
-    const label = hinted ? `✨ ${it.text} ✨` : it.text;
-    const fs = it.fs;
-    ctx.font = `800 ${fs}px "Courier New", monospace`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.shadowBlur = hinted ? 20 : 8;
-    ctx.shadowColor = it.isCorrect ? (hinted ? '#00e5ff' : '#4fc3f7') : '#ff4d6d';
-    ctx.fillStyle = it.isCorrect ? '#061828' : '#220a10';
-    ctx.beginPath();
-    ctx.roundRect(it.x - it.w / 2, it.y - it.h / 2, it.w, it.h, 10);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-    ctx.strokeStyle = it.isCorrect ? (hinted ? '#00e5ff' : '#1a5a7a') : '#5a1020';
-    ctx.lineWidth = hinted ? 2.5 : 1.8;
-    ctx.stroke();
-    ctx.fillStyle = it.isCorrect ? '#7ff0ff' : '#ffaabb';
-    ctx.shadowBlur = 4;
-    ctx.shadowColor = it.isCorrect ? 'rgba(0,229,255,.4)' : 'rgba(255,77,109,.4)';
-    ctx.fillText(label, it.x, it.y, it.w - 16);
+    let ch=getRandomChallenge();
+    let isCorrect=Math.random()<cfg.correctChance;
+    let text=isCorrect?ch.correct:ch.wrongs[Math.floor(Math.random()*ch.wrongs.length)];
+    let fs=16; let tw=text.length*fs*0.6+30;
+    let x=tw/2+20+Math.random()*(W-tw-40);
+    currentItem={type:"code",text,x,y:-50,vy:spd,isCorrect,correctAnswer:ch.correct,why:ch.why,fs,w:tw,h:fs+20};
   }
-  ctx.restore();
 }
-function drawMachine() {
-  const cx = machX + machW / 2, bodyH = 58, bodyY = groundY - bodyH, r = 14;
+function onCorrect(it){
+  score+=10; caughtCorrect++; playCorrectSound(); toast("✅ "+it.why,"c");
+  waitingForFeedback=true; setTimeout(()=>{waitingForFeedback=false;},800);
+  if(caughtCorrect>=starsNeeded) levelComplete();
+  updateHUD();
+}
+function onWrong(it){
+  if(activeShield){ activeShield=false; toast("🛡️ Shield blocked!","i"); waitingForFeedback=true; setTimeout(()=>{waitingForFeedback=false;},600); updateHUD(); return; }
+  lives--; playWrongSound(); toast("❌ "+it.why,"w");
+  waitingForFeedback=true; setTimeout(()=>{waitingForFeedback=false;},800);
+  if(lives<=0) gameOver();
+  updateHUD();
+}
+function onPower(p){
+  if(p==="hint" && hintUsesLeft>0){ hintUsesLeft--; hintActive=true; hintTimer=5; toast("💡 Hint active!","i"); setTimeout(()=>hintActive=false,5000); }
+  if(p==="shield"){ activeShield=true; toast("🛡️ Shield ready!","i"); }
+  if(p==="magnet"){ activeMagnet=true; setTimeout(()=>activeMagnet=false,8000); toast("✨ Magnet on!","i"); }
+  updateHUD();
+}
+function levelComplete(){
+  gameRunning=false;
+  if(currentLevel>=3){
+    toast("🏆 Stage Complete!","c",2000);
+    document.getElementById("scTitle").innerHTML=STAGE_CFG[currentStage].label+" Complete!";
+    document.getElementById("scStars").innerHTML="⭐⭐⭐";
+    document.getElementById("stageCompleteOverlay").classList.remove("hidden");
+  } else {
+    document.getElementById("lcTitle").innerHTML=`Level ${currentLevel} Done!`;
+    document.getElementById("lcStars").innerHTML="⭐⭐⭐";
+    document.getElementById("lvlCompleteOverlay").classList.remove("hidden");
+  }
+}
+function gameOver(){ gameRunning=false; document.getElementById("gameOverOverlay").classList.remove("hidden"); toast("Game Over!","w"); }
+function startGame(stage,level){
+  currentStage=stage; currentLevel=level;
+  let cfg=STAGE_CFG[stage];
+  score=0; lives=cfg.lives; caughtCorrect=0; starsNeeded=cfg.starsNeeded; hintUsesLeft=5; hintActive=false; activeShield=false; activeMagnet=false;
+  waitingForFeedback=false; currentItem=null;
+  updateHUD(); show("gameScreen");
+  runCountdown(()=>{ gameRunning=true; lastTime=performance.now(); if(!animId) animId=requestAnimationFrame(gameLoop); spawnItem(); });
+}
+function runCountdown(cb){
+  let cd=document.getElementById("countdown"), num=document.getElementById("cdNum");
+  cd.classList.remove("hidden"); let n=3;
+  let interval=setInterval(()=>{ n--; if(n>0){ num.innerHTML=n; } else { clearInterval(interval); num.innerHTML="GO!"; setTimeout(()=>{ cd.classList.add("hidden"); cb(); },500); } },800);
+}
+function restartLevel(){ startGame(currentStage,currentLevel); }
+function nextLevel(){ currentLevel++; startGame(currentStage,currentLevel); }
+function nextStage(){ let order=["easy","medium","hard"]; let idx=order.indexOf(currentStage); if(idx<2) startGame(order[idx+1],1); else show("titleScreen"); }
+
+// Drawing & loop
+function resizeCanvas(){
+  W=window.innerWidth; H=window.innerHeight; let c=document.getElementById("gameCanvas");
+  c.width=W; c.height=H; machW=Math.min(140,Math.max(100,W*0.18)); groundY=H-80;
+  machX=Math.min(W-machW,Math.max(0,machX||W/2-machW/2)); targetX=machX;
+}
+function drawBG(){ ctx.fillStyle="#0d0f1a"; ctx.fillRect(0,0,W,H); ctx.fillStyle="#00e5ff10"; ctx.fillRect(0,groundY,W,H-groundY); }
+function drawItem(it){
   ctx.save();
-  ctx.shadowBlur = machState === 'happy' ? 22 : machState === 'spark' ? 20 : 8;
-  ctx.shadowColor = machState === 'happy' ? '#69ff85' : machState === 'spark' ? '#ff4d6d' : '#00e5ff';
-  ctx.fillStyle = machState === 'spark' ? '#2a0810' : machState === 'happy' ? '#051a10' : '#131629';
-  ctx.beginPath();
-  ctx.roundRect(machX, bodyY, machW, bodyH, r);
-  ctx.fill();
-  ctx.strokeStyle = machState === 'happy' ? '#69ff85' : machState === 'spark' ? '#ff4d6d' : '#00e5ff';
-  ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  ctx.roundRect(machX, bodyY, machW, bodyH, r);
-  ctx.stroke();
-  ctx.shadowBlur = 0;
-  const sw = machW - 28, sh = bodyH - 18, sx = machX + 14, sy = bodyY + 9;
-  ctx.fillStyle = machState === 'spark' ? '#3a0010' : machState === 'happy' ? '#003a12' : '#0a0f1e';
-  ctx.beginPath();
-  ctx.roundRect(sx, sy, sw, sh, 7);
-  ctx.fill();
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.font = `${sh * 0.72}px Segoe UI Emoji`;
-  if (machState === 'happy') ctx.fillText('😄', cx, sy + sh / 2);
-  else if (machState === 'spark') ctx.fillText('💥', cx, sy + sh / 2);
-  else ctx.fillText('⚙️', cx, sy + sh / 2);
-  const heroMap = { kid: '🧒', robot: '🤖', cat: '🐱' };
-  ctx.font = '20px Segoe UI Emoji';
-  ctx.fillText(heroMap[hero] || '🧒', cx, bodyY - 14);
-  if (activeShield) {
-    ctx.strokeStyle = `rgba(105,255,133,${0.5 + 0.3 * Math.sin(Date.now() * 0.005)})`;
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(cx, bodyY + bodyH / 2, machW * 0.72, 0, Math.PI * 2);
-    ctx.stroke();
+  if(it.type=="power"){ ctx.font="28px Segoe UI Emoji"; ctx.fillText(it.text,it.x,it.y); }
+  else{
+    let hinted=hintActive&&it.isCorrect; let label=hinted?`✨ ${it.text} ✨`:it.text;
+    ctx.font=`800 ${it.fs}px monospace`; ctx.textAlign="center";
+    ctx.fillStyle=it.isCorrect?"#0a2a2a":"#2a1010"; ctx.shadowBlur=hinted?12:4;
+    ctx.beginPath(); ctx.roundRect(it.x-it.w/2,it.y-it.h/2,it.w,it.h,10); ctx.fill();
+    ctx.fillStyle=it.isCorrect?"#7ff0ff":"#ffaabb"; ctx.fillText(label,it.x,it.y);
   }
   ctx.restore();
 }
-function updateItem(dt) {
-  if (!currentItem) return;
-  const it = currentItem;
-  it.y += it.vy * (60 * dt);
-  it.x += it.vx * (60 * dt);
-  if (it.x < it.w / 2) { it.x = it.w / 2; it.vx *= -0.5; }
-  if (it.x > W - it.w / 2) { it.x = W - it.w / 2; it.vx *= -0.5; }
-  if (activeMagnet && it.type === 'code' && it.isCorrect) {
-    it.x += (machX + machW / 2 - it.x) * 0.07;
-  }
-  const catchY = groundY - 50;
-  if (it.y + it.h / 2 > catchY && it.y - it.h / 2 < groundY && it.x > machX - 12 && it.x < machX + machW + 12) {
-    const caughtItem = currentItem;
-    currentItem = null;
-    if (caughtItem.type === 'power') onPower(caughtItem.power);
-    else if (caughtItem.isCorrect) onCorrect(caughtItem);
-    else onWrong(caughtItem);
+function drawMachine(){
+  let cx=machX+machW/2, by=groundY-50;
+  ctx.fillStyle="#131629"; ctx.beginPath(); ctx.roundRect(machX,by,machW,48,12); ctx.fill();
+  ctx.fillStyle="#00e5ff40"; ctx.font="22px Segoe UI Emoji"; ctx.fillText(hero=="kid"?"🧒":hero=="robot"?"🤖":"🐱",cx,by+10);
+}
+let ctx=document.getElementById("gameCanvas").getContext("2d");
+function updateItem(dt){
+  if(!currentItem) return;
+  currentItem.y+=currentItem.vy*60*dt;
+  if(activeMagnet&&currentItem.type=="code"&&currentItem.isCorrect) currentItem.x+=(machX+machW/2-currentItem.x)*0.05;
+  if(currentItem.y+30>groundY-30 && currentItem.x>machX-15 && currentItem.x<machX+machW+15){
+    let it=currentItem; currentItem=null;
+    if(it.type=="power") onPower(it.power);
+    else if(it.isCorrect) onCorrect(it);
+    else onWrong(it);
     return;
   }
-  if (it.y > H + 80) {
-    currentItem = null;
-    setTimeout(() => { if (gameRunning && !waitingForFeedback) spawnItem(); }, 500);
-  }
+  if(currentItem.y>H+100) currentItem=null;
 }
-function gameLoop(now) {
-  if (!animId) return;
-  const dt = Math.min(0.06, (now - lastTime) / 1000 || 0);
-  lastTime = now;
-  ctx.clearRect(0, 0, W, H);
-  drawBG(now);
-  if (gameRunning && !gamePaused) {
-    const spd = W * 0.012;
-    if (arrowLeft) targetX = Math.max(0, targetX - spd);
-    if (arrowRight) targetX = Math.min(W - machW, targetX + spd);
-    machX += (targetX - machX) * 0.2;
-    machX = Math.max(0, Math.min(W - machW, machX));
-    
-    if (hintActive) {
-      hintTimer = Math.max(0, hintTimer - dt);
-      if (hintTimer <= 0) hintActive = false;
-    }
-    machTimer = Math.max(0, machTimer - dt);
-    if (machTimer <= 0 && machState !== 'idle') machState = 'idle';
-    
-    if (currentItem) updateItem(dt);
-    else if (!waitingForFeedback && gameRunning) spawnItem();
+function gameLoop(now){
+  if(!animId) return;
+  let dt=Math.min(0.05, (now-lastTime)/1000||0); lastTime=now;
+  ctx.clearRect(0,0,W,H); drawBG(); drawMachine();
+  if(gameRunning&&!gamePaused){
+    let spd=W*0.012;
+    if(arrowLeft) targetX=Math.max(0,targetX-spd);
+    if(arrowRight) targetX=Math.min(W-machW,targetX+spd);
+    machX+=(targetX-machX)*0.2;
+    if(hintActive){ hintTimer-=dt; if(hintTimer<=0) hintActive=false; }
+    if(currentItem) updateItem(dt);
+    else if(!waitingForFeedback) spawnItem();
     updateHUD();
   }
-  drawEffects();
-  drawMachine();
-  animId = requestAnimationFrame(gameLoop);
+  if(currentItem) drawItem(currentItem);
+  animId=requestAnimationFrame(gameLoop);
 }
-function resizeCanvas() {
-  W = window.innerWidth;
-  H = window.innerHeight;
-  canvas.width = W;
-  canvas.height = H;
-  canvas.style.width = W + 'px';
-  canvas.style.height = H + 'px';
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  machW = Math.max(100, Math.min(140, W * 0.18));
-  groundY = H - Math.max(80, H * 0.12);
-  machX = Math.min(W - machW, Math.max(0, machX || W / 2 - machW / 2));
-  targetX = machX;
-}
-function handlePointer(clientX) {
-  if (!gameRunning || gamePaused) return;
-  const rect = canvas.getBoundingClientRect();
-  const cx = (clientX - rect.left) * (W / rect.width);
-  targetX = Math.max(0, Math.min(W - machW, cx - machW / 2));
-}
-function togglePause() {
-  if (!gameRunning) return;
-  gamePaused = !gamePaused;
-  if (gamePaused) showOverlay('pauseOverlay');
-  else hideOverlay('pauseOverlay');
-}
-function wire(id, fn) { const el = document.getElementById(id); if (el) el.addEventListener('click', () => { sndTap(); fn(); }); }
+function handleMove(clientX){ if(!gameRunning||gamePaused) return; let rect=canvas.getBoundingClientRect(); let cx=(clientX-rect.left)*(W/rect.width); targetX=Math.max(0,Math.min(W-machW,cx-machW/2)); }
 
-// Event Wiring
-document.querySelectorAll('.buddy-card').forEach(c => c.addEventListener('click', () => {
-  sndTap();
-  document.querySelectorAll('.buddy-card').forEach(x => x.classList.remove('sel'));
-  c.classList.add('sel');
-  hero = c.dataset.hero;
-}));
-wire('titlePlayBtn', () => show('tutorialScreen'));
-wire('tutBackBtn', () => show('titleScreen'));
-wire('tutNextBtn', () => { loadStars(); loadLB(); renderLB('easy'); show('stageScreen'); });
-wire('stageBackBtn', () => show('tutorialScreen'));
-document.querySelectorAll('.stage-card').forEach(c => c.addEventListener('click', () => { sndTap(); startGame(c.dataset.stage, 1); }));
-document.querySelectorAll('.lb-tab').forEach(t => t.addEventListener('click', () => {
-  sndTap();
-  document.querySelectorAll('.lb-tab').forEach(x => x.classList.remove('active'));
-  t.classList.add('active');
-  renderLB(t.dataset.lb);
-}));
-wire('pauseBtn', () => { if (gameRunning) { gamePaused = true; showOverlay('pauseOverlay'); } });
-wire('quitBtn', () => { gameRunning = false; speechSynthesis.cancel(); show('titleScreen'); });
-wire('resumeBtn', () => { gamePaused = false; hideOverlay('pauseOverlay'); });
-wire('pauseQuitBtn', () => { gameRunning = false; speechSynthesis.cancel(); hideOverlay('pauseOverlay'); show('titleScreen'); });
-document.getElementById('pHint').addEventListener('click', () => { sndTap(); triggerHint(); });
-wire('nextLvlBtn', () => { hideOverlay('lvlCompleteOverlay'); startNextLevel(); });
-wire('nextStageBtn', () => { hideOverlay('stageCompleteOverlay'); startNextStage(); });
-wire('scHomeBtn', () => { hideOverlay('stageCompleteOverlay'); show('titleScreen'); });
-wire('retryBtn', () => { hideOverlay('gameOverOverlay'); restartLevel(); });
-wire('goHomeBtn', () => { hideOverlay('gameOverOverlay'); show('titleScreen'); });
-
-canvas.addEventListener('mousemove', e => handlePointer(e.clientX));
-canvas.addEventListener('touchmove', e => { e.preventDefault(); handlePointer(e.touches[0].clientX); }, { passive: false });
-canvas.addEventListener('touchstart', e => { e.preventDefault(); handlePointer(e.touches[0].clientX); }, { passive: false });
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowLeft') arrowLeft = true;
-  if (e.key === 'ArrowRight') arrowRight = true;
-  if (e.key === ' ' || e.key === 'p') if (gameRunning) togglePause();
-});
-document.addEventListener('keyup', e => {
-  if (e.key === 'ArrowLeft') arrowLeft = false;
-  if (e.key === 'ArrowRight') arrowRight = false;
-});
-window.addEventListener('resize', resizeCanvas);
-
-// Initialization
-loadStars();
-loadLB();
-resizeCanvas();
-animId = requestAnimationFrame(gameLoop);
-const machines = ['⚙️', '🤖', '💻', '⚙️'];
-let mi = 0;
-setInterval(() => { const el = document.getElementById('titleMachine'); if (el) el.textContent = machines[mi++ % machines.length]; }, 900);
+// Wiring Events
+function wire(id,fn){ document.getElementById(id)?.addEventListener("click",()=>{ playClick(); fn(); }); }
+wire("titlePlayBtn",()=>show("tutorialScreen"));
+wire("tutBackBtn",()=>show("titleScreen"));
+wire("tutNextBtn",()=>{ updateStarsUI(); show("stageScreen"); });
+wire("stageBackBtn",()=>show("tutorialScreen"));
+wire("nextLvlBtn",()=>{ document.getElementById("lvlCompleteOverlay").classList.add("hidden"); nextLevel(); });
+wire("nextStageBtn",()=>{ document.getElementById("stageCompleteOverlay").classList.add("hidden"); nextStage(); });
+wire("scHomeBtn",()=>{ document.getElementById("stageCompleteOverlay").classList.add("hidden"); show("titleScreen"); });
+wire("retryBtn",()=>{ document.getElementById("gameOverOverlay").classList.add("hidden"); restartLevel(); });
+wire("goHomeBtn",()=>{ document.getElementById("gameOverOverlay").classList.add("hidden"); show("titleScreen"); });
+wire("pauseBtn",()=>{ if(gameRunning){ gamePaused=true; document.getElementById("pauseOverlay").classList.remove("hidden"); } });
+wire("resumeBtn",()=>{ gamePaused=false; document.getElementById("pauseOverlay").classList.add("hidden"); });
+wire("pauseQuitBtn",()=>{ gameRunning=false; document.getElementById("pauseOverlay").classList.add("hidden"); show("titleScreen"); });
+wire("quitGameBtn",()=>{ gameRunning=false; show("titleScreen"); });
+document.getElementById("pHint")?.addEventListener("click",()=>{ if(gameRunning&&STAGE_CFG[currentStage].powers[currentLevel]?.includes("hint")&&hintUsesLeft>0){ playClick(); onPower("hint"); } });
+document.getElementById("pShield")?.addEventListener("click",()=>{ if(gameRunning&&STAGE_CFG[currentStage].powers[currentLevel]?.includes("shield")){ playClick(); onPower("shield"); } });
+document.getElementById("pMagnet")?.addEventListener("click",()=>{ if(gameRunning&&STAGE_CFG[currentStage].powers[currentLevel]?.includes("magnet")){ playClick(); onPower("magnet"); } });
+document.querySelectorAll(".stage-card").forEach(c=>c.addEventListener("click",()=>{ playClick(); startGame(c.dataset.stage,1); }));
+document.querySelectorAll(".buddy-card").forEach(c=>c.addEventListener("click",()=>{ playClick(); document.querySelectorAll(".buddy-card").forEach(x=>x.classList.remove("sel")); c.classList.add("sel"); hero=c.dataset.hero; }));
+document.querySelectorAll(".lb-tab").forEach(t=>t.addEventListener("click",()=>{ playClick(); document.querySelectorAll(".lb-tab").forEach(x=>x.classList.remove("active")); t.classList.add("active"); }));
+let canvas=document.getElementById("gameCanvas");
+canvas.addEventListener("mousemove",e=>handleMove(e.clientX));
+canvas.addEventListener("touchmove",e=>{ e.preventDefault(); handleMove(e.touches[0].clientX); },{passive:false});
+canvas.addEventListener("touchstart",e=>{ e.preventDefault(); handleMove(e.touches[0].clientX); },{passive:false});
+document.addEventListener("keydown",e=>{ if(e.key==="ArrowLeft") arrowLeft=true; if(e.key==="ArrowRight") arrowRight=true; if(e.key===" "&&gameRunning) gamePaused=!gamePaused; });
+document.addEventListener("keyup",e=>{ if(e.key==="ArrowLeft") arrowLeft=false; if(e.key==="ArrowRight") arrowRight=false; });
+window.addEventListener("resize",resizeCanvas);
+resizeCanvas(); animId=requestAnimationFrame(gameLoop);
+setInterval(()=>{ let m=document.getElementById("titleMachine"); if(m) m.innerHTML=m.innerHTML==="⚙️"?"🤖":"⚙️"; },1200);
 </script>
 </body>
 </html>
