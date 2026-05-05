@@ -453,7 +453,7 @@ function addFloat(x,y,text,color='#ffe566'){floaters.push({x,y,text,color,life:1
 function addParticles(x,y,color,n=14){for(let i=0;i<n;i++)particles.push({x,y,vx:(Math.random()-.5)*6,vy:(Math.random()-.5)*5-1.5,life:.9,decay:.022+Math.random()*.012,color,r:3+Math.random()*3});}
 function pickChallenge(){const cfg=STAGE_CFG[currentStage];const pool=ALL_CHALLENGES.filter(c=>c.diff<=cfg.maxDiff);currentChallenge=pool[Math.floor(Math.random()*pool.length)];}
 function spawnItem(){
-  if(!gameRunning||gamePaused||waitingForFeedback)return;
+  if(!gameRunning||gamePaused||waitingForFeedback||currentItem) return;
   pickChallenge();
   const cfg=STAGE_CFG[currentStage];
   const spd=cfg.baseSpeed*(1+(currentLevel-1)*.18);
@@ -531,11 +531,11 @@ function triggerHint(){
   updateHUD();
 }
 function scheduleNext(){
-  if(!gameRunning||gamePaused)return;
+  if(!gameRunning||gamePaused||waitingForFeedback) return;
   const cfg=STAGE_CFG[currentStage];
   spawnCooldown=(cfg.spawnDelay/1000)*(1-(currentLevel-1)*.1)+Math.random()*.6;
-  currentItem=null;
 }
+  
 function levelComplete(){
   gameRunning=false;
   sndLevelUp();
@@ -578,22 +578,41 @@ function gameOver(){
   setTimeout(()=>showOverlay('gameOverOverlay'),500);
 }
 function startGame(stage,level=1){
-  currentStage=stage;currentLevel=level;
+  currentStage=stage;
+  currentLevel=level;
+
   const cfg=STAGE_CFG[stage];
-  score=0;lives=cfg.lives;caughtCorrect=0;starsNeeded=cfg.starsNeeded;
-  hintProgress=1.0;hintUsesLeft=5;hintActive=false;hintTimer=0;
-  activeShield=false;activeMagnet=false;
+  score=0;
+  lives=cfg.lives;
+  caughtCorrect=0;
+  starsNeeded=cfg.starsNeeded;
+  hintProgress=1.0;
+  hintUsesLeft=5;
+  hintActive=false;
+  hintTimer=0;
+  activeShield=false;
+  activeMagnet=false;
   availPowers=cfg.powers[level]||[];
-  particles=[];floaters=[];currentItem=null;spawnCooldown=0;
-  waitingForFeedback=false;gamePaused=false;gameRunning=false;
-  resizeCanvas();machX=W/2-machW/2;targetX=machX;
+  particles=[];
+  floaters=[];
+  currentItem=null;
+  spawnCooldown=0;
+  waitingForFeedback=false;
+  gamePaused=false;
+  gameRunning=false;
+
+  resizeCanvas();
+  machX=W/2-machW/2;
+  targetX=machX;
   updateHUD();
   show('gameScreen');
+
   heroSay(`Level ${level}! Catch ${starsNeeded} correct code to pass! Let's go!`);
   runCountdown(()=>{
     gameRunning=true;
     lastTime=performance.now();
-    if(!animId)animId=requestAnimationFrame(gameLoop);
+    if(!animId) animId=requestAnimationFrame(gameLoop);
+    spawnCooldown=0;
     scheduleNext();
   });
 }
@@ -601,10 +620,15 @@ function runCountdown(cb){
   const el=document.getElementById('countdown');
   const numEl=document.getElementById('cdNum');
   const msgEl=document.getElementById('cdMsg');
-  const starsMsg=`Catch ${starsNeeded} ⭐ to pass Level ${currentLevel}!`;
+
   el.classList.remove('hidden');
+
   let n=3;
-  numEl.textContent=n;msgEl.textContent=starsMsg;sndCountdown();
+  numEl.style.color='';
+  numEl.textContent=n;
+  msgEl.textContent=`Catch ${starsNeeded} ⭐ to pass Level ${currentLevel}!`;
+  sndCountdown();
+
   const tick=setInterval(()=>{
     n--;
     if(n>0){
@@ -613,19 +637,21 @@ function runCountdown(cb){
       void numEl.offsetWidth;
       numEl.style.animation='cdpop .6s cubic-bezier(.36,1.7,.5,1)';
       sndCountdown();
-    } else {
-      clearInterval(tick);
-      numEl.textContent='GO!';
-      numEl.style.color='#69ff85';
-      msgEl.textContent='Feed the machine! 🤖';
-      sndGo();
-      setTimeout(()=>{
-        el.classList.add('hidden');
-        numEl.style.color='';
-        numEl.textContent='3';
-        cb();
-      },900);
+      return;
     }
+
+    clearInterval(tick);
+    numEl.textContent='GO!';
+    numEl.style.color='#69ff85';
+    msgEl.textContent='Feed the machine! 🤖';
+    sndGo();
+
+    setTimeout(()=>{
+      el.classList.add('hidden');
+      numEl.style.color='';
+      numEl.textContent='3';
+      cb();
+    },900);
   },1000);
 }
 function restartLevel(){startGame(currentStage,currentLevel);}
@@ -797,10 +823,13 @@ function gameLoop(now){
     if(hintActive){hintTimer=Math.max(0,hintTimer-dt);if(hintTimer<=0)hintActive=false;}
     machTimer=Math.max(0,machTimer-dt);
     if(machTimer<=0&&machState!=='idle')machState='idle';
-    if(!currentItem&&!waitingForFeedback){
-      spawnCooldown=Math.max(0,spawnCooldown-dt);
-      if(spawnCooldown<=0)spawnItem();
-    }
+  if(!currentItem&&!waitingForFeedback){
+  spawnCooldown=Math.max(0,spawnCooldown-dt);
+  if(spawnCooldown<=0){
+    spawnItem();
+    scheduleNext();
+  }
+}
     if(currentItem)updateItem(dt);
     updateHUD();
   }
