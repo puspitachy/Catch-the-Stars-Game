@@ -205,6 +205,33 @@ body::before {
   border: 1px solid var(--accent);
   box-shadow: none;
 }
+  .cover-controls {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+  background: rgba(0,0,0,0.45);
+  padding: 0.8rem 1.2rem;
+  border-radius: 60px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.cover-btn {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.12);
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.cover-btn:hover {
+  transform: scale(1.08);
+  background: rgba(255,255,255,0.22);
+}
 
 /* TUTORIAL GRID */
 .tut-grid {
@@ -223,7 +250,30 @@ body::before {
   font-weight: 700;
   font-size: 0.85rem;
 }
+.leaderboard-box {
+  margin-top: 1.5rem;
+  background: rgba(0,0,0,0.45);
+  padding: 1rem 1.5rem;
+  border-radius: 28px;
+  backdrop-filter: blur(10px);
+  width: min(90vw, 500px);
+  text-align: center;
+}
 
+.leaderboard-section {
+  margin-top: 1rem;
+}
+
+.leaderboard-section h3 {
+  margin-bottom: 0.4rem;
+}
+
+.leaderboard-section div {
+  background: rgba(255,255,255,0.08);
+  padding: 0.5rem;
+  border-radius: 18px;
+  margin-bottom: 0.5rem;
+}
 /* STAGE SELECT */
 .stage-grid {
   display: flex;
@@ -402,6 +452,10 @@ canvas {
     <div class="buddy-card sel" data-hero="kid"><span class="buddy-emoji">🧒</span><span class="buddy-name">Sunny</span></div>
     <div class="buddy-card" data-hero="robot"><span class="buddy-emoji">🤖</span><span class="buddy-name">Byte</span></div>
     <div class="buddy-card" data-hero="cat"><span class="buddy-emoji">🐱</span><span class="buddy-name">Pixel</span></div>
+  <div class="cover-controls">
+  <button class="cover-btn" id="coverMusicBtn">🎵</button>
+  <button class="cover-btn" id="coverThemeBtn">🌙</button>
+</div>
   </div>
   
   <button class="btn btn-primary" id="titlePlayBtn">🎮 LET'S PLAY!</button>
@@ -434,7 +488,24 @@ canvas {
   <button class="btn btn-primary" id="startStageBtn" style="background:#00d4ff; color:#000;">🚀 START GAME</button>
   <button class="btn btn-secondary" id="stageBackBtn">← Back</button>
 </div>
+<div class="leaderboard-box">
+  <h2>🏆 LEADERBOARD</h2>
 
+  <div class="leaderboard-section">
+    <h3>🌱 EASY</h3>
+    <div id="easyBoard"></div>
+  </div>
+
+  <div class="leaderboard-section">
+    <h3>⚡ MEDIUM</h3>
+    <div id="mediumBoard"></div>
+  </div>
+
+  <div class="leaderboard-section">
+    <h3>🔥 HARD</h3>
+    <div id="hardBoard"></div>
+  </div>
+</div>
 <!-- GAME SCREEN -->
 <div class="screen hidden" id="gameScreen">
   <canvas id="gameCanvas"></canvas>
@@ -489,11 +560,15 @@ const sfx = {
 
 function initAudio() {
   if (!bgMusic) {
-    bgMusic = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3");
+    bgMusic = new Audio("Sakura-Girl-Daisy-chosic.com_.mp3");
     bgMusic.loop = true;
-    bgMusic.volume = masterVol * 0.45; // background softer
+    bgMusic.preload = "auto";
+    bgMusic.volume = masterVol * 0.45;
   }
-  for (let k in sfx) sfx[k].volume = masterVol * 0.9;
+
+  for (let k in sfx) {
+    sfx[k].volume = masterVol * 0.9;
+  }
 }
 function playSfx(name) { try { let s = sfx[name]; if(s) { s.currentTime=0; s.play().catch(e=>{}); } } catch(e){} }
 function setMasterVol(v) { masterVol=v; if(bgMusic) bgMusic.volume = v * 0.45; for(let k in sfx) sfx[k].volume = v * 0.9; }
@@ -525,8 +600,17 @@ let animFrame = null, lastTime = 0;
 let terminalGlow = 0, lastColor = "";
 
 const STAGE_DATA = {
-  easy: { lives:5, needed:3, speed:0.44, correctChance:0.85, powers: {1:[],2:[],3:["hint"]} },
-  medium: { lives:3, needed:5, speed:0.62, correctChance:0.68, powers: {1:["hint"],2:["hint","magnet"],3:["hint","magnet","shield"]} },
+easy: {
+  lives:5,
+  stars:5,
+  speed:0.44,
+  correctChance:0.85,
+  powers: {
+    1:["hint"],
+    2:["hint"],
+    3:["hint","shield"]
+  }
+}  medium: { lives:3, needed:5, speed:0.62, correctChance:0.68, powers: {1:["hint"],2:["hint","magnet"],3:["hint","magnet","shield"]} },
   hard: { lives:2, needed:5, speed:0.82, correctChance:0.55, powers: {1:["hint","shield"],2:["hint","shield","magnet"],3:["hint","shield","magnet"]} }
 };
 
@@ -590,6 +674,43 @@ function glowTerminal(isGreen) {
   setTimeout(() => terminalGlow = 0.6, 120);
   setTimeout(() => terminalGlow = 0, 450);
 }
+  function saveLeaderboard(stage, score) {
+
+   let board = JSON.parse(localStorage.getItem(stage)) || [];
+
+   let player = prompt("Enter your name:");
+
+   if(!player) player = "Player";
+
+   board.push({
+      name: player,
+      score: score
+   });
+
+   board.sort((a,b) => b.score - a.score);
+
+   board = board.slice(0,5);
+
+   localStorage.setItem(stage, JSON.stringify(board));
+
+   renderLeaderboard();
+}
+  function renderLeaderboard() {
+
+   ["easy","medium","hard"].forEach(stage => {
+
+      let board = JSON.parse(localStorage.getItem(stage)) || [];
+
+      let html = "";
+
+      board.forEach((p,i) => {
+         html += `<div>${i+1}. ${p.name} — ${p.score}</div>`;
+      });
+
+      document.getElementById(stage + "Board").innerHTML =
+         html || "<div>No scores yet</div>";
+   });
+}
 
 function onCatch(item) {
   if (item.type === "code") {
@@ -635,11 +756,21 @@ function onCatch(item) {
   }
   currentItem = null;
 }
-
 function levelComplete() {
   gameRunning = false;
   playSfx("win");
-  if (currentLevel >= 3) document.getElementById("stageCompleteOverlay").classList.remove("hidden");
+
+  if (currentLevel >= 3) {
+
+    saveLeaderboard(currentStage, score);
+
+    document.getElementById("stageCompleteOverlay").classList.remove("hidden");
+
+  } else {
+
+    document.getElementById("lvlCompleteOverlay").classList.remove("hidden");
+  }
+}
   else document.getElementById("lvlCompleteOverlay").classList.remove("hidden");
 }
 function gameOver() { gameRunning=false; playSfx("loss"); document.getElementById("gameOverOverlay").classList.remove("hidden"); kidVoice("Game over. Keep practicing!"); }
@@ -756,7 +887,9 @@ document.querySelectorAll(".buddy-card").forEach(c => c.addEventListener("click"
 canvas.addEventListener("mousemove", e => { if(gameRunning && !gamePaused) { let rect = canvas.getBoundingClientRect(); let mx = (e.clientX - rect.left)*(W/rect.width); targetX = Math.max(0, Math.min(W-catcherW, mx - catcherW/2)); } });
 canvas.addEventListener("touchmove", e => { e.preventDefault(); if(gameRunning && !gamePaused) { let rect = canvas.getBoundingClientRect(); let mx = (e.touches[0].clientX - rect.left)*(W/rect.width); targetX = Math.max(0, Math.min(W-catcherW, mx - catcherW/2)); } }, {passive:false});
 document.addEventListener("keydown", e => { if(e.key === "ArrowLeft") arrowLeft=true; if(e.key === "ArrowRight") arrowRight=true; if(e.key === " " && gameRunning) gamePaused=!gamePaused; });
-document.addEventListener("keyup", e => { if(e.key === "ArrowLeft") arrowLeft=false; if(e.key === "ArrowRight") arrowRight=false; });
+document.addEventListener("keyup", e => { ... });
+
+renderLeaderboard();
 
 animFrame = requestAnimationFrame(gameLoop);
 resizeCanvas();
