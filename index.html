@@ -32,17 +32,17 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
 .buddy-emoji{font-size:2.2rem;display:block;}
 .buddy-name{font-weight:800;font-size:.8rem;color:var(--yellow);margin-top:.3rem;}
 
-/* TUTORIAL SCREEN */
+/* TUTORIAL (now stays simple, leads to stage nav) */
 #tutorialScreen{background:radial-gradient(ellipse at 50% 10%,#1a2040,#0d0f1a 70%);padding:1rem;overflow-y:auto;}
 .tut-title{font-family:'Fredoka One',cursive;font-size:clamp(1.5rem,5vw,2.5rem);color:var(--yellow);text-align:center;margin-bottom:.5rem;}
-.tut-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;width:min(95vw,680px);margin:.8rem 0;}
+.tut-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.7rem;width:min(95vw,680px);margin:.8rem 0;}
 .tut-card{background:var(--panel2);border-radius:16px;padding:.9rem .8rem;text-align:center;border:2px solid rgba(255,255,255,.07);}
 .tut-icon{font-size:2rem;display:block;margin-bottom:.4rem;}
 .tut-label{font-weight:800;font-size:.85rem;color:var(--accent);margin-bottom:.25rem;}
 .tut-desc{font-size:.75rem;color:var(--muted);line-height:1.4;}
 .btn-row{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:.8rem;}
 
-/* STAGE SELECT */
+/* STAGE SELECT - NAVIGATION BAR (only easy/medium/hard + game core) */
 #stageScreen{background:radial-gradient(ellipse at 50% 0%,#1a2040,#0d0f1a 70%);padding:1rem;overflow-y:auto;}
 .stage-title{font-family:'Fredoka One',cursive;font-size:clamp(1.8rem,5vw,2.5rem);color:var(--accent);text-align:center;margin-bottom:.3rem;}
 .stage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;width:min(95vw,680px);margin:.8rem 0;}
@@ -57,7 +57,6 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
 .stage-icon{font-size:2rem;margin-bottom:.4rem;}
 .stage-name{font-family:'Fredoka One',cursive;font-size:1.1rem;}
 .stage-info{font-size:.72rem;color:var(--muted);margin-top:.3rem;line-height:1.4;}
-.stage-stars{font-size:.95rem;margin-top:.4rem;letter-spacing:1px;}
 .lb-box{background:var(--panel2);border-radius:14px;padding:.8rem;width:min(95vw,680px);margin:.5rem 0;}
 .lb-box h3{color:var(--accent);font-family:'Fredoka One',cursive;margin-bottom:.5rem;font-size:1rem;}
 .lb-row{display:flex;align-items:center;gap:.6rem;padding:.35rem .5rem;border-radius:8px;font-size:.8rem;font-weight:700;}
@@ -95,7 +94,6 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;}
 #countdown{position:fixed;inset:0;z-index:45;display:flex;align-items:center;justify-content:center;flex-direction:column;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);}
 #countdown.hidden{display:none;}
 .cd-number{font-family:'Fredoka One',cursive;font-size:clamp(5rem,18vw,9rem);color:var(--yellow);text-shadow:0 0 40px rgba(255,229,102,.7);animation:cdpop .6s cubic-bezier(.36,1.7,.5,1);}
-@keyframes cdpop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
 .cd-msg{color:var(--accent);font-weight:800;font-size:clamp(.9rem,2.5vw,1.2rem);margin-top:.5rem;text-align:center;padding:0 1rem;}
 
 /* Toast */
@@ -116,22 +114,17 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;}
 .btn-primary{background:linear-gradient(135deg,#ffe566,#ff9f2e);color:#1a0f00;font-size:clamp(.95rem,2.8vw,1.2rem);padding:.75rem 2rem;box-shadow:0 6px 0 #8a5200;}
 .btn-secondary{background:var(--panel2);color:var(--accent);font-size:.9rem;padding:.55rem 1.3rem;border:2px solid var(--accent);}
 
-/* Side Controls */
+/* Side Controls + bigger character on terminal bar */
 .side-controls{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:100;background:rgba(10,12,26,.9);backdrop-filter:blur(12px);border-radius:28px;padding:12px 8px;display:flex;flex-direction:column;gap:12px;border:1px solid rgba(0,229,255,.3);}
 .side-btn{background:var(--panel2);border:none;border-radius:50px;width:44px;height:44px;font-size:1.5rem;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;color:var(--text);}
 .side-btn:hover{background:var(--accent);color:#000;}
 .volume-slider-container{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--panel2);padding:8px 4px;border-radius:40px;}
 .vol-icon{font-size:1rem;margin-bottom:4px;}
 input[type=range]{writing-mode:bt-lr;width:60px;height:4px;-webkit-appearance:slider-vertical;background:var(--accent);border-radius:4px;}
-
-/* Instruction Modal */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;display:flex;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:.2s;}
 .modal.show{visibility:visible;opacity:1;}
 .modal-content{background:var(--panel);border-radius:32px;padding:1.5rem;width:min(90vw,500px);max-height:80vh;overflow-y:auto;border:2px solid var(--accent);}
 .modal-content h2{color:var(--yellow);margin-bottom:1rem;}
-.modal-content ul{list-style:none;padding:0;}
-.modal-content li{margin:.8rem 0;display:flex;gap:10px;align-items:center;font-size:.9rem;border-bottom:1px solid rgba(255,255,255,.1);padding:.5rem;}
-
 .btn-close{background:var(--accent);color:#000;border:none;padding:.5rem 1.5rem;border-radius:40px;margin-top:1rem;font-weight:800;cursor:pointer;}
 </style>
 </head>
@@ -150,135 +143,110 @@ input[type=range]{writing-mode:bt-lr;width:60px;height:4px;-webkit-appearance:sl
   <button class="btn btn-primary" id="titlePlayBtn">⚡ LET'S PLAY!</button>
 </div>
 
-<!-- Tutorial -->
+<!-- Quick Tutorial (then stage navigation) -->
 <div class="screen hidden" id="tutorialScreen">
   <div class="tut-title">🎮 How to Play!</div>
   <div class="tut-grid">
-    <div class="tut-card"><span class="tut-icon">🖱️</span><span class="tut-label">Move</span><span class="tut-desc">Move mouse or finger</span></div>
-    <div class="tut-card"><span class="tut-icon">⌨️</span><span class="tut-label">Arrow Keys</span><span class="tut-desc">← → move left/right</span></div>
-    <div class="tut-card"><span class="tut-icon">✅</span><span class="tut-label">Correct Code</span><span class="tut-desc">Catch right code +10</span></div>
-    <div class="tut-card"><span class="tut-icon">❌</span><span class="tut-label">Wrong Code</span><span class="tut-desc">Avoid bugs - lose heart</span></div>
-    <div class="tut-card"><span class="tut-icon">💡</span><span class="tut-label">HINT</span><span class="tut-desc">Glows correct answer</span></div>
-    <div class="tut-card"><span class="tut-icon">🏆</span><span class="tut-label">Goal</span><span class="tut-desc">Fill stars to pass</span></div>
+    <div class="tut-card"><span class="tut-icon">🖱️</span><span class="tut-label">Move</span><span class="tut-desc">Mouse or finger</span></div>
+    <div class="tut-card"><span class="tut-icon">⌨️</span><span class="tut-label">Arrow Keys</span><span class="tut-desc">← → move</span></div>
+    <div class="tut-card"><span class="tut-icon">✅</span><span class="tut-label">Correct Code</span><span class="tut-desc">+10 points</span></div>
+    <div class="tut-card"><span class="tut-icon">❌</span><span class="tut-label">Wrong Code</span><span class="tut-desc">lose heart</span></div>
+    <div class="tut-card"><span class="tut-icon">💡</span><span class="tut-label">AI Hint</span><span class="tut-desc">Glows correct + why</span></div>
+    <div class="tut-card"><span class="tut-icon">🏆</span><span class="tut-label">Stars fill</span><span class="tut-desc">to pass level</span></div>
   </div>
   <div class="btn-row"><button class="btn btn-secondary" id="tutBackBtn">← Back</button><button class="btn btn-primary" id="tutNextBtn">Pick Stage ▶</button></div>
 </div>
 
-<!-- Stage Select -->
+<!-- Stage Navigation Bar (Easy, Medium, Hard only) -->
 <div class="screen hidden" id="stageScreen">
-  <div class="stage-title">🗺️ Pick a Stage</div>
+  <div class="stage-title">🗺️ Select Your Challenge</div>
   <div class="stage-grid">
-    <div class="stage-card easy" data-stage="easy"><div class="stage-icon">🌱</div><div class="stage-name" style="color:#4fc3f7;">Easy</div><div class="stage-info">5 hearts · slow</div><div class="stage-stars" id="easyStars">☆☆☆</div></div>
-    <div class="stage-card medium" data-stage="medium"><div class="stage-icon">⚡</div><div class="stage-name" style="color:var(--yellow);">Medium</div><div class="stage-info">3 hearts · hints</div><div class="stage-stars" id="mediumStars">☆☆☆</div></div>
-    <div class="stage-card hard" data-stage="hard"><div class="stage-icon">🔥</div><div class="stage-name" style="color:var(--red);">Hard</div><div class="stage-info">2 hearts · fast</div><div class="stage-stars" id="hardStars">☆☆☆</div></div>
+    <div class="stage-card easy" data-stage="easy"><div class="stage-icon">🌱</div><div class="stage-name" style="color:#4fc3f7;">Easy</div><div class="stage-info">5 hearts · Slower</div></div>
+    <div class="stage-card medium" data-stage="medium"><div class="stage-icon">⚡</div><div class="stage-name" style="color:var(--yellow);">Medium</div><div class="stage-info">3 hearts · Hints</div></div>
+    <div class="stage-card hard" data-stage="hard"><div class="stage-icon">🔥</div><div class="stage-name" style="color:var(--red);">Hard</div><div class="stage-info">2 hearts · Fast</div></div>
   </div>
-  <div class="lb-box"><h3>🏆 Leaderboard</h3><div class="lb-tabs"><button class="lb-tab active" data-lb="easy">Easy</button><button class="lb-tab" data-lb="medium">Medium</button><button class="lb-tab" data-lb="hard">Hard</button></div><div id="lbList"></div></div>
+  <div class="lb-box"><h3>🏆 Class Leaderboard</h3><div class="lb-tabs"><button class="lb-tab active" data-lb="easy">Easy</button><button class="lb-tab" data-lb="medium">Medium</button><button class="lb-tab" data-lb="hard">Hard</button></div><div id="lbList"></div></div>
   <div class="btn-row"><button class="btn btn-secondary" id="stageBackBtn">← Back</button></div>
 </div>
 
 <!-- Game Screen -->
 <div class="screen hidden" id="gameScreen"><canvas id="gameCanvas"></canvas>
   <div class="topbar"><div class="hstat score">⭐ <span id="hScore">0</span></div><div class="hstat lives">❤️ <span id="hLives">5</span></div><div class="hstat lvl">⚙️ Lv <span id="hLvl">1</span>/3</div><div class="hstat">🏅 <span id="hStage">Easy</span></div><div class="topbar-right"><button class="ibtn" id="pauseBtn">⏸</button><button class="ibtn" id="quitGameBtn">🏠</button></div></div>
-  <div class="powerbar"><div class="pchip" id="pHint">💡 HINT</div><div class="pchip" id="pShield">🛡️ SHIELD</div><div class="pchip" id="pMagnet">✨ MAGNET</div><span id="hintUses" style="margin-left:auto;font-size:.68rem;">Hints: 5</span></div>
+  <div class="powerbar"><div class="pchip" id="pHint">💡 AI HINT</div><div class="pchip" id="pShield">🛡️ SHIELD</div><div class="pchip" id="pMagnet">✨ MAGNET</div><span id="hintUses" style="margin-left:auto;font-size:.68rem;">Hints: 5</span></div>
   <div class="progbar"><div class="prog-label"><span id="progMsg">Catch 5 correct!</span><span id="progCount">0/5</span></div><div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div><div class="star-row" id="starRow"></div></div>
 </div>
 
-<!-- Countdown -->
+<!-- Overlays & Modals -->
 <div id="countdown" class="hidden"><div class="cd-number" id="cdNum">3</div><div class="cd-msg" id="cdMsg">Get ready!</div></div>
 <div id="toast"><div class="toast-inner" id="toastInner">✨</div></div>
-
-<!-- Side Controls -->
-<div class="side-controls">
-  <button class="side-btn" id="musicToggleBtn" title="Music On/Off">🎵</button>
-  <div class="volume-slider-container"><span class="vol-icon">🔊</span><input type="range" id="volumeSlider" min="0" max="100" value="50" orient="vertical" style="height:60px;"></div>
-  <button class="side-btn" id="themeToggleBtn" title="Day/Night">🌙</button>
-  <button class="side-btn" id="instructionBtn" title="Instructions">❓</button>
-  <button class="side-btn" id="quitSideBtn" title="Quit">🏠</button>
-</div>
-
-<!-- Instruction Modal -->
-<div id="instructionModal" class="modal"><div class="modal-content"><h2>📖 How to Play</h2><ul><li>🖱️ Move left/right with mouse or finger</li><li>✅ Catch GREEN correct code → +10 points + star</li><li>❌ Avoid RED bugs → lose a heart</li><li>💡 HINT makes the right answer glow</li><li>🛡️ SHIELD blocks one bug</li><li>✨ MAGNET pulls correct code toward you</li><li>⭐ Fill all stars to complete level!</li></ul><button class="btn-close" id="closeModalBtn">Got it!</button></div></div>
-
-<!-- Level Complete & Game Over Overlays -->
+<div class="side-controls"><button class="side-btn" id="musicToggleBtn" title="Music On/Off">🎵</button><div class="volume-slider-container"><span class="vol-icon">🔊</span><input type="range" id="volumeSlider" min="0" max="100" value="50" orient="vertical" style="height:60px;"></div><button class="side-btn" id="themeToggleBtn" title="Day/Night">🌙</button><button class="side-btn" id="instructionBtn" title="Instructions">❓</button><button class="side-btn" id="quitSideBtn" title="Quit">🏠</button></div>
+<div id="instructionModal" class="modal"><div class="modal-content"><h2>📖 How to Play</h2><ul><li>🖱️ Move left/right</li><li>✅ Catch correct code → +10 points</li><li>❌ Avoid wrong code → lose heart</li><li>💡 AI HINT: makes correct answer glow + explains why</li><li>🛡️ SHIELD: blocks one mistake</li><li>✨ MAGNET: pulls correct code</li><li>⭐ Fill all stars to complete level and win stage!</li></ul><button class="btn-close" id="closeModalBtn">Got it!</button></div></div>
 <div class="overlay hidden" id="lvlCompleteOverlay"><div class="card"><div id="lcEmoji">🎉</div><h2 id="lcTitle">Level Done!</h2><div class="big-stars" id="lcStars">⭐⭐⭐</div><button class="btn btn-primary" id="nextLvlBtn">Next Level ▶</button></div></div>
 <div class="overlay hidden" id="stageCompleteOverlay"><div class="card"><div>🏆</div><h2 id="scTitle">Stage Complete!</h2><div class="big-stars" id="scStars">⭐⭐⭐</div><button class="btn btn-primary" id="nextStageBtn">Next Stage</button><button class="btn btn-secondary" id="scHomeBtn">Home</button></div></div>
 <div class="overlay hidden" id="gameOverOverlay"><div class="card"><div>💥</div><h2>Game Over</h2><p id="goMsg">Try again!</p><button class="btn btn-primary" id="retryBtn">Try Again</button><button class="btn btn-secondary" id="goHomeBtn">Home</button></div></div>
 <div class="overlay hidden" id="pauseOverlay"><div class="card"><div>⏸️</div><h2>Paused</h2><button class="btn btn-primary" id="resumeBtn">Resume</button><button class="btn btn-secondary" id="pauseQuitBtn">Home</button></div></div>
 
 <script>
-// ==================== AUDIO & MUSIC SYSTEM ====================
-let bgAudio = null;
-let audioContext = null;
-let masterVolume = 0.5;
+// ============= AUDIO SYSTEM (using names: cover screen, codes collected, win, loss, oops, try again) =============
+const audioFiles = {
+  cover: new Audio("cover screen.m4a"),
+  codesCollected: new Audio("codes collected.m4a"),
+  win: new Audio("win.m4a"),
+  loss: new Audio("loss.m4a"),
+  oops: new Audio("oops.m4a"),
+  tryAgain: new Audio("try again.m4a"),
+  yaaa: new Audio("yaaa.m4a")
+};
+let bgMusic = null;
+let masterVol = 0.5;
 let musicEnabled = true;
-function initAudio() {
-  if (!bgAudio) {
-    bgAudio = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3");
-    bgAudio.loop = true;
-    bgAudio.volume = masterVolume;
+function initGlobalAudio() {
+  if(!bgMusic){
+    bgMusic = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3");
+    bgMusic.loop = true;
+    bgMusic.volume = masterVol;
   }
-  if (!audioContext) {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  }
+  for(let key in audioFiles) audioFiles[key].volume = masterVol;
 }
-function playClick() {
-  try {
-    if (!audioContext) initAudio();
-    const o = audioContext.createOscillator();
-    const g = audioContext.createGain();
-    o.connect(g); g.connect(audioContext.destination);
-    o.frequency.value = 880;
-    o.type = "sine";
-    g.gain.value = masterVolume * 0.15;
-    o.start(); o.stop(audioContext.currentTime + 0.08);
-  } catch(e) {}
+function playSound(name) {
+  try { let snd = audioFiles[name]; if(snd) { snd.currentTime=0; snd.play().catch(e=>console.log); } } catch(e){}
 }
-function playCorrectSound() {
-  try { if (!audioContext) initAudio(); const o=audioContext.createOscillator(), g=audioContext.createGain(); o.connect(g); g.connect(audioContext.destination); o.frequency.value=523; g.gain.value=masterVolume*0.2; o.start(); o.stop(audioContext.currentTime+0.12); } catch(e) {}
-}
-function playWrongSound() {
-  try { if (!audioContext) initAudio(); const o=audioContext.createOscillator(), g=audioContext.createGain(); o.connect(g); g.connect(audioContext.destination); o.frequency.value=220; g.gain.value=masterVolume*0.15; o.start(); o.stop(audioContext.currentTime+0.15); } catch(e) {}
-}
-function setMasterVolume(val) { masterVolume = val; if (bgAudio) bgAudio.volume = masterVolume; }
-function toggleMusic() { musicEnabled = !musicEnabled; if (bgAudio) { if (musicEnabled) bgAudio.play().catch(e=>console.log); else bgAudio.pause(); } }
-function startMusic() { if (bgAudio && musicEnabled) bgAudio.play().catch(e=>console.log); }
-document.addEventListener("click", () => { initAudio(); startMusic(); }, { once: true });
+function playClick() { try { let beep = new Audio(); beep.volume=masterVol*0.2; beep.play(); } catch(e){} }
+function setMasterVolume(v) { masterVol=v; if(bgMusic) bgMusic.volume=v; for(let k in audioFiles) audioFiles[k].volume=v; }
+function toggleMusic() { musicEnabled=!musicEnabled; if(bgMusic){ if(musicEnabled) bgMusic.play().catch(e=>console.log); else bgMusic.pause(); } }
+function startMusic() { if(bgMusic && musicEnabled) bgMusic.play().catch(e=>console.log); }
+document.addEventListener("click", ()=>{ initGlobalAudio(); startMusic(); playSound("cover"); }, { once: true });
+document.getElementById("volumeSlider").oninput = (e) => { masterVol = e.target.value/100; setMasterVolume(masterVol); };
 document.getElementById("musicToggleBtn").onclick = () => { playClick(); toggleMusic(); };
-document.getElementById("volumeSlider").oninput = (e) => { masterVolume = e.target.value / 100; setMasterVolume(masterVolume); };
-document.getElementById("themeToggleBtn").onclick = () => { playClick(); document.body.style.setProperty('--bg', document.body.style.getPropertyValue('--bg') === '#0d0f1a' ? '#f0f4fa' : '#0d0f1a'); };
+document.getElementById("themeToggleBtn").onclick = () => { playClick(); let root=document.body.style; let curr=root.getPropertyValue('--bg'); if(curr==='#0d0f1a') root.setProperty('--bg','#f0f4fa'); else root.setProperty('--bg','#0d0f1a'); };
 document.getElementById("instructionBtn").onclick = () => { playClick(); document.getElementById("instructionModal").classList.add("show"); };
 document.getElementById("closeModalBtn").onclick = () => { playClick(); document.getElementById("instructionModal").classList.remove("show"); };
-document.getElementById("quitSideBtn").onclick = () => { playClick(); gameRunning=false; show("titleScreen"); };
+document.getElementById("quitSideBtn").onclick = () => { gameRunning=false; show("titleScreen"); };
 
-// ==================== GAME STATE ====================
-let hero = "kid";
-let currentStage = "easy", currentLevel = 1;
+// ==================== GAME CORE ====================
+let hero = "kid"; let currentStage = "easy", currentLevel = 1;
 let score = 0, lives = 5, caughtCorrect = 0, starsNeeded = 5;
 let activeShield = false, activeMagnet = false, hintActive = false, hintTimer = 0, hintUsesLeft = 5;
 let gameRunning = false, gamePaused = false, waitingForFeedback = false;
-let currentItem = null, particles = [], floaters = [];
-let arrowLeft = false, arrowRight = false;
-let W = 0, H = 0, machX = 0, machW = 120, groundY = 0, targetX = 0;
-let animId = null, lastTime = 0;
-
+let currentItem = null; let arrowLeft=false,arrowRight=false;
+let W=0,H=0,machX=0,machW=120,groundY=0,targetX=0;
+let animId=null,lastTime=0;
 const STAGE_CFG = {
-  easy: { label: "Easy", lives: 5, starsNeeded: 5, baseSpeed: 0.22, correctChance: 0.88, powers: { 1: [], 2: [], 3: ["hint"] } },
-  medium: { label: "Medium", lives: 3, starsNeeded: 5, baseSpeed: 0.32, correctChance: 0.65, powers: { 1: ["hint"], 2: ["hint","magnet"], 3: ["hint","magnet","shield"] } },
-  hard: { label: "Hard", lives: 2, starsNeeded: 5, baseSpeed: 0.46, correctChance: 0.5, powers: { 1: ["hint","shield"], 2: ["hint","shield","magnet"], 3: ["hint","shield","magnet"] } }
+  easy: { label:"Easy", lives:5, starsNeeded:5, baseSpeed:0.22, correctChance:0.88, powers:{1:[],2:[],3:["hint"]} },
+  medium: { label:"Medium", lives:3, starsNeeded:5, baseSpeed:0.32, correctChance:0.65, powers:{1:["hint"],2:["hint","magnet"],3:["hint","magnet","shield"]} },
+  hard: { label:"Hard", lives:2, starsNeeded:5, baseSpeed:0.46, correctChance:0.5, powers:{1:["hint","shield"],2:["hint","shield","magnet"],3:["hint","shield","magnet"]} }
 };
 const challenges = [
-  { correct: 'print("Hi")', wrongs: ['print(Hi)','Print Hi'], why: '✅ print needs quotes!' },
-  { correct: 'x = 5', wrongs: ['x == 5','x :=5'], why: '✅ one = stores value' },
-  { correct: 'for i in range(3):', wrongs: ['for i=3','loop 3'], why: '✅ for needs range and colon' },
-  { correct: 'if x == 5:', wrongs: ['if x=5:','if x is 5'], why: '✅ == compares values' },
+  { correct:'print("Hi")', wrongs:['print(Hi)','Print Hi'], why:'✅ print needs quotes to output text!' },
+  { correct:'x = 5', wrongs:['x == 5','x :=5'], why:'✅ = stores value, == compares!' },
+  { correct:'for i in range(3):', wrongs:['for i=3','loop 3 times'], why:'✅ for uses "in range()" and colon' },
+  { correct:'if x == 5:', wrongs:['if x=5:','if x is 5'], why:'✅ use == to compare numbers' }
 ];
-function getRandomChallenge() { return challenges[Math.floor(Math.random() * challenges.length)]; }
-function updateStarsUI() { for(let s of ["easy","medium","hard"]) document.getElementById(s+"Stars").innerHTML="☆☆☆"; }
+function getRandomChallenge(){ return challenges[Math.floor(Math.random()*challenges.length)]; }
 
-function show(id) { document.querySelectorAll(".screen").forEach(s=>s.classList.add("hidden")); document.getElementById(id).classList.remove("hidden"); }
+function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.add("hidden")); document.getElementById(id).classList.remove("hidden"); }
 function toast(msg,type,dur=2000){ let el=document.getElementById("toastInner"); el.textContent=msg; el.className="toast-inner t"+type; document.getElementById("toast").style.opacity="1"; setTimeout(()=>document.getElementById("toast").style.opacity="0",dur); }
-
-function updateHUD() {
+function updateHUD(){
   document.getElementById("hScore").innerHTML=score;
   document.getElementById("hLives").innerHTML=lives;
   document.getElementById("hLvl").innerHTML=currentLevel;
@@ -299,8 +267,7 @@ function updateHUD() {
   document.getElementById("pShield").classList.toggle("active", activeShield);
   document.getElementById("pMagnet").classList.toggle("active", activeMagnet);
 }
-
-function spawnItem() {
+function spawnItem(){
   if(!gameRunning||gamePaused||waitingForFeedback||currentItem) return;
   let cfg=STAGE_CFG[currentStage];
   let spd=cfg.baseSpeed*(1+(currentLevel-1)*0.18);
@@ -320,38 +287,37 @@ function spawnItem() {
   }
 }
 function onCorrect(it){
-  score+=10; caughtCorrect++; playCorrectSound(); toast("✅ "+it.why,"c");
+  score+=10; caughtCorrect++; playSound("codesCollected"); playSound("yaaa");
+  toast("✅ "+it.why,"c");
   waitingForFeedback=true; setTimeout(()=>{waitingForFeedback=false;},800);
   if(caughtCorrect>=starsNeeded) levelComplete();
   updateHUD();
 }
 function onWrong(it){
-  if(activeShield){ activeShield=false; toast("🛡️ Shield blocked!","i"); waitingForFeedback=true; setTimeout(()=>{waitingForFeedback=false;},600); updateHUD(); return; }
-  lives--; playWrongSound(); toast("❌ "+it.why,"w");
+  if(activeShield){ activeShield=false; toast("🛡️ Shield blocked!","i"); playSound("tryAgain"); waitingForFeedback=true; setTimeout(()=>{waitingForFeedback=false;},600); updateHUD(); return; }
+  lives--; playSound("oops"); toast("❌ "+it.why,"w");
   waitingForFeedback=true; setTimeout(()=>{waitingForFeedback=false;},800);
   if(lives<=0) gameOver();
   updateHUD();
 }
 function onPower(p){
-  if(p==="hint" && hintUsesLeft>0){ hintUsesLeft--; hintActive=true; hintTimer=5; toast("💡 Hint active!","i"); setTimeout(()=>hintActive=false,5000); }
-  if(p==="shield"){ activeShield=true; toast("🛡️ Shield ready!","i"); }
-  if(p==="magnet"){ activeMagnet=true; setTimeout(()=>activeMagnet=false,8000); toast("✨ Magnet on!","i"); }
+  if(p==="hint" && hintUsesLeft>0){ hintUsesLeft--; hintActive=true; hintTimer=5; toast("💡 AI Hint: correct answer will glow!","i"); playSound("tryAgain"); setTimeout(()=>hintActive=false,5000); }
+  if(p==="shield"){ activeShield=true; toast("🛡️ Shield ready!","i"); playSound("tryAgain"); }
+  if(p==="magnet"){ activeMagnet=true; toast("✨ Magnet on for 8s!","i"); playSound("tryAgain"); setTimeout(()=>activeMagnet=false,8000); }
   updateHUD();
 }
 function levelComplete(){
-  gameRunning=false;
+  gameRunning=false; playSound("win");
   if(currentLevel>=3){
     toast("🏆 Stage Complete!","c",2000);
     document.getElementById("scTitle").innerHTML=STAGE_CFG[currentStage].label+" Complete!";
-    document.getElementById("scStars").innerHTML="⭐⭐⭐";
     document.getElementById("stageCompleteOverlay").classList.remove("hidden");
   } else {
     document.getElementById("lcTitle").innerHTML=`Level ${currentLevel} Done!`;
-    document.getElementById("lcStars").innerHTML="⭐⭐⭐";
     document.getElementById("lvlCompleteOverlay").classList.remove("hidden");
   }
 }
-function gameOver(){ gameRunning=false; document.getElementById("gameOverOverlay").classList.remove("hidden"); toast("Game Over!","w"); }
+function gameOver(){ gameRunning=false; playSound("loss"); document.getElementById("gameOverOverlay").classList.remove("hidden"); toast("Game Over! Try again!","w"); }
 function startGame(stage,level){
   currentStage=stage; currentLevel=level;
   let cfg=STAGE_CFG[stage];
@@ -369,35 +335,35 @@ function restartLevel(){ startGame(currentStage,currentLevel); }
 function nextLevel(){ currentLevel++; startGame(currentStage,currentLevel); }
 function nextStage(){ let order=["easy","medium","hard"]; let idx=order.indexOf(currentStage); if(idx<2) startGame(order[idx+1],1); else show("titleScreen"); }
 
-// Drawing & loop
+// Canvas drawing
 function resizeCanvas(){
   W=window.innerWidth; H=window.innerHeight; let c=document.getElementById("gameCanvas");
   c.width=W; c.height=H; machW=Math.min(140,Math.max(100,W*0.18)); groundY=H-80;
   machX=Math.min(W-machW,Math.max(0,machX||W/2-machW/2)); targetX=machX;
 }
-function drawBG(){ ctx.fillStyle="#0d0f1a"; ctx.fillRect(0,0,W,H); ctx.fillStyle="#00e5ff10"; ctx.fillRect(0,groundY,W,H-groundY); }
+let ctx=document.getElementById("gameCanvas").getContext("2d");
+function drawMachine(){
+  let cx=machX+machW/2, by=groundY-58;
+  ctx.fillStyle="var(--panel)"; ctx.shadowBlur=0; ctx.beginPath(); ctx.roundRect(machX,by,machW,60,16); ctx.fill();
+  ctx.fillStyle="#00e5ffaa"; ctx.font="34px Segoe UI Emoji"; ctx.fillText(hero=="kid"?"🧒":hero=="robot"?"🤖":"🐱",cx-20,by+38);
+  ctx.fillStyle="var(--accent)"; ctx.font="bold 18px monospace"; ctx.fillText(">>_ ", cx-10, by+18);
+}
 function drawItem(it){
-  ctx.save();
-  if(it.type=="power"){ ctx.font="28px Segoe UI Emoji"; ctx.fillText(it.text,it.x,it.y); }
+  ctx.save(); ctx.shadowBlur=hintActive&&it.type=="code"&&it.isCorrect?18:4;
+  if(it.type=="power"){ ctx.font="32px Segoe UI Emoji"; ctx.fillText(it.text,it.x,it.y); }
   else{
     let hinted=hintActive&&it.isCorrect; let label=hinted?`✨ ${it.text} ✨`:it.text;
     ctx.font=`800 ${it.fs}px monospace`; ctx.textAlign="center";
-    ctx.fillStyle=it.isCorrect?"#0a2a2a":"#2a1010"; ctx.shadowBlur=hinted?12:4;
-    ctx.beginPath(); ctx.roundRect(it.x-it.w/2,it.y-it.h/2,it.w,it.h,10); ctx.fill();
+    ctx.fillStyle="#1a1f38"; ctx.beginPath(); ctx.roundRect(it.x-it.w/2,it.y-it.h/2,it.w,it.h,12); ctx.fill();
     ctx.fillStyle=it.isCorrect?"#7ff0ff":"#ffaabb"; ctx.fillText(label,it.x,it.y);
+    if(hinted){ ctx.font="bold 12px monospace"; ctx.fillStyle="gold"; ctx.fillText("✨ AI says correct! ✨",it.x,it.y-12); }
   }
   ctx.restore();
 }
-function drawMachine(){
-  let cx=machX+machW/2, by=groundY-50;
-  ctx.fillStyle="#131629"; ctx.beginPath(); ctx.roundRect(machX,by,machW,48,12); ctx.fill();
-  ctx.fillStyle="#00e5ff40"; ctx.font="22px Segoe UI Emoji"; ctx.fillText(hero=="kid"?"🧒":hero=="robot"?"🤖":"🐱",cx,by+10);
-}
-let ctx=document.getElementById("gameCanvas").getContext("2d");
 function updateItem(dt){
   if(!currentItem) return;
   currentItem.y+=currentItem.vy*60*dt;
-  if(activeMagnet&&currentItem.type=="code"&&currentItem.isCorrect) currentItem.x+=(machX+machW/2-currentItem.x)*0.05;
+  if(activeMagnet&&currentItem.type=="code"&&currentItem.isCorrect) currentItem.x+=(machX+machW/2-currentItem.x)*0.08;
   if(currentItem.y+30>groundY-30 && currentItem.x>machX-15 && currentItem.x<machX+machW+15){
     let it=currentItem; currentItem=null;
     if(it.type=="power") onPower(it.power);
@@ -410,7 +376,8 @@ function updateItem(dt){
 function gameLoop(now){
   if(!animId) return;
   let dt=Math.min(0.05, (now-lastTime)/1000||0); lastTime=now;
-  ctx.clearRect(0,0,W,H); drawBG(); drawMachine();
+  ctx.clearRect(0,0,W,H); ctx.fillStyle="var(--bg)"; ctx.fillRect(0,0,W,H);
+  drawMachine(); if(currentItem){ drawItem(currentItem); }
   if(gameRunning&&!gamePaused){
     let spd=W*0.012;
     if(arrowLeft) targetX=Math.max(0,targetX-spd);
@@ -421,16 +388,15 @@ function gameLoop(now){
     else if(!waitingForFeedback) spawnItem();
     updateHUD();
   }
-  if(currentItem) drawItem(currentItem);
   animId=requestAnimationFrame(gameLoop);
 }
 function handleMove(clientX){ if(!gameRunning||gamePaused) return; let rect=canvas.getBoundingClientRect(); let cx=(clientX-rect.left)*(W/rect.width); targetX=Math.max(0,Math.min(W-machW,cx-machW/2)); }
 
-// Wiring Events
+// Event Binding
 function wire(id,fn){ document.getElementById(id)?.addEventListener("click",()=>{ playClick(); fn(); }); }
 wire("titlePlayBtn",()=>show("tutorialScreen"));
 wire("tutBackBtn",()=>show("titleScreen"));
-wire("tutNextBtn",()=>{ updateStarsUI(); show("stageScreen"); });
+wire("tutNextBtn",()=>show("stageScreen"));
 wire("stageBackBtn",()=>show("tutorialScreen"));
 wire("nextLvlBtn",()=>{ document.getElementById("lvlCompleteOverlay").classList.add("hidden"); nextLevel(); });
 wire("nextStageBtn",()=>{ document.getElementById("stageCompleteOverlay").classList.add("hidden"); nextStage(); });
@@ -446,7 +412,7 @@ document.getElementById("pShield")?.addEventListener("click",()=>{ if(gameRunnin
 document.getElementById("pMagnet")?.addEventListener("click",()=>{ if(gameRunning&&STAGE_CFG[currentStage].powers[currentLevel]?.includes("magnet")){ playClick(); onPower("magnet"); } });
 document.querySelectorAll(".stage-card").forEach(c=>c.addEventListener("click",()=>{ playClick(); startGame(c.dataset.stage,1); }));
 document.querySelectorAll(".buddy-card").forEach(c=>c.addEventListener("click",()=>{ playClick(); document.querySelectorAll(".buddy-card").forEach(x=>x.classList.remove("sel")); c.classList.add("sel"); hero=c.dataset.hero; }));
-document.querySelectorAll(".lb-tab").forEach(t=>t.addEventListener("click",()=>{ playClick(); document.querySelectorAll(".lb-tab").forEach(x=>x.classList.remove("active")); t.classList.add("active"); }));
+
 let canvas=document.getElementById("gameCanvas");
 canvas.addEventListener("mousemove",e=>handleMove(e.clientX));
 canvas.addEventListener("touchmove",e=>{ e.preventDefault(); handleMove(e.touches[0].clientX); },{passive:false});
