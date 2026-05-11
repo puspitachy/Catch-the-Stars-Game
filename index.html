@@ -874,24 +874,51 @@ playWrongVoice();
 }
 
 function levelComplete() {
+
   gameRunning = false;
+
+  // PLAY YOUR LEVEL UP VOICE
+  document.getElementById("levelUpAudio").currentTime = 0;
+
+  document.getElementById("levelUpAudio").play();
+
   let cfg = STAGE_CONFIG[currentStage];
+
   if(currentLevel >= cfg.levels) {
-    document.getElementById("stageScore").textContent = `⭐ ${score} pts`;
-    document.getElementById("stageCompleteOverlay").classList.remove("hidden");
-    kidSpeak("Amazing! Stage complete! You are a Python star!", 100);
+
+    document.getElementById("stageScore").textContent =
+      `⭐ ${score} pts`;
+
+    document.getElementById("stageCompleteOverlay")
+      .classList.remove("hidden");
+
   } else {
-    document.getElementById("lvlScore").textContent = `⭐ ${score} pts`;
-    document.getElementById("lvlCompleteOverlay").classList.remove("hidden");
-    kidSpeak("Level complete! Keep going, superstar!", 100);
+
+    document.getElementById("lvlScore").textContent =
+      `⭐ ${score} pts`;
+
+    document.getElementById("lvlCompleteOverlay")
+      .classList.remove("hidden");
+
   }
+
 }
 
 function gameOver() {
+
   gameRunning = false;
-  document.getElementById("goScore").textContent = `⭐ ${score} pts`;
-  document.getElementById("gameOverOverlay").classList.remove("hidden");
-  kidSpeak("Game over. You can do it! Try again!", 200);
+
+  // PLAY GAME OVER VOICE
+  document.getElementById("gameOverAudio").currentTime = 0;
+
+  document.getElementById("gameOverAudio").play();
+
+  document.getElementById("goScore").textContent =
+    `⭐ ${score} pts`;
+
+  document.getElementById("gameOverOverlay")
+    .classList.remove("hidden");
+
 }
 
 function nextLevel() {
