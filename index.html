@@ -1187,13 +1187,14 @@ function drawItem(item) {
   if(item.caught) return;
   ctx.save();
   ctx.globalAlpha = item.alpha;
+  
 
   let isCorrect = item.isCorrect;
   let isPower = item.type === "power";
 
 // White glow
 ctx.shadowBlur = isPower ? 20 : 10;
-ctx.shadowColor = "rgba(255,255,255,0.8)";ctx.strokeStyle = "white";
+ctx.shadowColor = "rgba(255,255,255,0.9)";
 
   // Background
   let boxGrad = ctx.createLinearGradient(item.x - item.w/2, item.y - item.h/2, item.x + item.w/2, item.y + item.h/2);
@@ -1210,8 +1211,8 @@ ctx.shadowColor = "rgba(255,255,255,0.8)";ctx.strokeStyle = "white";
   ctx.fill();
 
   // Border
-  ctx.strokeStyle = isPower ? "#ffd966" : isCorrect ? "rgba(74,222,128,0.6)" : "rgba(255,107,107,0.5)";
-  ctx.lineWidth = isPower ? 2 : 1.5;
+ctx.strokeStyle = "white";
+ctx.lineWidth = 3;
   ctx.stroke();
 
   // Text
