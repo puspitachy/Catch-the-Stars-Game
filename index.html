@@ -1191,9 +1191,9 @@ function drawItem(item) {
   let isCorrect = item.isCorrect;
   let isPower = item.type === "power";
 
-  // Shadow glow
-  ctx.shadowBlur = isPower ? 20 : 10;
-  ctx.shadowColor = isPower ? "#ffd966" : isCorrect ? "rgba(74,222,128,0.4)" : "rgba(255,107,107,0.3)";
+// White glow
+ctx.shadowBlur = isPower ? 20 : 10;
+ctx.shadowColor = "rgba(255,255,255,0.8)";ctx.strokeStyle = "white";
 
   // Background
   let boxGrad = ctx.createLinearGradient(item.x - item.w/2, item.y - item.h/2, item.x + item.w/2, item.y + item.h/2);
