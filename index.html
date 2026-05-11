@@ -490,6 +490,15 @@ canvas {
 <audio id="levelUpAudio" src="level up.m4a"></audio>
 
 <audio id="gameOverAudio" src="oh no game over.m4a"></audio>
+<audio id="level1Audio" src="level 1.m4a"></audio>
+
+<audio id="level2Audio" src="level 2.m4a"></audio>
+
+<audio id="level3Audio" src="level 3.m4a"></audio>
+
+<audio id="level4Audio" src="level 4.m4a"></audio>
+
+<audio id="level5Audio" src="level 5.m4a"></audio>
 <script>
 // ========== STAR BACKGROUND ==========
 (function(){
@@ -536,7 +545,54 @@ function kidSpeak() {
   return;
 
 }
+function playLevelStartVoice(){
 
+  let currentAudio;
+
+  // CHECK CURRENT LEVEL
+
+  if(currentLevel === 1){
+
+    currentAudio =
+      document.getElementById("level1Audio");
+
+  }
+
+  else if(currentLevel === 2){
+
+    currentAudio =
+      document.getElementById("level2Audio");
+
+  }
+
+  else if(currentLevel === 3){
+
+    currentAudio =
+      document.getElementById("level3Audio");
+
+  }
+
+  else if(currentLevel === 4){
+
+    currentAudio =
+      document.getElementById("level4Audio");
+
+  }
+
+  else{
+
+    currentAudio =
+      document.getElementById("level5Audio");
+
+  }
+
+  // PLAY AUDIO
+
+  currentAudio.currentTime = 0;
+
+  currentAudio.play();
+
+}
 // ========== CHALLENGES ==========
 const EASY_CHALLENGES = [
   { correct: 'print("Hello")', wrongs: ['print(Hello)', 'Print("Hello")'],
@@ -777,25 +833,65 @@ function getPowers() {
 
 // ========== GAME LOGIC ==========
 function startGame(stage, lvl) {
-  currentStage = stage; currentLevel = lvl;
+
+  currentStage = stage;
+
+  currentLevel = lvl;
+
+  // PLAY LEVEL START VOICE
+  setTimeout(() => {
+
+    playLevelStartVoice();
+
+  }, 1000);
+
   let cfg = STAGE_CONFIG[stage];
-  lives = cfg.lives; neededCorrect = cfg.needed;
+
+  lives = cfg.lives;
+
+  neededCorrect = cfg.needed;
+
   hintUses = cfg.hintUses;
-  score = 0; caughtCorrect = 0;
-  activeShield = false; activeMagnet = false;
-  fallingItems = []; spawnCooldown = 0;
+
+  score = 0;
+
+  caughtCorrect = 0;
+
+  activeShield = false;
+
+  activeMagnet = false;
+
+  fallingItems = [];
+
+  spawnCooldown = 0;
+
   terminalGlow = 0;
-  gameRunning = false; gamePaused = false;
+
+  gameRunning = false;
+
+  gamePaused = false;
+
   lastChallengeIdx = -1;
+
   updateUI();
+
   showScreen("gameScreen");
+
   runCountdown(() => {
+
     gameRunning = true;
+
     lastTime = performance.now();
-    if(!animFrame) animFrame = requestAnimationFrame(gameLoop);
+
+    if(!animFrame)
+      animFrame = requestAnimationFrame(gameLoop);
+
     spawnItems();
+
     tryPlayMusic();
+
   });
+
 }
 
 function runCountdown(cb) {
