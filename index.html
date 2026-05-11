@@ -469,7 +469,7 @@ canvas {
 
   <button class="stage-nav-btn">🎵</button>
 
-  <button class="stage-nav-btn">🌙</button>
+  <button class="stage-nav-btn">❓</button>
 
   <button class="stage-nav-btn">🏠</button>
 
@@ -512,7 +512,7 @@ canvas {
     <div class="nav-buttons">
       <button class="icon-btn" id="gamePauseBtn" title="Pause">⏸️</button>
       <button class="icon-btn" id="gameSoundToggle" title="Sound">🎵</button>
-      <button class="icon-btn" id="gameThemeToggle" title="Night Mode">🌙</button>
+      <button class="icon-btn" id="gameThemeToggle" title="Night Mode">❓</button>
       <button class="icon-btn" id="gameQuitBtn" title="Exit">🏠</button>
     </div>
   </div>
@@ -594,6 +594,8 @@ canvas {
 <audio id="level4Audio" src="level 4.m4a"></audio>
 
 <audio id="level5Audio" src="level 5.m4a"></audio>
+  <audio id="cover" src="cover screen.m4a"></audio>
+
 <script>
 // ========== STAR BACKGROUND ==========
 (function(){
@@ -1508,6 +1510,15 @@ document.getElementById("nextStageBtn").onclick = nextStage;
 document.getElementById("scHomeBtn").onclick = () => { document.getElementById("stageCompleteOverlay").classList.add("hidden"); showScreen("titleScreen"); };
 document.getElementById("retryGameBtn").onclick = () => { document.getElementById("gameOverOverlay").classList.add("hidden"); startGame(currentStage, 1); };
 document.getElementById("goHomeBtn").onclick = () => { document.getElementById("gameOverOverlay").classList.add("hidden"); showScreen("titleScreen"); };
+// PLAY WELCOME VOICE ON FIRST CLICK
+document.body.addEventListener("click", () => {
+
+  const welcome =
+    document.getElementById("cover");
+
+  welcome.play();
+
+}, { once:true });
 
 // First click init audio
 document.addEventListener("click", () => tryPlayMusic(), { once: true });
@@ -1515,6 +1526,8 @@ document.addEventListener("click", () => tryPlayMusic(), { once: true });
 // Start rendering
 animFrame = requestAnimationFrame(gameLoop);
 resizeCanvas();
+
+  
 </script>
 </body>
 </html>
