@@ -478,7 +478,18 @@ canvas {
 <div id="toast">✨</div>
 <div id="powerupPopup">⚡ Power-up Falling!</div>
 <div id="hintBubble">💡 Hint text here</div>
+<audio id="rightAudio" src="right.m4a"></audio>
+<audio id="niceJobAudio" src="nice job.m4a"></audio>
+<audio id="perfectAudio" src="perfect.m4a"></audio>
+<audio id="wellDoneAudio" src="well done.m4a"></audio>
 
+<audio id="wrongAudio" src="oh no.m4a"></audio>
+<audio id="carefulAudio" src="carefull.m4a"></audio>
+
+<audio id="bingoAudio" src="bingo.m4a"></audio>
+<audio id="levelUpAudio" src="level up.m4a"></audio>
+
+<audio id="gameOverAudio" src="oh no game over.m4a"></audio>
 <script>
 // ========== STAR BACKGROUND ==========
 (function(){
@@ -518,14 +529,12 @@ function toggleMusic() {
 let speechQueue = [];
 let isSpeaking = false;
 
-function kidSpeak(text, afterDelay=0) {
-  if(!window.speechSynthesis) return;
-  setTimeout(()=>{
-    window.speechSynthesis.cancel();
-    let u = new SpeechSynthesisUtterance(text);
-    u.rate = 1.0; u.pitch = 1.35; u.volume = 0.9; u.lang = "en-US";
-    window.speechSynthesis.speak(u);
-  }, afterDelay);
+function kidSpeak() {
+
+  // AI voice disabled
+
+  return;
+
 }
 
 // ========== CHALLENGES ==========
@@ -828,7 +837,7 @@ function onCatch(item) {
       score += 10 + (currentLevel - 1) * 2;
       caughtCorrect++;
       terminalGlow = 1; glowColor = "#66ffaa";
-      playCatchSound();
+playCorrectVoice();
       showToast(`✅ +${10+(currentLevel-1)*2}! Correct!`, "ok");
       // AI explains after brief delay (let sound play first)
       kidSpeak(item.explain, 400);
@@ -842,7 +851,7 @@ function onCatch(item) {
       } else {
         lives--;
         terminalGlow = 1; glowColor = "#ff6666";
-        playWrongSound();
+playWrongVoice();
         showToast(`❌ ${item.hint}`, "err");
         kidSpeak("Oops! " + item.hint, 300);
         if(lives <= 0) { setTimeout(gameOver, 400); }
@@ -900,6 +909,51 @@ function nextStage() {
 }
 
 // ========== SOUNDS (Web Audio) ==========
+  // ========== SOUNDS ==========
+
+function playCorrectVoice(){
+
+  const sounds = [
+
+    document.getElementById("rightAudio"),
+
+    document.getElementById("niceJobAudio"),
+
+    document.getElementById("perfectAudio"),
+
+    document.getElementById("wellDoneAudio"),
+
+    document.getElementById("bingoAudio")
+
+  ];
+
+  let randomSound =
+    sounds[Math.floor(Math.random() * sounds.length)];
+
+  randomSound.currentTime = 0;
+
+  randomSound.play();
+
+}
+
+function playWrongVoice(){
+
+  const sounds = [
+
+    document.getElementById("wrongAudio"),
+
+    document.getElementById("carefulAudio")
+
+  ];
+
+  let randomSound =
+    sounds[Math.floor(Math.random() * sounds.length)];
+
+  randomSound.currentTime = 0;
+
+  randomSound.play();
+
+}
 let audioCtx = null;
 function getAudioCtx() {
   if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
