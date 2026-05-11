@@ -538,11 +538,28 @@ function toggleMusic() {
 let speechQueue = [];
 let isSpeaking = false;
 
-function kidSpeak() {
+function kidSpeak(text, afterDelay=0) {
 
-  // AI voice disabled
+  if(!window.speechSynthesis) return;
 
-  return;
+  setTimeout(() => {
+
+    window.speechSynthesis.cancel();
+
+    let u =
+      new SpeechSynthesisUtterance(text);
+
+    u.rate = 1.0;
+
+    u.pitch = 1.2;
+
+    u.volume = 1;
+
+    u.lang = "en-US";
+
+    speechSynthesis.speak(u);
+
+  }, afterDelay);
 
 }
 function playLevelStartVoice(){
@@ -936,7 +953,7 @@ function onCatch(item) {
 playCorrectVoice();
       showToast(`✅ +${10+(currentLevel-1)*2}! Correct!`, "ok");
       // AI explains after brief delay (let sound play first)
-      kidSpeak(item.explain, 400);
+      
       if(caughtCorrect >= neededCorrect) { setTimeout(levelComplete, 400); }
     } else {
       if(activeShield) {
@@ -949,7 +966,6 @@ playCorrectVoice();
         terminalGlow = 1; glowColor = "#ff6666";
 playWrongVoice();
         showToast(`❌ ${item.hint}`, "err");
-        kidSpeak("Oops! " + item.hint, 300);
         if(lives <= 0) { setTimeout(gameOver, 400); }
       }
     }
