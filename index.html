@@ -1435,7 +1435,7 @@ document.addEventListener("keyup", e => {
 
 // ========== SCREEN BUTTONS ==========
 document.getElementById("titlePlayBtn").onclick = () => { tryPlayMusic(); showScreen("tutorialScreen"); };
-document.getElementById("titleHowBtn").onclick = () => showScreen("tutorialScreen");
+document.getElementById("titleHowBtn").onclick = () => showScreen("stageScreen");
 document.getElementById("tutBackBtn").onclick = () => showScreen("titleScreen");
 document.getElementById("tutNextBtn").onclick = () => showScreen("stageScreen");
 document.getElementById("stageBackBtn").onclick = () => showScreen("tutorialScreen");
@@ -1466,7 +1466,7 @@ document.getElementById("gamePauseBtn").onclick = () => {
   else document.getElementById("pauseOverlay").classList.add("hidden");
 };
 document.getElementById("resumeGameBtn").onclick = () => { gamePaused = false; document.getElementById("pauseOverlay").classList.add("hidden"); };
-document.getElementById("pauseHomeBtn").onclick = () => { gameRunning=false; gamePaused=false; document.getElementById("pauseOverlay").classList.add("hidden"); showScreen("titleScreen"); };
+document.getElementById("pauseHomeBtn").onclick = () => { gameRunning=false; gamePaused=false; document.getElementById("pauseOverlay").classList.add("hidden"); showScreen("stageScreen"); };
 document.getElementById("gameQuitBtn").onclick = () => { gameRunning=false; showScreen("titleScreen"); };
 document.getElementById("gameSoundToggle").onclick = toggleMusic;
 document.getElementById("gameThemeToggle").onclick = () => document.body.classList.toggle("night");
