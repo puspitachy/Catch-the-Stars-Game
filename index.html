@@ -989,30 +989,43 @@ function levelComplete() {
 
   gameRunning = false;
 
-  // PLAY YOUR LEVEL UP VOICE
-  document.getElementById("levelUpAudio").currentTime = 0;
+  let levelAudio =
+    document.getElementById("levelUpAudio");
 
-  document.getElementById("levelUpAudio").play();
+  // RESET AUDIO
+  levelAudio.pause();
 
-  let cfg = STAGE_CONFIG[currentStage];
+  levelAudio.currentTime = 0;
 
-  if(currentLevel >= cfg.levels) {
+  // PLAY AUDIO
+  levelAudio.play();
 
-    document.getElementById("stageScore").textContent =
-      `⭐ ${score} pts`;
+  // WHEN AUDIO FINISHES
+  levelAudio.onended = () => {
 
-    document.getElementById("stageCompleteOverlay")
-      .classList.remove("hidden");
+    let cfg = STAGE_CONFIG[currentStage];
 
-  } else {
+    if(currentLevel >= cfg.levels){
 
-    document.getElementById("lvlScore").textContent =
-      `⭐ ${score} pts`;
+      document.getElementById("stageScore").textContent =
+        `⭐ ${score} pts`;
 
-    document.getElementById("lvlCompleteOverlay")
-      .classList.remove("hidden");
+      document.getElementById("stageCompleteOverlay")
+        .classList.remove("hidden");
 
-  }
+    }
+
+    else{
+
+      document.getElementById("lvlScore").textContent =
+        `⭐ ${score} pts`;
+
+      document.getElementById("lvlCompleteOverlay")
+        .classList.remove("hidden");
+
+    }
+
+  };
 
 }
 
@@ -1020,16 +1033,27 @@ function gameOver() {
 
   gameRunning = false;
 
-  // PLAY GAME OVER VOICE
-  document.getElementById("gameOverAudio").currentTime = 0;
+  let overAudio =
+    document.getElementById("gameOverAudio");
 
-  document.getElementById("gameOverAudio").play();
+  // RESET AUDIO
+  overAudio.pause();
 
-  document.getElementById("goScore").textContent =
-    `⭐ ${score} pts`;
+  overAudio.currentTime = 0;
 
-  document.getElementById("gameOverOverlay")
-    .classList.remove("hidden");
+  // PLAY AUDIO
+  overAudio.play();
+
+  // WAIT FOR AUDIO TO FINISH
+  overAudio.onended = () => {
+
+    document.getElementById("goScore").textContent =
+      `⭐ ${score} pts`;
+
+    document.getElementById("gameOverOverlay")
+      .classList.remove("hidden");
+
+  };
 
 }
 
