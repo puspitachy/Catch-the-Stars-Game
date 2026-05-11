@@ -744,13 +744,25 @@ function updateUI() {
 }
 
 function getPowers() {
-  if(currentStage === "easy") return currentLevel >= 2 ? ["hint"] : [];
+
+  // EASY MODE
+  if(currentStage === "easy") {
+    return ["hint"];
+  }
+
+  // MEDIUM MODE
   if(currentStage === "medium") {
-    if(currentLevel === 1) return ["hint"];
-    if(currentLevel === 2) return ["hint","magnet"];
+
+    if(currentLevel === 1)
+      return ["hint"];
+
+    if(currentLevel === 2)
+      return ["hint","magnet"];
+
     return ["hint","magnet","shield"];
   }
-  // hard
+
+  // HARD MODE
   return ["hint","shield","magnet"];
 }
 
