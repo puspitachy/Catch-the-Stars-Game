@@ -59,7 +59,6 @@ html, body {
   50% { opacity: 0.9; }
 }
 
-/* Glow orbs */
 body::before {
   content: '';
   position: fixed; inset: 0;
@@ -185,6 +184,53 @@ body::before {
 .stage-desc { font-size: 0.75rem; color: var(--muted); font-weight: 700; }
 .stage-levels { font-size: 0.7rem; color: var(--accent); font-weight: 800; margin-top: 0.2rem; }
 
+/* STAGE PAGE NAVBAR */
+.stage-navbar {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 24px;
+  border-radius: 60px;
+  background: rgba(5,10,30,0.88);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+  margin-bottom: 24px;
+  pointer-events: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.stage-grid,
+#startStageBtn,
+#stageBackBtn {
+  position: relative;
+  z-index: 5;
+}
+
+.stage-nav-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.06);
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: inset 0 2px 8px rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.stage-nav-btn:hover {
+  transform: translateY(-4px) scale(1.06);
+  border-color: white;
+  box-shadow: 0 0 18px rgba(255,255,255,0.35);
+}
+
+.stage-nav-btn:active { transform: scale(0.95); }
+
 /* ========== GAME SCREEN ========== */
 #gameScreen { justify-content: flex-start; padding-top: 0; background: transparent; }
 
@@ -205,90 +251,7 @@ canvas {
   box-shadow: 0 4px 20px rgba(0,0,0,0.5);
   gap: 0.4rem; flex-wrap: nowrap;
 }
-  /* STAGE PAGE NAVBAR */
-/* STAGE PAGE NAVBAR */
 
-.stage-navbar{
-
-  display:flex;
-
-  gap:18px;
-
-  justify-content:center;
-
-  align-items:center;
-
-  padding:16px 24px;
-
-  border-radius:60px;
-
-  background:rgba(5,10,30,0.88);
-
-  backdrop-filter:blur(18px);
-
-  border:1px solid rgba(255,255,255,0.12);
-
-  box-shadow:0 8px 30px rgba(0,0,0,0.45);
-
-  margin-bottom:24px;
-
-  pointer-events:auto;
-
-  position:relative;
-
-  z-index:1;
-
-}
-
-.stage-grid,
-#startStageBtn,
-#stageBackBtn{
-
-  position:relative;
-
-  z-index:5;
-
-}
-
-.stage-nav-btn{
-
-  width:72px;
-
-  height:72px;
-
-  border-radius:50%;
-
-  border:2px solid rgba(255,255,255,0.08);
-
-  background:rgba(255,255,255,0.06);
-
-  color:white;
-
-  font-size:2rem;
-
-  cursor:pointer;
-
-  transition:0.2s;
-
-  box-shadow:inset 0 2px 8px rgba(255,255,255,0.05);
-
-}
-
-.stage-nav-btn:hover{
-
-  transform:translateY(-4px) scale(1.06);
-
-  border-color:white;
-
-  box-shadow:0 0 18px rgba(255,255,255,0.35);
-
-}
-
-.stage-nav-btn:active{
-
-  transform:scale(0.95);
-
-}
 .nav-stat {
   display: flex; align-items: center; gap: 0.2rem;
   font-weight: 900; font-size: 0.9rem;
@@ -419,6 +382,149 @@ canvas {
   opacity: 0;
 }
 #hintBubble.show { opacity: 1; }
+
+/* ========== INSTRUCTIONS POPUP ========== */
+#instructionsPopup {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(16px);
+  z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+}
+#instructionsPopup.hidden { display: none; }
+
+.inst-card {
+  background: rgba(8,18,50,0.98);
+  border-radius: 36px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.7), 0 0 40px rgba(0,212,255,0.12);
+  padding: 2rem 2.2rem;
+  max-width: 560px; width: 100%;
+  max-height: 85vh; overflow-y: auto;
+}
+
+.inst-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: 2rem;
+  background: linear-gradient(135deg, var(--yellow), var(--accent));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-align: center; margin-bottom: 1.2rem;
+}
+
+.inst-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0.75rem; margin-bottom: 1.2rem;
+}
+
+.inst-item {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.82rem; font-weight: 700;
+  display: flex; align-items: flex-start; gap: 0.5rem;
+  line-height: 1.4;
+}
+.inst-item .inst-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.05rem; }
+
+.inst-close {
+  display: block; width: 100%;
+  background: linear-gradient(135deg, var(--yellow) 0%, #f59e0b 100%);
+  color: #1a1200; border: none; border-radius: 40px;
+  font-family: 'Nunito', sans-serif; font-weight: 900;
+  font-size: 1.1rem; padding: 0.85rem; cursor: pointer;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.3);
+  transition: 0.15s;
+}
+.inst-close:hover { transform: translateY(-2px); }
+.inst-close:active { transform: translateY(2px); }
+
+/* ========== LEADERBOARD ========== */
+#leaderboardScreen {
+  overflow-y: auto;
+}
+
+.lb-card {
+  background: rgba(8,18,50,0.97);
+  border-radius: 36px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.7);
+  padding: 2rem 2.2rem;
+  max-width: 560px; width: 95vw;
+  max-height: 80vh; overflow-y: auto;
+}
+
+.lb-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: 2rem;
+  background: linear-gradient(135deg, var(--yellow), #ff9a3c);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-align: center; margin-bottom: 0.3rem;
+}
+.lb-sub { text-align: center; color: var(--muted); font-size: 0.8rem; font-weight: 700; margin-bottom: 1.2rem; }
+
+.lb-section { margin-bottom: 1.2rem; }
+.lb-section-title {
+  font-size: 0.75rem; font-weight: 900; color: var(--accent);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 0.5rem; padding-left: 0.4rem;
+  border-left: 3px solid var(--accent);
+}
+
+.lb-row {
+  display: flex; align-items: center; gap: 0.75rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 18px; padding: 0.65rem 1rem;
+  margin-bottom: 0.45rem;
+  transition: 0.2s;
+}
+.lb-row:hover { background: rgba(255,255,255,0.07); }
+.lb-medal { font-size: 1.5rem; flex-shrink: 0; }
+.lb-hero { font-size: 1.4rem; flex-shrink: 0; }
+.lb-info { flex: 1; }
+.lb-name { font-weight: 900; font-size: 0.92rem; }
+.lb-stage { font-size: 0.72rem; color: var(--muted); font-weight: 700; }
+.lb-score { font-weight: 900; font-size: 1.1rem; color: var(--yellow); }
+.lb-empty { text-align: center; color: var(--muted); font-size: 0.85rem; font-weight: 700; padding: 1rem 0; }
+
+.lb-char-section {
+  background: rgba(255,255,255,0.03);
+  border-radius: 20px; padding: 0.9rem 1rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.lb-char-header {
+  display: flex; align-items: center; gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+.lb-char-emoji { font-size: 1.6rem; }
+.lb-char-name { font-weight: 900; font-size: 1rem; }
+.lb-char-scores { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.lb-char-score-chip {
+  background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.2);
+  border-radius: 40px; padding: 0.3rem 0.75rem;
+  font-size: 0.78rem; font-weight: 800;
+  display: flex; align-items: center; gap: 0.3rem;
+}
+.lb-char-score-chip .diff-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.lb-char-score-chip .diff-dot.easy { background: var(--easy); }
+.lb-char-score-chip .diff-dot.medium { background: var(--medium); }
+.lb-char-score-chip .diff-dot.hard { background: var(--hard); }
+
+.lb-clear-btn {
+  display: block; width: 100%; margin-top: 1rem;
+  background: rgba(255,107,107,0.15);
+  color: var(--red); border: 1px solid rgba(255,107,107,0.3);
+  border-radius: 40px; padding: 0.7rem;
+  font-family: 'Nunito', sans-serif; font-weight: 900;
+  font-size: 0.9rem; cursor: pointer; transition: 0.15s;
+}
+.lb-clear-btn:hover { background: rgba(255,107,107,0.3); }
 </style>
 </head>
 <body>
@@ -437,6 +543,7 @@ canvas {
   </div>
   <button class="btn btn-primary" id="titlePlayBtn">🎮 LET'S PLAY!</button>
   <button class="btn btn-secondary" id="titleHowBtn">📘 How to Play</button>
+  <button class="btn btn-secondary" id="titleLeaderBtn">🏆 Leaderboard</button>
   <div style="margin-top:0.8rem;font-size:0.78rem;opacity:0.6;font-weight:700;">Move fast — catch the right code!</div>
 </div>
 
@@ -463,18 +570,13 @@ canvas {
 <!-- STAGE SELECT -->
 <div class="screen hidden" id="stageScreen">
   <div class="stage-navbar">
-
-  <button class="stage-nav-btn">⏸️</button>
-
-  <button class="stage-nav-btn">🎵</button>
-
-  <button class="stage-nav-btn">❓</button>
-
-  <button class="stage-nav-btn">🏠</button>
-
-</div>
+    <button class="stage-nav-btn" id="stageNavPause" title="Pause">⏸️</button>
+    <button class="stage-nav-btn" id="stageNavMusic" title="Toggle Music">🎵</button>
+    <button class="stage-nav-btn" id="stageNavHelp" title="How to Play">❓</button>
+    <button class="stage-nav-btn" id="stageNavHome" title="Home">🏠</button>
+  </div>
   <div style="font-size:2.2rem;font-weight:900;margin-bottom:0.3rem;">🎯 Choose Difficulty</div>
-  
+
   <div class="stage-grid">
     <div class="stage-card easy selected" data-stage="easy">
       <div class="stage-em">🌱</div>
@@ -499,6 +601,27 @@ canvas {
   <button class="btn btn-secondary" id="stageBackBtn">← Back</button>
 </div>
 
+<!-- LEADERBOARD SCREEN -->
+<div class="screen hidden" id="leaderboardScreen">
+  <div class="lb-card">
+    <div class="lb-title">🏆 Leaderboard</div>
+    <div class="lb-sub">Your best scores across all characters</div>
+
+    <div class="lb-section">
+      <div class="lb-section-title">🥇 Top Runs</div>
+      <div id="lbTopRuns"></div>
+    </div>
+
+    <div class="lb-section">
+      <div class="lb-section-title">👾 High Score per Character</div>
+      <div id="lbCharScores"></div>
+    </div>
+
+    <button class="lb-clear-btn" id="lbClearBtn">🗑️ Clear All Scores</button>
+  </div>
+  <button class="btn btn-secondary" style="margin-top:1rem;" id="lbBackBtn">← Back</button>
+</div>
+
 <!-- GAME SCREEN -->
 <div class="screen hidden" id="gameScreen">
   <canvas id="gameCanvas"></canvas>
@@ -513,7 +636,7 @@ canvas {
     <div class="nav-buttons">
       <button class="icon-btn" id="gamePauseBtn" title="Pause">⏸️</button>
       <button class="icon-btn" id="gameSoundToggle" title="Sound">🎵</button>
-      <button class="icon-btn" id="gameThemeToggle" title="Night Mode">❓</button>
+      <button class="icon-btn" id="gameThemeToggle" title="Night Mode">🌙</button>
       <button class="icon-btn" id="gameQuitBtn" title="Exit">🏠</button>
     </div>
   </div>
@@ -571,31 +694,45 @@ canvas {
   </div>
 </div>
 
+<!-- INSTRUCTIONS POPUP (question mark) -->
+<div id="instructionsPopup" class="hidden">
+  <div class="inst-card">
+    <div class="inst-title">📘 How to Play</div>
+    <div class="inst-grid">
+      <div class="inst-item"><span class="inst-icon">🖱️</span><span>Move mouse or finger to steer your catcher</span></div>
+      <div class="inst-item"><span class="inst-icon">⌨️</span><span>Arrow keys move left / right</span></div>
+      <div class="inst-item"><span class="inst-icon">✅</span><span>Catch correct Python code = +10 pts</span></div>
+      <div class="inst-item"><span class="inst-icon">❌</span><span>Wrong code = lose a ❤️</span></div>
+      <div class="inst-item"><span class="inst-icon">⭐</span><span>Fill all stars to level up!</span></div>
+      <div class="inst-item"><span class="inst-icon">💡</span><span>AI Hint shows why code is right</span></div>
+      <div class="inst-item"><span class="inst-icon">🛡️</span><span>Shield blocks one wrong catch</span></div>
+      <div class="inst-item"><span class="inst-icon">✨</span><span>Magnet pulls correct codes toward you</span></div>
+      <div class="inst-item"><span class="inst-icon">⏸️</span><span>Spacebar pauses the game</span></div>
+      <div class="inst-item"><span class="inst-icon">🏆</span><span>Scores saved to Leaderboard</span></div>
+    </div>
+    <button class="inst-close" id="instCloseBtn">Got it! Let's Play 🚀</button>
+  </div>
+</div>
+
 <div id="toast">✨</div>
 <div id="powerupPopup">⚡ Power-up Falling!</div>
 <div id="hintBubble">💡 Hint text here</div>
+
 <audio id="rightAudio" src="right.m4a"></audio>
 <audio id="niceJobAudio" src="nice job.m4a"></audio>
 <audio id="perfectAudio" src="perfect.m4a"></audio>
 <audio id="wellDoneAudio" src="well done.m4a"></audio>
-
 <audio id="wrongAudio" src="oh no.m4a"></audio>
 <audio id="carefulAudio" src="carefull.m4a"></audio>
-
 <audio id="bingoAudio" src="bingo.m4a"></audio>
 <audio id="levelUpAudio" src="level finish and done.m4a"></audio>
-
 <audio id="gameOverAudio" src="oh no vame over.m4a"></audio>
 <audio id="level1Audio" src="level 1.m4a"></audio>
-
 <audio id="level2Audio" src="level 2.m4a"></audio>
-
 <audio id="level3Audio" src="level 3.m4a"></audio>
-
 <audio id="level4Audio" src="level 4.m4a"></audio>
-
 <audio id="level5Audio" src="level 5.m4a"></audio>
-  <audio id="cover" src="cover screen.m4a"></audio>
+<audio id="cover" src="cover screen.m4a"></audio>
 
 <script>
 // ========== STAR BACKGROUND ==========
@@ -605,19 +742,88 @@ canvas {
     let s = document.createElement("div");
     s.className = "star";
     let sz = Math.random()*2.5+1;
-    s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;
-      --dur:${2+Math.random()*5}s;--del:${-Math.random()*5}s;`;
+    s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--dur:${2+Math.random()*5}s;--del:${-Math.random()*5}s;`;
     bg.appendChild(s);
   }
 })();
 
+// ========== LEADERBOARD STORAGE ==========
+function getLBData() {
+  try { return JSON.parse(localStorage.getItem("ccjr_lb") || "[]"); } catch(e) { return []; }
+}
+function saveLBData(data) {
+  try { localStorage.setItem("ccjr_lb", JSON.stringify(data)); } catch(e) {}
+}
+function recordScore(heroKey, stage, scoreVal) {
+  let data = getLBData();
+  data.push({ hero: heroKey, stage, score: scoreVal, date: Date.now() });
+  // Keep last 100
+  if(data.length > 100) data = data.slice(-100);
+  saveLBData(data);
+}
+
+function renderLeaderboard() {
+  let data = getLBData();
+  // Sort by score desc
+  data.sort((a,b) => b.score - a.score);
+
+  const heroEmoji = { kid: "🧒", robot: "🤖", cat: "🐱" };
+  const heroName  = { kid: "Sunny", robot: "Byte", cat: "Pixel" };
+  const stageName = { easy: "Easy 🌱", medium: "Medium ⚡", hard: "Hard 🔥" };
+  const medals    = ["🥇","🥈","🥉"];
+
+  // Top runs
+  let topEl = document.getElementById("lbTopRuns");
+  if(data.length === 0) {
+    topEl.innerHTML = '<div class="lb-empty">No scores yet — play a game!</div>';
+  } else {
+    topEl.innerHTML = data.slice(0, 10).map((entry, i) => `
+      <div class="lb-row">
+        <span class="lb-medal">${medals[i] || "🎮"}</span>
+        <span class="lb-hero">${heroEmoji[entry.hero] || "🧒"}</span>
+        <div class="lb-info">
+          <div class="lb-name">${heroName[entry.hero] || entry.hero}</div>
+          <div class="lb-stage">${stageName[entry.stage] || entry.stage}</div>
+        </div>
+        <span class="lb-score">${entry.score} pts</span>
+      </div>
+    `).join("");
+  }
+
+  // Per-character high scores
+  let charEl = document.getElementById("lbCharScores");
+  let chars = ["kid","robot","cat"];
+  charEl.innerHTML = chars.map(heroKey => {
+    let heroRuns = data.filter(d => d.hero === heroKey);
+    let easyBest  = heroRuns.filter(d=>d.stage==="easy").reduce((m,d)=>Math.max(m,d.score),-1);
+    let medBest   = heroRuns.filter(d=>d.stage==="medium").reduce((m,d)=>Math.max(m,d.score),-1);
+    let hardBest  = heroRuns.filter(d=>d.stage==="hard").reduce((m,d)=>Math.max(m,d.score),-1);
+
+    let chips = "";
+    if(easyBest  >= 0) chips += `<div class="lb-char-score-chip"><span class="diff-dot easy"></span>Easy: ${easyBest} pts</div>`;
+    if(medBest   >= 0) chips += `<div class="lb-char-score-chip"><span class="diff-dot medium"></span>Medium: ${medBest} pts</div>`;
+    if(hardBest  >= 0) chips += `<div class="lb-char-score-chip"><span class="diff-dot hard"></span>Hard: ${hardBest} pts</div>`;
+    if(!chips) chips = `<div style="font-size:0.78rem;color:var(--muted);font-weight:700;">No games played yet</div>`;
+
+    return `
+      <div class="lb-char-section">
+        <div class="lb-char-header">
+          <span class="lb-char-emoji">${heroEmoji[heroKey]}</span>
+          <span class="lb-char-name">${heroName[heroKey]}</span>
+        </div>
+        <div class="lb-char-scores">${chips}</div>
+      </div>
+    `;
+  }).join("");
+}
+
 // ========== AUDIO ==========
-let musicEnabled = true, masterVol = 0.6;
+let musicEnabled = true;
 let bgMusic = null;
 
 function initAudio() {
   if(bgMusic) return;
-bgMusic = new Audio("Sakura-Girl-Daisy-chosic.com_.mp3");
+  bgMusic = new Audio("Sakura-Girl-Daisy-chosic.com_.mp3");
   bgMusic.loop = true; bgMusic.volume = 0.25;
 }
 
@@ -629,85 +835,28 @@ function tryPlayMusic() {
 function toggleMusic() {
   musicEnabled = !musicEnabled;
   document.getElementById("gameSoundToggle").textContent = musicEnabled ? "🎵" : "🔇";
+  document.getElementById("stageNavMusic").textContent = musicEnabled ? "🎵" : "🔇";
   if(bgMusic) musicEnabled ? bgMusic.play().catch(()=>{}) : bgMusic.pause();
 }
 
 // ========== SPEECH SYNTHESIS ==========
-let speechQueue = [];
-let isSpeaking = false;
-
 function kidSpeak(text, afterDelay=0) {
-
   if(!window.speechSynthesis) return;
-
   setTimeout(() => {
-
     window.speechSynthesis.cancel();
-
-    let u =
-      new SpeechSynthesisUtterance(text);
-
-    u.rate = 1.0;
-
-    u.pitch = 1.2;
-
-    u.volume = 1;
-
-    u.lang = "en-US";
-
+    let u = new SpeechSynthesisUtterance(text);
+    u.rate = 1.0; u.pitch = 1.2; u.volume = 1; u.lang = "en-US";
     speechSynthesis.speak(u);
-
   }, afterDelay);
-
 }
-function playLevelStartVoice(){
 
-  let currentAudio;
-
-  // CHECK CURRENT LEVEL
-
-  if(currentLevel === 1){
-
-    currentAudio =
-      document.getElementById("level1Audio");
-
-  }
-
-  else if(currentLevel === 2){
-
-    currentAudio =
-      document.getElementById("level2Audio");
-
-  }
-
-  else if(currentLevel === 3){
-
-    currentAudio =
-      document.getElementById("level3Audio");
-
-  }
-
-  else if(currentLevel === 4){
-
-    currentAudio =
-      document.getElementById("level4Audio");
-
-  }
-
-  else{
-
-    currentAudio =
-      document.getElementById("level5Audio");
-
-  }
-
-  // PLAY AUDIO
-
-  currentAudio.currentTime = 0;
-
-  currentAudio.play();
-
+function playLevelStartVoice() {
+  let map = {1:"level1Audio",2:"level2Audio",3:"level3Audio",4:"level4Audio",5:"level5Audio"};
+  let id = map[currentLevel] || "level1Audio";
+  let el = document.getElementById(id);
+  el.currentTime = 0; el.play();
 }
+
 // ========== CHALLENGES ==========
 const EASY_CHALLENGES = [
   { correct: 'print("Hello")', wrongs: ['print(Hello)', 'Print("Hello")'],
@@ -770,11 +919,11 @@ const HARD_CHALLENGES = [
   { correct: 'result = [x for x in nums if x > 0]', wrongs: ['result = [x in nums if x > 0]', 'result = list(x for x in nums if x > 0)'],
     hint: 'List comprehension: [expression for item in list if condition]',
     explain: 'List comprehension filters and builds a new list in one line.' },
-  { correct: 'def factorial(n):\n  if n == 0: return 1\n  return n * factorial(n-1)', 
+  { correct: 'def factorial(n):\n  if n == 0: return 1\n  return n * factorial(n-1)',
     wrongs: ['def factorial(n):\n  if n == 0: return 0\n  return n * factorial(n-1)', 'def factorial(n):\n  if n == 1: return 1\n  return n + factorial(n-1)'],
     hint: 'Recursion base case: factorial of zero is ONE, and multiply!',
     explain: 'Recursion calls itself with a smaller number until it hits the base case.' },
-  { correct: 'try:\n  x = int(input())\nexcept ValueError:', 
+  { correct: 'try:\n  x = int(input())\nexcept ValueError:',
     wrongs: ['try:\n  x = int(input())\ncatch ValueError:', 'try:\n  x = int(input())\nexcept:'],
     hint: 'Python uses except, not catch, for error handling!',
     explain: 'try and except catch errors so the program does not crash.' },
@@ -825,28 +974,53 @@ function getChallenge(stage) {
   return { ...pool[idx] };
 }
 
-function makeCodeItem(stage, level, forceCorrect) {
-  let cfg = STAGE_CONFIG[stage];
-  let ch = getChallenge(stage);
-  let isCorrect = forceCorrect !== undefined ? forceCorrect : (Math.random() < 0.6);
-  let text = isCorrect ? ch.correct : ch.wrongs[Math.floor(Math.random() * ch.wrongs.length)];
-
-  // speed scales with level
-  let speedMult = 1 + (level - 1) * 0.12;
-  let vy = cfg.baseVy * speedMult * H;
-
-  // font size scales by stage
-  let fs = stage === "easy" ? 20 : stage === "medium" ? 17 : 14;
-
-  // measure text width (multi-line support)
+// Measure item width for a given text+fontsize
+function measureItem(text, fs) {
   ctx.font = `900 ${fs}px 'Nunito', monospace`;
   let lines = text.split('\n');
   let maxW = 0;
   lines.forEach(l => { let w = ctx.measureText(l).width; if(w>maxW) maxW=w; });
   let tw = Math.max(120, maxW + 36);
   let th = lines.length * (fs + 6) + 24;
+  return { tw, th, lines };
+}
 
-  let x = tw/2 + 20 + Math.random() * (W - tw - 40);
+// Check if a proposed X position overlaps any existing items
+function findNonOverlappingX(tw, th, tries=20) {
+  let padding = 12;
+  for(let attempt = 0; attempt < tries; attempt++) {
+    let x = tw/2 + padding + Math.random() * (W - tw - padding*2);
+    // Check against active falling items that are near the top
+    let overlaps = false;
+    for(let it of fallingItems) {
+      if(it.caught) continue;
+      // Only worry about items close vertically (within 2x item height of spawn zone)
+      if(it.y > th * 3) continue;
+      let dist = Math.abs(it.x - x);
+      let minDist = (it.w/2 + tw/2) + padding;
+      if(dist < minDist) { overlaps = true; break; }
+    }
+    if(!overlaps) return x;
+  }
+  // Fallback: space items evenly
+  return tw/2 + padding + Math.random() * (W - tw - padding*2);
+}
+
+function makeCodeItem(stage, level, forceCorrect) {
+  let cfg = STAGE_CONFIG[stage];
+  let ch = getChallenge(stage);
+  let isCorrect = forceCorrect !== undefined ? forceCorrect : (Math.random() < 0.6);
+  let text = isCorrect ? ch.correct : ch.wrongs[Math.floor(Math.random() * ch.wrongs.length)];
+
+  let speedMult = 1 + (level - 1) * 0.12;
+  let vy = cfg.baseVy * speedMult * H;
+
+  let fs = stage === "easy" ? 20 : stage === "medium" ? 17 : 14;
+
+  let { tw, th, lines } = measureItem(text, fs);
+
+  let x = findNonOverlappingX(tw, th);
+
   return {
     type: "code", text, x, y: -th/2 - 10,
     vy, isCorrect, hint: ch.hint, explain: ch.explain,
@@ -856,11 +1030,12 @@ function makeCodeItem(stage, level, forceCorrect) {
 }
 
 function makePowerItem(power) {
-  let x = 60 + Math.random() * (W - 120);
+  let tw = 120, th = 52;
+  let x = findNonOverlappingX(tw, th);
   return {
-    type: "power", power, x, y: -40,
+    type: "power", power, x, y: -th/2 - 10,
     vy: STAGE_CONFIG[currentStage].baseVy * 0.8 * H,
-    w: 120, h: 52, fs: 18, lines: [power === "shield" ? "🛡️ SHIELD" : "✨ MAGNET"],
+    w: tw, h: th, fs: 18, lines: [power === "shield" ? "🛡️ SHIELD" : "✨ MAGNET"],
     alpha: 1, caught: false,
   };
 }
@@ -911,7 +1086,6 @@ function updateUI() {
   let left = neededCorrect - caughtCorrect;
   document.getElementById("progMsg").textContent = left <= 0 ? "✨ COMPLETE!" : `Catch ${left} more correct code${left !== 1 ? "s" : ""}!`;
 
-  // Power chip states
   let powers = getPowers();
   let hBtn = document.getElementById("gameHintBtn");
   let sBtn = document.getElementById("gameShieldBtn");
@@ -924,89 +1098,42 @@ function updateUI() {
 }
 
 function getPowers() {
-
-  // EASY MODE
-  if(currentStage === "easy") {
-    return ["hint"];
-  }
-
-  // MEDIUM MODE
+  if(currentStage === "easy") return ["hint"];
   if(currentStage === "medium") {
-
-    if(currentLevel === 1)
-      return ["hint"];
-
-    if(currentLevel === 2)
-      return ["hint","magnet"];
-
+    if(currentLevel === 1) return ["hint"];
+    if(currentLevel === 2) return ["hint","magnet"];
     return ["hint","magnet","shield"];
   }
-
-  // HARD MODE
   return ["hint","shield","magnet"];
 }
 
 // ========== GAME LOGIC ==========
 function startGame(stage, lvl) {
-
   currentStage = stage;
-
   currentLevel = lvl;
 
-  // PLAY LEVEL START VOICE
-  setTimeout(() => {
-
-    playLevelStartVoice();
-
-  }, 1000);
+  setTimeout(() => { playLevelStartVoice(); }, 1000);
 
   let cfg = STAGE_CONFIG[stage];
-
   lives = cfg.lives;
-
   neededCorrect = cfg.needed;
-
   hintUses = cfg.hintUses;
-
-  score = 0;
-
-  caughtCorrect = 0;
-
-  activeShield = false;
-
-  activeMagnet = false;
-
-  fallingItems = [];
-
-  spawnCooldown = 0;
-
-  terminalGlow = 0;
-
-  gameRunning = false;
-
-  gamePaused = false;
-
+  score = 0; caughtCorrect = 0;
+  activeShield = false; activeMagnet = false;
+  fallingItems = []; spawnCooldown = 0;
+  terminalGlow = 0; gameRunning = false; gamePaused = false;
   lastChallengeIdx = -1;
 
   updateUI();
-
   showScreen("gameScreen");
 
   runCountdown(() => {
-
     gameRunning = true;
-
     lastTime = performance.now();
-
-    if(!animFrame)
-      animFrame = requestAnimationFrame(gameLoop);
-
+    if(!animFrame) animFrame = requestAnimationFrame(gameLoop);
     spawnItems();
-
     tryPlayMusic();
-
   });
-
 }
 
 function runCountdown(cb) {
@@ -1029,7 +1156,6 @@ function spawnItems() {
   let current = fallingItems.filter(i => !i.caught).length;
 
   if(current < maxItems) {
-    // Occasionally spawn a powerup
     let powers = getPowers();
     if(powers.length > 0 && Math.random() < 0.08) {
       let pw = powers[Math.floor(Math.random()*powers.length)];
@@ -1048,10 +1174,8 @@ function onCatch(item) {
       score += 10 + (currentLevel - 1) * 2;
       caughtCorrect++;
       terminalGlow = 1; glowColor = "#66ffaa";
-playCorrectVoice();
+      playCorrectVoice();
       showToast(`✅ +${10+(currentLevel-1)*2}! Correct!`, "ok");
-      // AI explains after brief delay (let sound play first)
-      
       if(caughtCorrect >= neededCorrect) { setTimeout(levelComplete, 400); }
     } else {
       if(activeShield) {
@@ -1062,7 +1186,7 @@ playCorrectVoice();
       } else {
         lives--;
         terminalGlow = 1; glowColor = "#ff6666";
-playWrongVoice();
+        playWrongVoice();
         showToast(`❌ ${item.hint}`, "err");
         if(lives <= 0) { setTimeout(gameOver, 400); }
       }
@@ -1084,75 +1208,37 @@ playWrongVoice();
 }
 
 function levelComplete() {
-
   gameRunning = false;
+  // Save score to leaderboard
+  recordScore(hero, currentStage, score);
 
-  let levelAudio =
-    document.getElementById("levelUpAudio");
-
-  // RESET AUDIO
-  levelAudio.pause();
-
-  levelAudio.currentTime = 0;
-
-  // PLAY AUDIO
+  let levelAudio = document.getElementById("levelUpAudio");
+  levelAudio.pause(); levelAudio.currentTime = 0;
   levelAudio.play();
-
-  // WHEN AUDIO FINISHES
   levelAudio.onended = () => {
-
     let cfg = STAGE_CONFIG[currentStage];
-
-    if(currentLevel >= cfg.levels){
-
-      document.getElementById("stageScore").textContent =
-        `⭐ ${score} pts`;
-
-      document.getElementById("stageCompleteOverlay")
-        .classList.remove("hidden");
-
+    if(currentLevel >= cfg.levels) {
+      document.getElementById("stageScore").textContent = `⭐ ${score} pts`;
+      document.getElementById("stageCompleteOverlay").classList.remove("hidden");
+    } else {
+      document.getElementById("lvlScore").textContent = `⭐ ${score} pts`;
+      document.getElementById("lvlCompleteOverlay").classList.remove("hidden");
     }
-
-    else{
-
-      document.getElementById("lvlScore").textContent =
-        `⭐ ${score} pts`;
-
-      document.getElementById("lvlCompleteOverlay")
-        .classList.remove("hidden");
-
-    }
-
   };
-
 }
 
 function gameOver() {
-
   gameRunning = false;
+  // Save score to leaderboard
+  recordScore(hero, currentStage, score);
 
-  let overAudio =
-    document.getElementById("gameOverAudio");
-
-  // RESET AUDIO
-  overAudio.pause();
-
-  overAudio.currentTime = 0;
-
-  // PLAY AUDIO
+  let overAudio = document.getElementById("gameOverAudio");
+  overAudio.pause(); overAudio.currentTime = 0;
   overAudio.play();
-
-  // WAIT FOR AUDIO TO FINISH
   overAudio.onended = () => {
-
-    document.getElementById("goScore").textContent =
-      `⭐ ${score} pts`;
-
-    document.getElementById("gameOverOverlay")
-      .classList.remove("hidden");
-
+    document.getElementById("goScore").textContent = `⭐ ${score} pts`;
+    document.getElementById("gameOverOverlay").classList.remove("hidden");
   };
-
 }
 
 function nextLevel() {
@@ -1169,52 +1255,28 @@ function nextStage() {
   else showScreen("titleScreen");
 }
 
-// ========== SOUNDS (Web Audio) ==========
-  // ========== SOUNDS ==========
-
+// ========== SOUNDS ==========
 function playCorrectVoice(){
-
   const sounds = [
-
     document.getElementById("rightAudio"),
-
     document.getElementById("niceJobAudio"),
-
     document.getElementById("perfectAudio"),
-
     document.getElementById("wellDoneAudio"),
-
     document.getElementById("bingoAudio")
-
   ];
-
-  let randomSound =
-    sounds[Math.floor(Math.random() * sounds.length)];
-
-  randomSound.currentTime = 0;
-
-  randomSound.play();
-
+  let r = sounds[Math.floor(Math.random() * sounds.length)];
+  r.currentTime = 0; r.play();
 }
 
 function playWrongVoice(){
-
   const sounds = [
-
     document.getElementById("wrongAudio"),
-
     document.getElementById("carefulAudio")
-
   ];
-
-  let randomSound =
-    sounds[Math.floor(Math.random() * sounds.length)];
-
-  randomSound.currentTime = 0;
-
-  randomSound.play();
-
+  let r = sounds[Math.floor(Math.random() * sounds.length)];
+  r.currentTime = 0; r.play();
 }
+
 let audioCtx = null;
 function getAudioCtx() {
   if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1232,23 +1294,11 @@ function playTone(freq, type, duration, vol=0.3) {
     osc.start(); osc.stop(ac.currentTime + duration);
   } catch(e) {}
 }
-function playCatchSound() {
-  playTone(523, "sine", 0.1, 0.4);
-  setTimeout(() => playTone(659, "sine", 0.1, 0.4), 80);
-  setTimeout(() => playTone(784, "sine", 0.15, 0.4), 160);
-}
-function playWrongSound() {
-  playTone(220, "sawtooth", 0.2, 0.3);
-  setTimeout(() => playTone(180, "sawtooth", 0.2, 0.3), 100);
-}
 
 // ========== DRAWING ==========
 function drawBg() {
-  // Scanline effect
   ctx.fillStyle = "rgba(6,13,31,0.92)";
   ctx.fillRect(0, 0, W, H);
-
-  // Grid
   ctx.strokeStyle = "rgba(0,212,255,0.04)";
   ctx.lineWidth = 1;
   for(let x=0; x<W; x+=60) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
@@ -1259,7 +1309,6 @@ function drawCatcher() {
   let topY = groundY - 72;
   let glow = terminalGlow;
 
-  // Glow backdrop
   if(glow > 0) {
     ctx.save();
     ctx.shadowBlur = 30 * glow;
@@ -1269,30 +1318,25 @@ function drawCatcher() {
     ctx.restore();
   }
 
-  // Terminal body
   let grad = ctx.createLinearGradient(catcherX, topY, catcherX, topY+70);
   grad.addColorStop(0, "#0f1e40");
   grad.addColorStop(1, "#070f25");
   ctx.fillStyle = grad;
   ctx.beginPath(); ctx.roundRect(catcherX, topY, catcherW, 70, 22); ctx.fill();
 
-  // Border glow
   ctx.strokeStyle = glow > 0 ? glowColor : "rgba(0,212,255,0.5)";
   ctx.lineWidth = glow > 0 ? 2 + glow * 2 : 1.5;
   ctx.beginPath(); ctx.roundRect(catcherX, topY, catcherW, 70, 22); ctx.stroke();
 
-  // Terminal text
   ctx.fillStyle = glow > 0 ? glowColor : "rgba(0,212,255,0.7)";
   ctx.font = "bold 11px monospace";
   ctx.textAlign = "left";
   ctx.fillText(">_ TERMINAL", catcherX + 14, topY + 22);
 
-  // Hero emoji
   ctx.font = "36px 'Segoe UI Emoji'";
   ctx.textAlign = "center";
   ctx.fillText(hero==="kid"?"🧒":hero==="robot"?"🤖":"🐱", catcherX + catcherW/2, topY + 62);
 
-  // Shield indicator
   if(activeShield) {
     ctx.font = "18px 'Segoe UI Emoji'";
     ctx.fillText("🛡️", catcherX + catcherW - 20, topY + 20);
@@ -1309,18 +1353,14 @@ function drawItem(item) {
   if(item.caught) return;
   ctx.save();
   ctx.globalAlpha = item.alpha;
-  
 
-  let isCorrect = item.isCorrect;
-  let isPower = item.type === "power";
-
-// White glow
-ctx.shadowBlur = isPower ? 20 : 10;
-ctx.shadowColor = "rgba(255,255,255,0.9)";
+  // NO glow — just clean white border
+  ctx.shadowBlur = 0;
+  ctx.shadowColor = "transparent";
 
   // Background
   let boxGrad = ctx.createLinearGradient(item.x - item.w/2, item.y - item.h/2, item.x + item.w/2, item.y + item.h/2);
-  if(isPower) {
+  if(item.type === "power") {
     boxGrad.addColorStop(0, "#2a2000");
     boxGrad.addColorStop(1, "#1a1500");
   } else {
@@ -1332,13 +1372,13 @@ ctx.shadowColor = "rgba(255,255,255,0.9)";
   ctx.roundRect(item.x - item.w/2, item.y - item.h/2, item.w, item.h, 18);
   ctx.fill();
 
-  // Border
-ctx.strokeStyle = "white";
-ctx.lineWidth = 3;
+  // White border — no glow, no shadow
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 3;
   ctx.stroke();
 
   // Text
-  ctx.fillStyle = isPower ? "#ffd966" : "#e2e8f0";
+  ctx.fillStyle = item.type === "power" ? "#ffd966" : "#e2e8f0";
   ctx.font = `900 ${item.fs}px 'Nunito', monospace`;
   ctx.textAlign = "center";
 
@@ -1359,26 +1399,34 @@ function gameLoop(now) {
 
   drawBg();
 
-  // Move catcher
   if(gameRunning && !gamePaused) {
     let speed = W * 0.012;
     if(arrowLeft) targetX = Math.max(0, targetX - speed);
     if(arrowRight) targetX = Math.min(W - catcherW, targetX + speed);
     catcherX += (targetX - catcherX) * 0.22;
 
-    // Spawn
     spawnCooldown -= dt;
     if(spawnCooldown <= 0) {
       spawnItems();
       spawnCooldown = currentStage === "easy" ? 0.8 : currentStage === "medium" ? 0.5 : 0.3;
     }
 
-    // Update items
     fallingItems = fallingItems.filter(it => it.y < H + 200 && !it.caught);
     fallingItems.forEach(it => {
       it.y += it.vy * dt;
 
-      // Magnet pulls correct code items
+      // Lateral separation to avoid overlap while falling
+      for(let other of fallingItems) {
+        if(other === it || other.caught) continue;
+        let dx = it.x - other.x;
+        let minDist = (it.w/2 + other.w/2) + 10;
+        if(Math.abs(dx) < minDist && Math.abs(it.y - other.y) < (it.h/2 + other.h/2) + 10) {
+          let push = (minDist - Math.abs(dx)) / 2;
+          let dir = dx >= 0 ? 1 : -1;
+          it.x = Math.max(it.w/2, Math.min(W - it.w/2, it.x + dir * push));
+        }
+      }
+
       if(activeMagnet && it.type === "code" && it.isCorrect) {
         it.x += (catcherX + catcherW/2 - it.x) * 0.06;
       }
@@ -1395,11 +1443,9 @@ function gameLoop(now) {
     });
   }
 
-  // Draw all items
   fallingItems.forEach(it => drawItem(it));
   drawCatcher();
 
-  // Draw pause text
   if(gamePaused) {
     ctx.fillStyle = "rgba(0,0,0,0.3)";
     ctx.fillRect(0,0,W,H);
@@ -1436,10 +1482,42 @@ document.addEventListener("keyup", e => {
 
 // ========== SCREEN BUTTONS ==========
 document.getElementById("titlePlayBtn").onclick = () => { tryPlayMusic(); showScreen("stageScreen"); };
-document.getElementById("titleHowBtn").onclick = () => showScreen("stageScreen");
+document.getElementById("titleHowBtn").onclick = () => showScreen("tutorialScreen");
+document.getElementById("titleLeaderBtn").onclick = () => { renderLeaderboard(); showScreen("leaderboardScreen"); };
+
 document.getElementById("tutBackBtn").onclick = () => showScreen("titleScreen");
-document.getElementById("tutNextBtn").onclick = () => showScreen("tutorialScreen");
+document.getElementById("tutNextBtn").onclick = () => showScreen("stageScreen");
+
 document.getElementById("stageBackBtn").onclick = () => showScreen("tutorialScreen");
+
+// Leaderboard back
+document.getElementById("lbBackBtn").onclick = () => showScreen("titleScreen");
+document.getElementById("lbClearBtn").onclick = () => {
+  if(confirm("Clear all leaderboard scores?")) {
+    localStorage.removeItem("ccjr_lb");
+    renderLeaderboard();
+  }
+};
+
+// Stage navbar buttons
+document.getElementById("stageNavPause").onclick = () => {
+  // Pause is only relevant in-game; on stage select it just shows a toast
+  showToast("Start a game to pause!", "");
+};
+document.getElementById("stageNavMusic").onclick = () => toggleMusic();
+document.getElementById("stageNavHelp").onclick = () => {
+  document.getElementById("instructionsPopup").classList.remove("hidden");
+};
+document.getElementById("stageNavHome").onclick = () => showScreen("titleScreen");
+
+// Instructions popup close
+document.getElementById("instCloseBtn").onclick = () => {
+  document.getElementById("instructionsPopup").classList.add("hidden");
+};
+// Close on backdrop click
+document.getElementById("instructionsPopup").addEventListener("click", function(e) {
+  if(e.target === this) this.classList.add("hidden");
+});
 
 // Stage selection
 let selectedStage = "easy";
@@ -1478,7 +1556,6 @@ document.getElementById("gameHintBtn").onclick = () => {
   let powers = getPowers();
   if(!powers.includes("hint") || hintUses <= 0) return;
   hintUses--;
-  // Give hint about a random relevant challenge
   let pool = STAGE_CONFIG[currentStage].challenges;
   let hint = pool[Math.floor(Math.random()*pool.length)].hint;
   showHint(hint);
@@ -1511,24 +1588,18 @@ document.getElementById("nextStageBtn").onclick = nextStage;
 document.getElementById("scHomeBtn").onclick = () => { document.getElementById("stageCompleteOverlay").classList.add("hidden"); showScreen("titleScreen"); };
 document.getElementById("retryGameBtn").onclick = () => { document.getElementById("gameOverOverlay").classList.add("hidden"); startGame(currentStage, 1); };
 document.getElementById("goHomeBtn").onclick = () => { document.getElementById("gameOverOverlay").classList.add("hidden"); showScreen("titleScreen"); };
-// PLAY WELCOME VOICE ON FIRST CLICK
+
+// Welcome voice on first click
 document.body.addEventListener("click", () => {
-
-  const welcome =
-    document.getElementById("cover");
-
+  const welcome = document.getElementById("cover");
   welcome.play();
+}, { once: true });
 
-}, { once:true });
-
-// First click init audio
 document.addEventListener("click", () => tryPlayMusic(), { once: true });
 
 // Start rendering
 animFrame = requestAnimationFrame(gameLoop);
 resizeCanvas();
-
-  
 </script>
 </body>
 </html>
